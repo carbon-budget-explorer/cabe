@@ -28,5 +28,9 @@
 		"vite": "^4.3.0",
 		"vitest": "^0.25.3"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"svelte-vega": "^2.0.0",
+		"world-atlas": "^2.0.2"
+	}
 }
