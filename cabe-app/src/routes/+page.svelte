@@ -1,6 +1,7 @@
 <script>
 	import { each } from "svelte/internal";
     import Tabs from '$lib/Tabs.svelte';
+    import Map from '$lib/Map.svelte';
 
 	const strategies = [
         {code: 'GF', description: 'Grandfathering'},
@@ -11,10 +12,13 @@
         {code: 'ECPC', description: 'Equal cumulative per capita'},
     ]
 
-    var activeStrategy = 'GF';
+    let activeStrategy = 'GF';
     const handleClick = code => () => (activeStrategy = code);
 </script>
 
 <h1>FAIR Carbon Budget Explorer</h1>
 <p>Pick your effort-sharing principle</p>
-<Tabs {strategies} />
+
+<Tabs {strategies} bind:value={activeStrategy} />
+<h1>{activeStrategy}</h1>
+<Map />

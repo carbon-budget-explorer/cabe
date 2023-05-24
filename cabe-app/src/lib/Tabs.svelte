@@ -1,25 +1,18 @@
 <!-- https://svelte.dev/repl/cf05bd4a4ca14fb8ace8b6cdebbb58da?version=3.17.0 -->
 <script>
     export let strategies = [];
-    export let activeStrategy = 'GF';
+    export let value = '';
 
-    const handleClick = strategy => () => (activeStrategy = strategy);
+    const handleClick = strategy => () => (value = strategy);
   </script>
 
   <ul>
   {#each strategies as strategy}
-      <li class={activeStrategy === strategy.code ? 'active' : ''}>
+      <li class={value === strategy.code ? 'active' : ''}>
           <span on:click={handleClick(strategy.code)}>{strategy.description}</span>
       </li>
   {/each}
   </ul>
-  {#each strategies as strategy}
-      {#if activeStrategy == strategy.code}
-      <div class="box">
-          <p>{strategy.description}</p>
-      </div>
-      {/if}
-  {/each}
 
 
   <style>
