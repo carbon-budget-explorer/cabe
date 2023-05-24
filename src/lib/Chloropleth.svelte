@@ -7,7 +7,7 @@
 	// Based on https://vega.github.io/vega-lite/examples/choropleth_unemployment.html
 	const data = {
 		topojson,
-		features,
+		// features,
 	};
 
 	/** @type {import('svelte-vega').VisualizationSpec}  */
@@ -22,31 +22,35 @@
 				feature: 'countries'
 			}
 		},
-		transform: [
-			{
-				lookup: 'id',
-				from: {
-					data: {
-						name: 'features'
-					},
-					key: 'id',
-					fields: ['population']
-				},
-				default: 0
-			}
-		],
+		// transform: [
+		// 	{
+		// 		lookup: 'id',
+		// 		from: {
+		// 			data: {
+		// 				name: 'features'
+		// 			},
+		// 			key: 'id',
+		// 			fields: ['population']
+		// 		},
+		// 		default: 0
+		// 	}
+		// ],
 		mark: 'geoshape',
 		projection: {
 			type: 'naturalEarth1'
 		},
 		encoding: {
 			color: {
-				// "value": "#ff9900",
-				field: 'population',
-				type: 'quantitative'
+				"value": "red",
+				// field: 'population',
+				// type: 'quantitative'
 			}
 		}
 	};
+
+	/** @type {import('svelte-vega').View}*/
+	let view;
+	$: view ? console.log(view.data('topojson')) : '';
 </script>
 
-<VegaLite {data} {spec} />
+<VegaLite {data} {spec} bind:view={view}/>
