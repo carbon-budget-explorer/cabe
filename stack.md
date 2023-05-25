@@ -35,3 +35,11 @@ vega / vega-lite / altair / vega-embed
 plotly
 d3
 nivo (react only)
+
+### svelte visualisations
+
+* d3
+* https://florence.spatialnetworkslab.org/
+* https://nestauk.github.io/svizzle/
+* https://svend3r.dev/
+* https://github.com/vega/svelte-vega

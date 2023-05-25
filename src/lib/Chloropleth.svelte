@@ -53,4 +53,4 @@
 	$: view ? console.log(view.data('topojson')) : '';
 </script>
 
-<VegaLite {data} {spec} bind:view={view}/>
+<VegaLite {data} {spec} bind:view={view} options={{renderer:'svg'}}/>
