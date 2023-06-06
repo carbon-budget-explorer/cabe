@@ -1,8 +1,10 @@
 <!-- https://dev.to/learners/maps-with-d3-and-svelte-8p3 -->
-<script>
+<script lang="ts">
     import { onMount } from 'svelte';
-    import { geoPath, geoNaturalEarth1 } from  "d3";
+    import { geoPath, geoNaturalEarth1, scaleLog, extent } from  "d3";
+	import type { Metric } from './metrics';
 
+    export let metrics: Metric[]
     let dataset = [];
     onMount(async () => {
         // const countriesURL = "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"
@@ -22,18 +24,45 @@
         activeCountry = this.dataset.name
     }
 
+    const domain = extent(metrics.map(metric => metric.GDP));
+    const range = ["red", "white", "green"];
+    const scale = scaleLog()
+        .domain(domain)
+        .range(range);
+
+    function fillColor(code: string) {
+        // TODO find out why not all countries are in metrics
+        const metric = metrics.find(metric => metric.ISO === code);
+        if (metric === undefined) {
+            return 'fill: black';
+        }
+        return `fill: ${scale(metric.GDP)}`
+    }
 </script>
 
 <p>Active country: {activeCountry}</p>
 <svg>
-{#each dataset as data}
+    {#each dataset as data}
     <path
-     d={path(data)}
-     data-name={data.properties.ISO_A3}
+    d={path(data)}
+    data-name={data.properties.ISO_A3}
+    style={fillColor(data.properties.ISO_A3)} 
      on:mouseover={handleMouseover}
      on:focus={handleMouseover}
      />
 {/each}
+<defs>
+<!-- From https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Gradients 
+TODO replace with https://observablehq.com/@d3/color-legend in svelte format
+-->
+    <linearGradient id="Gradient2" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color={range[0]} />
+      <stop offset="50%" stop-color={range[1]} stop-opacity="0" />
+      <stop offset="100%" stop-color={range[2]} />
+    </linearGradient>
+  </defs>
+
+  <rect fill="url(#Gradient2)" x="10" y="10" rx="15" ry="15" width="500" height="30" />
 </svg>
 
 <style>

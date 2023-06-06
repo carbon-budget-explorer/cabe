@@ -1,8 +1,10 @@
-<script>
+<script lang="ts">
 	import Map from "../../lib/Map.svelte";
+	import type { PageData } from './$types';
 
+	export let data: PageData;
 </script>
 <h1>World explorer</h1>
 <p>Make a selection and view the map!</p>
 <a href="/">Go back</a>
-<Map />
+<Map metrics={data.metrics} />
