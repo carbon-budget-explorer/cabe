@@ -1,0 +1,8 @@
+name: cabe
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - xarray
+  - jupyterlab
+  - netcdf4

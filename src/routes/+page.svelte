@@ -1,2 +1,2 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<h1>Welcome to Carbon Budget Explorer</h1>
+<p><a href="world">Here</a> you can explore carbon budgets</p>
