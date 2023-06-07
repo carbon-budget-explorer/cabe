@@ -74,7 +74,7 @@
 				from: { data: 'countries' },
 				encode: {
 					enter: { tooltip: { field: 'properties.GDP_MD' } }, // Note this is population from NE world data
-					update: { fill: { scale: 'color', field: 'GDP' } }, // Note this is population from other source
+					update: { fill: { signal: "scale('color',  datum.GDP) || 'grey'" } }, // Note this is population from other source
 					hover: { fill: { value: 'red' } }
 				},
 				transform: [{ type: 'geoshape', projection: 'projection' }]
