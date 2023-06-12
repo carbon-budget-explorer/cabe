@@ -22,6 +22,8 @@ export function filterMetrics(raw_metrics: Metric[], year: number) {
 export async function getCountryMetrics(iso: string) {
     const rawmetrics = await loadMetrics()
     const metrics = rawmetrics.filter(d => d.ISO === iso)
+    console.log(metrics)
+    // TODO add name of country and other fields from static/ne_110m_admin_0_countries.geojson
     return {
         iso,
         metrics
