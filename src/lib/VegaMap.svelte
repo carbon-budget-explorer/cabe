@@ -26,7 +26,7 @@
 				name: 'selectedCountry',
 				description: 'A country ISO code that updates in response to mouse click',
 				value: 'NLD',
-				on: [{ events: 'mousedown', update: "datum ? datum.properties.ISO_A3_EH : ''" }] // ISO_A3 not set for FRA
+				on: [{ events: 'dblclick', update: "datum ? datum.properties.ISO_A3_EH : ''" }] // ISO_A3 not set for FRA
 			},
 			{ name: 'tx', update: 'width / 2' },
 			{ name: 'ty', update: 'height / 2' },
