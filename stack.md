@@ -31,6 +31,7 @@ Requirements:
   - Solidjs looks nice, but solidstart still in beta
 
 ## Visualization
+
 vega / vega-lite / altair / vega-embed
 plotly
 d3
