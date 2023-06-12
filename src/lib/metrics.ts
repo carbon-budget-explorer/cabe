@@ -17,6 +17,10 @@ export function filterMetrics(raw_metrics: Metric[], year: number) {
 	return raw_metrics.filter((d) => d.Time === year);
 }
 
+export function allYears(raw_metrics: Metric[]) {
+	return [...new Set(raw_metrics.map((d) => d.Time.toString()))];
+}
+
 export async function getCountryMetrics(iso: string) {
 	const rawmetrics = await loadMetrics();
 	const metrics = rawmetrics.filter((d) => d.ISO === iso);
