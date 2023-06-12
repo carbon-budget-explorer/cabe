@@ -1,8 +1,6 @@
-import { getCountryMetrics } from '$lib/metrics'
-import type { PageLoad } from './$types'
+import { getCountryMetrics } from '$lib/metrics';
+import type { RouteParams } from './$types';
 
-export const load = (
-    async ({ params }) => {
-       return await getCountryMetrics(params.iso)
-    }
-) satisfies PageLoad
+export const load = async ({ params }: { params: RouteParams }) => {
+	return await getCountryMetrics(params.iso);
+};

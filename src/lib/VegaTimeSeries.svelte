@@ -5,10 +5,9 @@
 
 	export let metricName: string;
 	export let data: Metric[];
-	console.log(metricName);
 
 	$: spec = {
-		"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+		$schema: 'https://vega.github.io/schema/vega-lite/v5.json',
 		title: `${metricName} over time`,
 		width: 960,
 		height: 200,
@@ -22,9 +21,6 @@
 			y: { field: metricName, type: 'quantitative' }
 		}
 	} as VisualizationSpec;
-
-	let view: View;
-	$: view ? console.log('Vega view: ', data, view.getState()) : '';
 </script>
 
-<VegaLite {spec} bind:view={view} />
+<VegaLite {spec} />
