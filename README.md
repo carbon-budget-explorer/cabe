@@ -4,6 +4,7 @@ Web application to explore carbon budgets
 
 ## Developing
 
+You'll need [node.js](https://nodejs.org/en) to run a local development server.
 Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
 ```bash
