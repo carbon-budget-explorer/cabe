@@ -8,10 +8,10 @@
 	console.log(metricName);
 
 	$: spec = {
-		$schema: 'https://vega.github.io/schema/vega/v5.json',
+		"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
 		title: `${metricName} over time`,
 		width: 960,
-		height: 500,
+		height: 200,
 		// autosize: 'none',
 		data: {
 			values: data

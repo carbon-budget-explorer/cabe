@@ -10,7 +10,7 @@
 	let country: string;
 
 	const gotoCountry = (country: string) => {
-		if (browser && country !== undefined) {
+		if (browser && country !== undefined && country !== '') {
 			goto(`/countries/${country}`);
 		}
 	};
