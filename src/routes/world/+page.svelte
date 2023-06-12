@@ -28,7 +28,7 @@
 </script>
 
 <h1>World explorer</h1>
-<p>Make a selection by clicking on a country.</p>
+<p>Make a selection by double clicking on a country. Use mouse wheel to zoom and drag to pan map.</p>
 <VegaMap metrics={data.metrics} metricName={data.metricName} bind:country />
 <p />
 <select bind:value={selectedYear} on:change={gotoYear}>
