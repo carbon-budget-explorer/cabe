@@ -3,6 +3,7 @@
 	import { Vega } from 'svelte-vega';
 	import type { Metric } from './metrics';
 
+	export let metricName: string;
 	export let metrics: Metric[];
 	export let country: any;
 
@@ -14,7 +15,7 @@
 		selectedCountry: updateCountry
 	};
 
-	const spec: VisualizationSpec = {
+	$: spec = {
 		$schema: 'https://vega.github.io/schema/vega/v5.json',
 		description: 'Test map',
 		width: 960,
@@ -57,7 +58,7 @@
 			{
 				name: 'color',
 				type: 'log',
-				domain: { data: 'countries', field: 'GDP' },
+				domain: { data: 'countries', field: metricName },
 				range: { scheme: 'cividis' }
 			}
 		],
@@ -65,7 +66,7 @@
 			{
 				fill: 'color',
 				orient: 'bottom-left',
-				title: 'Median GDP'
+				title: `Median ${metricName}`
 			}
 		],
 		marks: [
@@ -73,14 +74,14 @@
 				type: 'shape',
 				from: { data: 'countries' },
 				encode: {
-					enter: { tooltip: { field: 'properties.GDP_MD' } }, // Note this is population from NE world data
-					update: { fill: { signal: "scale('color',  datum.GDP) || 'grey'" } }, // Note this is population from other source
+					enter: { tooltip: { field: metricName } },
+					update: { fill: { signal: `scale('color',  datum.${metricName}) || 'grey'` } },
 					hover: { fill: { value: 'red' } }
 				},
 				transform: [{ type: 'geoshape', projection: 'projection' }]
 			}
 		]
-	};
+	} as VisualizationSpec;
 </script>
 
 <Vega {spec} {signalListeners} />

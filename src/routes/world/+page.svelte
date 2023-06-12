@@ -1,6 +1,6 @@
 <script lang="ts">
 	// import VegaLiteMap from "$lib/VegaLiteMap.svelte";
-	import VegaMap from "$lib/VegaMap.svelte";
+	import VegaMap from '$lib/VegaMap.svelte';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
@@ -11,4 +11,23 @@
 <p>Make a selection by clicking on a country.</p>
 <p>Selected country: {country}</p>
 <a href="/">Go back</a>
-<VegaMap metrics={data.metrics} bind:country />
+<VegaMap metrics={data.metrics} metricName={data.metricName} bind:country />
+<ul>
+	<li>
+		<a href="?year=2018">Go to 2018</a>
+	</li>
+	<li>
+		<a href="?year=2019">Go to 2019</a>
+	</li>
+	<li>
+		<a href="?year=2020">Go to 2020</a>
+	</li>
+</ul>
+<ul>
+	<li>
+		<a href="?metric=Population">Population</a>
+	</li>
+	<li>
+		<a href="?metric=GDP">GDP</a>
+	</li>
+</ul>

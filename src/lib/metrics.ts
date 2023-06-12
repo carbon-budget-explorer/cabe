@@ -14,3 +14,7 @@ export async function loadMetrics() {
     )
     return metrics
 }
+
+export function filterMetrics(raw_metrics: Metric[], year: number) {
+    return raw_metrics.filter(d => d.Time === year)
+}
