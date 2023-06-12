@@ -18,3 +18,12 @@ export async function loadMetrics() {
 export function filterMetrics(raw_metrics: Metric[], year: number) {
     return raw_metrics.filter(d => d.Time === year)
 }
+
+export async function getCountryMetrics(iso: string) {
+    const rawmetrics = await loadMetrics()
+    const metrics = rawmetrics.filter(d => d.ISO === iso)
+    return {
+        iso,
+        metrics
+    }
+}
