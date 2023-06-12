@@ -1,20 +1,24 @@
-import { filterMetrics, loadMetrics } from '$lib/metrics';
+import { allYears, filterMetrics, loadMetrics } from '$lib/metrics';
 
 export async function load({ url }) {
 	// TODO validate searchParam with zod.js
 
+	const rawMetrics = await loadMetrics();
+	const years = allYears(rawMetrics);
+
 	const rawyear = url.searchParams.get('year');
-	// TODO determine default year from data
-	let year: number = 2018;
+	let year: string = years[years.length - 1];
 	if (rawyear !== null) {
-		year = parseInt(rawyear);
+		year = rawyear;
 	}
+
 	const rawmetricName = url.searchParams.get('metric');
 	let metricName: string = 'GDP';
 	if (rawmetricName !== null) {
 		metricName = rawmetricName;
 	}
-	const raw_metrics = await loadMetrics();
-	const metrics = filterMetrics(raw_metrics, year);
-	return { metrics, metricName };
+
+	const metrics = filterMetrics(rawMetrics, parseInt(year));
+
+	return { metrics, metricName, years, year };
 }
