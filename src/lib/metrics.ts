@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+import { countryName } from './borders';
 
 export interface Metric {
 	ISO: string;
@@ -26,8 +27,10 @@ export async function getCountryMetrics(iso: string) {
 	const rawmetrics = await loadMetrics();
 	const metrics = rawmetrics.filter((d) => d.ISO === iso);
 	// TODO add name of country and other fields from static/ne_110m_admin_0_countries.geojson
+	const name = await countryName(iso);
 	return {
 		iso,
+		name,
 		metrics
 	};
 }

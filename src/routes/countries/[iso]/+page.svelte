@@ -5,7 +5,7 @@
 	console.log(data);
 </script>
 
-<h1>{data.iso}</h1>
+<h1>{data.name}</h1>
 
 <VegaTimeSeries data={data.metrics} metricName="GDP" />
 <VegaTimeSeries data={data.metrics} metricName="Population" />
