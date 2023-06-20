@@ -17,7 +17,7 @@
 
 	$: spec = {
 		$schema: 'https://vega.github.io/schema/vega/v5.json',
-		description: 'Test map',
+		description: 'World map',
 		width: 960,
 		height: 500,
 		autosize: 'none',
@@ -171,7 +171,7 @@
 						}
 					},
 					update: { fill: { signal: `scale('color',  datum.${metricName}) || 'grey'` } },
-					hover: { fill: { value: 'red' } }
+					hover: { fill: { value: 'firebrick' } }
 				},
 				transform: [{ type: 'geoshape', projection: 'projection' }]
 			}
