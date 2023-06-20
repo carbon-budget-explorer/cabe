@@ -6,3 +6,4 @@ dependencies:
   - xarray
   - jupyterlab
   - netcdf4
+  - zarr
