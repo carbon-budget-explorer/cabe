@@ -25,3 +25,20 @@ npm run build
 You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+
+## Data preparation
+
+The data is prepared using the [data preparation script](dataprep/dataprep.ipynb). The data is stored in the [data folder](data).
+
+Install with mamba using
+
+```bash
+mamba env create  -f dataprep/environment.yml
+conda activate cabe
+```
+
+Run notebooks with
+
+```bash
+jupyter run dataprep/dataprep.ipynb dataprep/borders.ipynb
+```

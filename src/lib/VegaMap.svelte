@@ -121,8 +121,7 @@
 			},
 			{
 				name: 'countries',
-				url: 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson',
-				// url: '/ne_110m_admin_0_countries.geojson',
+				url: '/country_borders.geojson',
 				format: { type: 'json', property: 'features' },
 				transform: [
 					{
