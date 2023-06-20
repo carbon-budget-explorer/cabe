@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { View, VisualizationSpec } from 'svelte-vega';
+	import type { VisualizationSpec } from 'svelte-vega';
 	import { VegaLite } from 'svelte-vega';
 	import type { Metric } from './metrics';
 

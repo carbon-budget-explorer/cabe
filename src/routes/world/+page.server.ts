@@ -13,7 +13,7 @@ export async function load({ url }) {
 	}
 
 	const rawmetricName = url.searchParams.get('metric');
-	let metricName: string = 'GDP';
+	let metricName = 'GDP';
 	if (rawmetricName !== null) {
 		metricName = rawmetricName;
 	}

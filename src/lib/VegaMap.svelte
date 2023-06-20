@@ -165,9 +165,11 @@
 				type: 'shape',
 				from: { data: 'countries' },
 				encode: {
-					enter: { tooltip: { 
-						signal: `{ title: datum.properties.ISO_A3_EH, ${metricName} : format(datum.${metricName}, 's') }`
-					} },
+					enter: {
+						tooltip: {
+							signal: `{ title: datum.properties.ISO_A3_EH, ${metricName} : format(datum.${metricName}, 's') }`
+						}
+					},
 					update: { fill: { signal: `scale('color',  datum.${metricName}) || 'grey'` } },
 					hover: { fill: { value: 'red' } }
 				},
