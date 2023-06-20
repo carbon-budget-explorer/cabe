@@ -157,7 +157,7 @@
 			{
 				fill: 'color',
 				orient: 'bottom-left',
-				title: `Median ${metricName}`
+				title: metricName
 			}
 		],
 		marks: [
@@ -165,7 +165,9 @@
 				type: 'shape',
 				from: { data: 'countries' },
 				encode: {
-					enter: { tooltip: { field: metricName } },
+					enter: { tooltip: { 
+						signal: `{ title: datum.properties.ISO_A3_EH, ${metricName} : format(datum.${metricName}, 's') }`
+					} },
 					update: { fill: { signal: `scale('color',  datum.${metricName}) || 'grey'` } },
 					hover: { fill: { value: 'red' } }
 				},
