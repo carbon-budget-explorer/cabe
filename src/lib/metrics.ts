@@ -8,8 +8,9 @@ export interface Metric {
 }
 
 export async function loadMetrics() {
-	const fn = 'data/test.json';
-	const metrics: Metric[] = JSON.parse(await readFile(fn, { encoding: 'utf8' }));
+	const fn = 'data/metrics.json';
+	const text = await readFile(fn, { encoding: 'utf8' })
+	const metrics: Metric[] = JSON.parse(text);
 	return metrics;
 }
 
