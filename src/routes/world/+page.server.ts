@@ -1,4 +1,5 @@
-import { allYears, filterMetrics, loadMetrics } from '$lib/metrics';
+import { countryName } from '$lib/borders';
+import { allYears, filterMetrics, loadMetrics, type NamedMetric } from '$lib/metrics';
 
 export async function load({ url }) {
 	// TODO validate searchParam with zod.js
@@ -18,7 +19,22 @@ export async function load({ url }) {
 		metricName = rawmetricName;
 	}
 
-	const metrics = filterMetrics(rawMetrics, parseInt(year));
-
+	const filteredMetrics = filterMetrics(rawMetrics, parseInt(year));
+	// TODO Add country name in more efficient and reusable way
+	const metrics: NamedMetric[] = await Promise.all(
+		filteredMetrics.map(async (d) => {
+			try {
+				return {
+					...d,
+					name: await countryName(d.ISO)
+				};
+			} catch (error) {
+				return {
+					...d,
+					name: d.ISO
+				};
+			}
+		})
+	);
 	return { metrics, metricName, years, year };
 }

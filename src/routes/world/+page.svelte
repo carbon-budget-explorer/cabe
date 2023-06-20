@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import CountryFilter from '$lib/CountryFilter.svelte';
 
 	// import VegaLiteMap from "$lib/VegaLiteMap.svelte";
 	import VegaMap from '$lib/VegaMap.svelte';
@@ -28,25 +29,64 @@
 </script>
 
 <h1>World explorer</h1>
-<p>
-	Make a selection by double clicking on a country. Use mouse wheel to zoom and drag to pan map.
-</p>
-<VegaMap metrics={data.metrics} metricName={data.metricName} bind:country />
-<p />
-<select bind:value={selectedYear} on:change={gotoYear}>
-	{#each data.years as year}
-		<option value={year}>
-			{year}
-		</option>
-	{/each}
-</select>
-<ul>
-	<li>
-		<a href="?metric=Population">Population</a>
-	</li>
-	<li>
-		<a href="?metric=GDP">GDP</a>
-	</li>
-</ul>
+<main>
+	<div>
+		<div>
+			<p>
+				Make a selection by double clicking on a country. Use mouse wheel to zoom and drag to pan
+				map.
+			</p>
 
-<a href="/">Go back</a>
+			<VegaMap metrics={data.metrics} metricName={data.metricName} bind:country />
+			<p />
+		</div>
+		<div class="filter">
+			<label>
+				Year
+				<select bind:value={selectedYear} on:change={gotoYear}>
+					{#each data.years as year}
+						<option value={year}>
+							{year}
+						</option>
+					{/each}
+				</select>
+			</label>
+			<ul>
+				<li>
+					{#if data.metricName === 'Population'}
+						Population
+					{:else}
+						<a href="?metric=Population">Population</a>
+					{/if}
+				</li>
+				<li>
+					{#if data.metricName === 'GDP'}
+						GDP
+					{:else}
+						<a href="?metric=GDP">GDP</a>
+					{/if}
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div>
+		<CountryFilter metrics={data.metrics} />
+	</div>
+</main>
+<footer>
+	<a href="/">Go back</a>
+</footer>
+
+<style>
+	main {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+
+	.filter {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+	}
+</style>

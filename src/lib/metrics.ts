@@ -8,6 +8,10 @@ export interface Metric {
 	GDP: number;
 }
 
+export interface NamedMetric extends Metric {
+	name: string;
+}
+
 export async function loadMetrics() {
 	const fn = 'data/metrics.json';
 	const text = await readFile(fn, { encoding: 'utf8' });

@@ -6,7 +6,10 @@
 </script>
 
 <h1>{data.name}</h1>
-
-<VegaTimeSeries data={data.metrics} metricName="GDP" />
-<VegaTimeSeries data={data.metrics} metricName="Population" />
-<a href="/world">Go back</a>
+<main>
+	<VegaTimeSeries data={data.metrics} metricName="GDP" />
+	<VegaTimeSeries data={data.metrics} metricName="Population" />
+</main>
+<footer>
+	<a href="/world">Go back</a>
+</footer>
