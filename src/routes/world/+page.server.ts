@@ -1,5 +1,6 @@
 import { countryName } from '$lib/borders';
 import { allYears, filterMetrics, loadMetrics, type NamedMetric } from '$lib/metrics';
+import { loadScenarios } from '$lib/scenarios';
 
 export async function load({ url }) {
 	// TODO validate searchParam with zod.js
@@ -36,5 +37,8 @@ export async function load({ url }) {
 			}
 		})
 	);
+
+	await loadScenarios();
+
 	return { metrics, metricName, years, year };
 }
