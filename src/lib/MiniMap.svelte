@@ -8,7 +8,7 @@
 		}
 	};
 
-    // TODO scale translat so all countries are visible
+	// TODO scale translat so all countries are visible
 	// TODO highlight country of page
 	// TODO color by metric like GDP, similar to /world
 	// TODO pick how to color
@@ -19,16 +19,16 @@
 		width: 300,
 		height: 200,
 		autosize: {
-            type: 'fit',
-            resize: false,
-            contains: 'content'
-        },
+			type: 'fit',
+			resize: false,
+			contains: 'content'
+		},
 		signals: [
 			{
 				name: 'onCountryClick',
 				value: {},
 				on: [{ events: 'click', update: 'datum' }]
-			},
+			}
 		],
 		data: [
 			{
@@ -40,7 +40,7 @@
 		projections: [
 			{
 				name: 'projection',
-				type: 'equalEarth',
+				type: 'equalEarth'
 			}
 		],
 		marks: [

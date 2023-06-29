@@ -1,10 +1,9 @@
 <script lang="ts">
 	import type { VisualizationSpec } from 'svelte-vega';
 	import { VegaLite } from 'svelte-vega';
-	import type { Metric } from './metrics';
 
 	export let metricName: string;
-	export let data: Metric[];
+	export let data: any;
 
 	$: spec = {
 		$schema: 'https://vega.github.io/schema/vega-lite/v5.json',
@@ -13,9 +12,9 @@
 		height: 200,
 		// autosize: 'none',
 		data: {
-			values: data
+			values: data,
 		},
-		mark: 'bar',
+		mark: 'line',
 		encoding: {
 			x: { field: 'Time', type: 'ordinal' },
 			y: { field: metricName, type: 'quantitative' }

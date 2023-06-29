@@ -8,17 +8,18 @@
 <h1>{data.name}</h1>
 <main>
 	<div>
-	<VegaTimeSeries data={data.metrics} metricName="GDP" />
-	<VegaTimeSeries data={data.metrics} metricName="Population" />
+		<h2>GDP</h2>
+		<VegaTimeSeries data={data.gdp} metricName="value" />
+		<h2>Population</h2>
+		<VegaTimeSeries data={data.population} metricName="value" />
 	</div>
 	<div>
-		<MiniMap/>
+		<MiniMap />
 	</div>
 </main>
 <footer>
 	<a href="/world">Go back</a>
 </footer>
-
 
 <style>
 	main {
