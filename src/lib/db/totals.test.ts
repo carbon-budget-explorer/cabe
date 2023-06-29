@@ -6,13 +6,13 @@ import { describe, test, expect, beforeAll, afterAll } from 'vitest';
 import type { NetCDFFile } from 'netcdf4-async';
 import { createRequire } from 'node:module';
 
-import { open_totals, type Totals } from './totals';
+import { open_totals } from './totals';
 
 const require = createRequire(import.meta.url);
 
 const netcdf4 = require('netcdf4-async');
 
-let testnc: string = '';
+let testnc = '';
 
 beforeAll(async () => {
 	const workdir = await mkdtemp(join(tmpdir(), 'cabe-test-'));
@@ -84,17 +84,17 @@ describe('Totals', () => {
 		[
 			'NLD',
 			[
-				{ year: 2019, value: 1.11 },
-				{ year: 2020, value: 2.22 },
-				{ year: 2021, value: 3.33 }
+				{ Time: 2019, value: 1.11 },
+				{ Time: 2020, value: 2.22 },
+				{ Time: 2021, value: 3.33 }
 			]
 		],
 		[
 			'USA',
 			[
-				{ year: 2019, value: 4.44 },
-				{ year: 2020, value: 5.55 },
-				{ year: 2021, value: 6.66 }
+				{ Time: 2019, value: 4.44 },
+				{ Time: 2020, value: 5.55 },
+				{ Time: 2021, value: 6.66 }
 			]
 		]
 	])('regional %s', async (iso, expected) => {
