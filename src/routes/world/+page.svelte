@@ -18,7 +18,7 @@
 	};
 	$: gotoCountry(country);
 
-	let selectedYear: string = data.year;
+	let selectedYear: number = data.year;
 	function gotoYear(event: any) {
 		if (browser) {
 			const params = new URLSearchParams($page.url.search);
@@ -51,21 +51,17 @@
 					{/each}
 				</select>
 			</label>
+
 			<ul>
-				<li>
-					{#if data.metricName === 'Population'}
-						Population
-					{:else}
-						<a href="?metric=Population">Population</a>
-					{/if}
-				</li>
-				<li>
-					{#if data.metricName === 'GDP'}
-						GDP
-					{:else}
-						<a href="?metric=GDP">GDP</a>
-					{/if}
-				</li>
+				{#each data.variables as variable}
+					<li>
+						{#if data.metricName === variable}
+							{variable}
+						{:else}
+							<a href={`?metric=${variable}`}>{variable}</a>
+						{/if}
+					</li>
+				{/each}
 			</ul>
 		</div>
 	</div>

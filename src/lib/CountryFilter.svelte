@@ -1,9 +1,10 @@
 <script lang="ts">
 	import type { NamedMetric } from './metrics';
 
-	export let metrics: NamedMetric[];
+	export let metrics: any;
 	let query = '';
 	$: filteredMetrics = metrics
+		.filter((a) => a.ISO !== undefined && a.ISO !== null)
 		.sort((a, b) => a.ISO.localeCompare(b.ISO))
 		.filter((d) => {
 			return (

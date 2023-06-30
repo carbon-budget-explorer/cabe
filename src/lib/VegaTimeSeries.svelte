@@ -12,7 +12,7 @@
 		height: 200,
 		// autosize: 'none',
 		data: {
-			values: data,
+			values: data
 		},
 		mark: 'line',
 		encoding: {

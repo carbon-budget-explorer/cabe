@@ -1,16 +1,15 @@
 import { countryName } from '$lib/borders';
-import { allYears, filterMetrics, loadMetrics, type NamedMetric } from '$lib/metrics';
+import { totals } from '$lib/db/data';
 
-export async function load({ url }) {
+export async function load({ url }: { url: URL }) {
 	// TODO validate searchParam with zod.js
 
-	const rawMetrics = await loadMetrics();
-	const years = allYears(rawMetrics);
+	const years = await totals.years();
 
 	const rawyear = url.searchParams.get('year');
-	let year: string = years[years.length - 1];
+	let year: number = new Date().getFullYear();
 	if (rawyear !== null) {
-		year = rawyear;
+		year = parseInt(rawyear);
 	}
 
 	const rawmetricName = url.searchParams.get('metric');
@@ -19,22 +18,27 @@ export async function load({ url }) {
 		metricName = rawmetricName;
 	}
 
-	const filteredMetrics = filterMetrics(rawMetrics, parseInt(year));
+	const filteredMetrics = await totals.global(metricName, year);
 	// TODO Add country name in more efficient and reusable way
-	const metrics: NamedMetric[] = await Promise.all(
-		filteredMetrics.map(async (d) => {
-			try {
-				return {
-					...d,
-					name: await countryName(d.ISO)
-				};
-			} catch (error) {
-				return {
-					...d,
-					name: d.ISO
-				};
-			}
-		})
+	const metrics = await Promise.all(
+		filteredMetrics
+			.filter((d) => !Number.isNaN(d.value) && d.value !== null)
+			.map(async (d) => {
+				try {
+					return {
+						...d,
+						name: await countryName(d.ISO)
+					};
+				} catch (error) {
+					return {
+						...d,
+						name: d.ISO
+					};
+				}
+			})
 	);
-	return { metrics, metricName, years, year };
+
+	const variables = await totals.variables();
+
+	return { metrics, metricName, years, year, variables };
 }

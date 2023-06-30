@@ -1,10 +1,9 @@
 <script lang="ts">
 	import type { SignalListeners, VisualizationSpec } from 'svelte-vega';
 	import { Vega } from 'svelte-vega';
-	import type { Metric } from './metrics';
 
 	export let metricName: string;
-	export let metrics: Metric[];
+	export let metrics: any;
 	export let country: any;
 
 	function updateCountry(_: string, value: unknown) {
@@ -18,8 +17,8 @@
 	$: spec = {
 		$schema: 'https://vega.github.io/schema/vega/v5.json',
 		description: 'World map',
-		width: 960,
-		height: 500,
+		width: 1160,
+		height: 600,
 		autosize: 'none',
 		signals: [
 			{
@@ -32,7 +31,7 @@
 			{ name: 'ty', update: 'height / 2' },
 			{
 				name: 'scale',
-				value: 150,
+				value: 230,
 				on: [
 					{
 						events: { type: 'wheel', consume: true },
@@ -129,7 +128,7 @@
 						from: 'metrics',
 						key: 'ISO',
 						fields: ['properties.ISO_A3_EH'], // fields from countries for joining the data
-						values: ['Population', 'GDP'], // fields from metrics to add to the data
+						values: ['value'], // fields from metrics to add to the data
 						default: 'unknown'
 					}
 				]
@@ -149,7 +148,7 @@
 			{
 				name: 'color',
 				type: 'log',
-				domain: { data: 'countries', field: metricName },
+				domain: { data: 'countries', field: 'value' },
 				range: { scheme: 'cividis' }
 			}
 		],
@@ -167,10 +166,10 @@
 				encode: {
 					enter: {
 						tooltip: {
-							signal: `{ title: datum.properties.ISO_A3_EH, ${metricName} : format(datum.${metricName}, 's') }`
+							signal: `{ title: datum.properties.ISO_A3_EH, ${metricName} : format(datum.value, 's') }`
 						}
 					},
-					update: { fill: { signal: `scale('color',  datum.${metricName}) || 'grey'` } },
+					update: { fill: { signal: `scale('color',  datum.value) || 'grey'` } },
 					hover: { fill: { value: 'firebrick' } }
 				},
 				transform: [{ type: 'geoshape', projection: 'projection' }]

@@ -5,12 +5,12 @@ const require = createRequire(import.meta.url);
 
 const netcdf4 = require('netcdf4-async');
 
-export const open_totals = async (path: string) => {
+export const open_scenarios = async (path: string) => {
 	const file: NetCDFFile = await netcdf4.open(path, 'r');
-	return new Totals(file);
+	return new Scenarios(file);
 };
 
-export class Totals {
+export class Scenarios {
 	constructor(private file: NetCDFFile) {}
 
 	async isos() {
@@ -34,20 +34,6 @@ export class Totals {
 		return Array.from(values);
 	}
 
-	async variables() {
-		const variables = await this.file.root.getVariables();
-		const dimensions = new Set<string>(['Category', 'ISO', 'Time']);
-		const varnames: string[] = [];
-		for (const [vname, variable] of Object.entries(variables)) {
-			const dims = await variable.getDimensions();
-			// filter out vars which do not have ISO and Time dimensions
-			if (!dimensions.has(vname) && dims.ISO && dims.Time) {
-				varnames.push(vname);
-			}
-		}
-		return varnames;
-	}
-
 	async categories() {
 		const category = await this.file.root.getVariable('Category');
 		const category_dims = await category.getDimensions();
@@ -64,46 +50,44 @@ export class Totals {
 		return Array.from(values);
 	}
 
-	async references() {
+	async variables() {
 		const variables = await this.file.root.getVariables();
+		const dimensions = new Set<string>(['Category', 'ISO', 'Time']);
 		const varnames: string[] = [];
 		for (const [vname, variable] of Object.entries(variables)) {
 			const dims = await variable.getDimensions();
-			// filter out vars which do not have ISO and Time dimensions
-			if (dims.ISO && !dims.Time) {
+			// filter out vars which do not have ISO and Time and Category dimensions
+			if (!dimensions.has(vname) && dims.ISO && dims.Time && dims.Category) {
 				varnames.push(vname);
 			}
 		}
 		return varnames;
 	}
 
-	async reference(reference: string) {
-		const var_ = await this.file.root.getVariable(reference);
-		const var_dims = await var_.getDimensions();
-		const values = await var_.readSlice(0, var_dims.ISO);
-		const iso = await this.isos();
-		return Array.from(values).map((value, i) => {
-			return {
-				ISO: iso[i],
-				value
-			};
-		});
-	}
-
-	async category(category: string) {
-		const var_ = await this.file.root.getVariable(category);
-		const var_dims = await var_.getDimensions();
-		const values = await var_.readSlice(0, var_dims.Category, 0, var_dims.Time);
-		return Array.from(values);
-	}
-
-	async global(variable: string, year: number) {
+	async global(category: string, variable: string, year: number) {
 		const var_ = await this.file.root.getVariable(variable);
 		const var_dims = await var_.getDimensions();
+		const categories = await this.categories();
+		const category_index = categories.indexOf(category);
+		const iso = await this.isos();
 		const years = await this.years();
 		const year_index = years.indexOf(year);
-		const values = await var_.readSlice(0, var_dims.ISO, year_index, 1);
-		const iso = await this.isos();
+		const dim_order = Object.keys(var_dims).toString();
+		let selection = [];
+		switch (dim_order) {
+			case 'ISO,Time,Category':
+				selection = [0, var_dims.ISO, year_index, 1, category_index, 1];
+				break;
+			case 'Category,ISO,Time':
+				selection = [category_index, 1, 0, var_dims.ISO, 0, year_index, 1];
+				break;
+			case 'ISO,Category,Time':
+				selection = [0, var_dims.ISO, category_index, 1, year_index, 1];
+				break;
+			default:
+				throw new Error(`Unknown dim order: ${dim_order}`);
+		}
+		const values = await var_.readSlice(...selection);
 		return Array.from(values).map((value, i) => {
 			return {
 				ISO: iso[i],
@@ -112,13 +96,30 @@ export class Totals {
 		});
 	}
 
-	async region(variable: string, iso: string) {
+	async region(category: string, variable: string, iso: string) {
 		const var_ = await this.file.root.getVariable(variable);
 		const var_dims = await var_.getDimensions();
 		const isos = await this.isos();
 		const iso_index = isos.indexOf(iso);
-		const values = await var_.readSlice(iso_index, 1, 0, var_dims.Time);
+		const categories = await this.categories();
+		const category_index = categories.indexOf(category);
 		const years = await this.years();
+		const dim_order = Object.keys(var_dims).toString();
+		let selection = [];
+		switch (dim_order) {
+			case 'ISO,Time,Category':
+				selection = [iso_index, 1, 0, var_dims.Time, category_index, 1];
+				break;
+			case 'Category,ISO,Time':
+				selection = [category_index, 1, iso_index, 1, 0, var_dims.Time];
+				break;
+			case 'ISO,Category,Time':
+				selection = [iso_index, 1, category_index, 1, 0, var_dims.Time];
+				break;
+			default:
+				throw new Error(`Unknown dim order: ${dim_order}`);
+		}
+		const values = await var_.readSlice(...selection);
 		return Array.from(values).map((value, i) => {
 			return {
 				Time: years[i],

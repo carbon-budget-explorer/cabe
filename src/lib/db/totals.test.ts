@@ -8,6 +8,7 @@ import { createRequire } from 'node:module';
 
 import { open_totals } from './totals';
 
+
 const require = createRequire(import.meta.url);
 
 const netcdf4 = require('netcdf4-async');
@@ -17,7 +18,6 @@ let testnc = '';
 beforeAll(async () => {
 	const workdir = await mkdtemp(join(tmpdir(), 'cabe-test-'));
 	testnc = join(workdir, 'test.nc');
-	console.log(testnc);
 	const file: NetCDFFile = await netcdf4.open(testnc, 'c', 'netcdf4');
 	// Time dimension
 	await file.root.addDimension('Time', 3);
@@ -56,22 +56,22 @@ describe('Totals', () => {
 		[
 			2019,
 			[
-				{ iso: 'NLD', value: 1.11 },
-				{ iso: 'USA', value: 4.44 }
+				{ ISO: 'NLD', value: 1.11 },
+				{ ISO: 'USA', value: 4.44 }
 			]
 		],
 		[
 			2020,
 			[
-				{ iso: 'NLD', value: 2.22 },
-				{ iso: 'USA', value: 5.55 }
+				{ ISO: 'NLD', value: 2.22 },
+				{ ISO: 'USA', value: 5.55 }
 			]
 		],
 		[
 			2021,
 			[
-				{ iso: 'NLD', value: 3.33 },
-				{ iso: 'USA', value: 6.66 }
+				{ ISO: 'NLD', value: 3.33 },
+				{ ISO: 'USA', value: 6.66 }
 			]
 		]
 	])('global %i', async (year, expected) => {
@@ -99,7 +99,7 @@ describe('Totals', () => {
 		]
 	])('regional %s', async (iso, expected) => {
 		const totals = await open_totals(testnc);
-		const population = await totals.regional('Population', iso);
+		const population = await totals.region('Population', iso);
 		expect(population).toEqual(expected);
 	});
 });

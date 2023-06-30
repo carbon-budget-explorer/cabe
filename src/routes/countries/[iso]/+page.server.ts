@@ -8,8 +8,8 @@ export const load = async ({ params }: { params: RouteParams }) => {
 	const r = {
 		iso,
 		name,
-		gdp: await totals.regional('GDP', iso),
-		population: await totals.regional('Population', iso),
-	}
-	return r
+		gdp: await totals.region('GDP', iso),
+		population: await totals.region('Population', iso)
+	};
+	return r;
 };
