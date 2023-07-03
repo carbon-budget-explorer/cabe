@@ -19,13 +19,15 @@
 </script>
 
 <div>
-	<input type="text" bind:value={query} placeholder="Filter regions..." />
-	<button title="Clear query" disabled={query === ''} on:click={() => (query = '')}>X</button>
+	<div class="flex flex-row gap-1">
+		<input class="grow" type="text" bind:value={query} placeholder="Filter regions ..." />
+		<button title="Clear query" disabled={query === ''} on:click={() => (query = '')}>X</button>
+	</div>
+	<ul>
+		{#each filteredMetrics as region}
+			<li>
+				<a class="underline" href={`/regions/${region.ISO}`}>{region.name}</a>
+			</li>
+		{/each}
+	</ul>
 </div>
-<ul>
-	{#each filteredMetrics as region}
-		<li>
-			<a class="underline" href={`/regions/${region.ISO}`}>{region.name}</a>
-		</li>
-	{/each}
-</ul>
