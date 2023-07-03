@@ -108,5 +108,10 @@ jobs:
           node-version: 18
       - name: 📥 Install deps
         run: npm ci
+      - name: ⬇️  Install data deps
+        run: npm run download:borders
       - name: ⚙️  Build
         run: npm run build
+        env:
+            CABE_TOTALS_PATH: __tests__/totals.nc
+            CABE_SCENARIOS_PATH: __tests__/scenarios.nc

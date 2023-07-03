@@ -3,7 +3,6 @@ import { open_scenarios } from './scenarios';
 import { open_totals } from './totals';
 
 const defaultTotalsPath = 'data/xr_total.nc';
-// TODO if data/xr_total.nc does not exist, failback to __tests__/totals.nc?
 const totalsPath = process.env.CABE_TOTALS_PATH || defaultTotalsPath;
 export const totals = await open_totals(totalsPath);
 
