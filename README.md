@@ -1,5 +1,7 @@
 # Carbon Budget Explorer (CABE)
 
+[![CI](https://github.com/carbon-budget-explorer/cabe/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/carbon-budget-explorer/cabe/actions/workflows/ci.yml)
+
 Web application to explore carbon budgets
 
 ## Data requirements
