@@ -68,3 +68,22 @@ To read data in Javascript we could
   - whole file in memory
 - Convert to sqlite / csv
   - Needs Python script
+
+## Styling/ui framework
+
+Framework should be customizeable enough.
+
+- plain css
+  - Hard to maintain
+- **Tailwind**
+  - Easy to use
+- flowbite
+  - based on tailwind
+- radix
+  - Active development has been pause
+- skeleton
+- based on tailwind
+- svelteui
+  - not based on tailwind
+
+Decided to use tailwind for now.
