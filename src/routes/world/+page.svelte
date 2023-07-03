@@ -17,7 +17,7 @@
 	};
 	$: gotoRegion(region);
 
-	type ChangeEvent = Event & { currentTarget: EventTarget & HTMLSelectElement };
+	type ChangeEvent = Event & { currentTarget: EventTarget & (HTMLSelectElement | HTMLInputElement) };
 
 	let selectedYear: number = data.year;
 	function gotoYear(event: ChangeEvent) {
@@ -85,7 +85,7 @@
 			/>
 			<p />
 		</div>
-		<div class="flew-row flex items-center gap-4">
+		<div class="flew-row flex gap-4 justify-around">
 			<div>
 				<h3 class="text-xl">Year</h3>
 				<select bind:value={selectedYear} on:change={gotoYear}>
@@ -98,19 +98,21 @@
 			</div>
 			<div>
 				<h3 class="text-xl">Totals</h3>
-				<select bind:value={data.metricName} on:change={gotoTotalVariable}>
-					<option value="" />
-					{#each data.totals.variables as variable}
-						<option value={variable}>
+				<label class="block">
+					<div class="flex flex-col">
+						{#each data.totals.variables as variable}
+						<label>
+							<input type="radio" name="sv" value={variable} checked={data.totals.variable === variable} on:change={gotoTotalVariable}>
 							{variable}
-						</option>
-					{/each}
-				</select>
+						</label>
+						{/each}
+					</div>
+				</label>
 			</div>
 			<div>
 				<h3 class="text-xl">Scenarios</h3>
-				<label
-					>Category
+				<label>
+					Category
 					<select value={data.scenarios.category} on:change={gotoScenarioCategory}>
 						<option value="" />
 						{#each data.scenarios.categories as category}
@@ -121,14 +123,18 @@
 					</select>
 				</label>
 				<label>
-					Effort-sharing principle
-					<select value={data.scenarios.variable} on:change={gotoScenarioVariable}>
+					<p>Effort-sharing principle</p>
+					<div class="flex flex-col">
 						{#each data.scenarios.variables as [variable, label]}
-							<option value={variable}>
-								{label}
-							</option>
+						<!-- TODO render variable without label -->
+						{#if label !== variable}
+						<label>
+							<input type="radio" name="sv" value={variable} checked={data.scenarios.variable === variable} on:change={gotoScenarioVariable}>
+							{label}
+						</label>
+						{/if}
 						{/each}
-					</select>
+					</div>
 				</label>
 			</div>
 		</div>
