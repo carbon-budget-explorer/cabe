@@ -38,7 +38,7 @@
 	$: spec = {
 		$schema: 'https://vega.github.io/schema/vega/v5.json',
 		description: 'World map',
-		width: 1160,
+		width: 1000,
 		height: 600,
 		autosize: 'none',
 		signals: [

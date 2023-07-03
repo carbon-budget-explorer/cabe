@@ -69,7 +69,7 @@
 </script>
 
 <h1 class="text-3xl font-bold">World explorer</h1>
-<main class="flex flex-row justify-between">
+<main class="flex flex-row gap-4">
 	<div>
 		<div>
 			<p>

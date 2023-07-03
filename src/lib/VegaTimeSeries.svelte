@@ -18,8 +18,8 @@
 		},
 		mark: 'line',
 		encoding: {
-			// TODO have less ticks
-			x: { field: 'Time', type: 'ordinal' },
+			// TODO dont render thousands separator on x axis
+			x: { field: 'Time', type: 'quantitative' },
 			y: { field: 'value', type: 'quantitative', title: yLabel }
 		}
 	} as VisualizationSpec;
