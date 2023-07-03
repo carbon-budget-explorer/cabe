@@ -1,44 +1,48 @@
-import { countryName } from '$lib/borders';
-import { totals } from '$lib/db/data';
+import {
+	scenarios as scenariosDb,
+	totals as totalsDb,
+	borders as bordersDb
+} from '$lib/server/db/data';
+import type { SpatialMetric } from '$lib/server/db/utils';
+
+function searchParam(url: URL, name: string, defaultValue = '') {
+	const param = url.searchParams.get(name);
+	if (param === null) {
+		return defaultValue;
+	}
+	return param;
+}
 
 export async function load({ url }: { url: URL }) {
 	// TODO validate searchParam with zod.js
 
-	const years = await totals.years();
+	// TODO are years same for totals and scenarios?
+	const years = totalsDb.years();
 
-	const rawyear = url.searchParams.get('year');
-	let year: number = new Date().getFullYear();
-	if (rawyear !== null) {
-		year = parseInt(rawyear);
+	const rawyear = searchParam(url, 'year', new Date().getFullYear().toString());
+	const year = parseInt(rawyear);
+
+	const totals = {
+		variables: totalsDb.variables(),
+		variable: searchParam(url, 'tv')
+	};
+
+	const scenarios = {
+		categories: scenariosDb.categories(),
+		variables: scenariosDb.variables(),
+		category: searchParam(url, 'sc', totals.variable ? '' : 'C1'),
+		variable: searchParam(url, 'sv', totals.variable ? '' : 'GF')
+	};
+
+	let rawMetrics: SpatialMetric[];
+	if (scenarios.category && scenarios.variable) {
+		rawMetrics = scenariosDb.global(scenarios.category, scenarios.variable, year);
+	} else {
+		rawMetrics = totalsDb.global(totals.variable, year);
 	}
-
-	const rawmetricName = url.searchParams.get('metric');
-	let metricName = 'GDP';
-	if (rawmetricName !== null) {
-		metricName = rawmetricName;
-	}
-
-	const filteredMetrics = await totals.global(metricName, year);
-	// TODO Add country name in more efficient and reusable way
-	const metrics = await Promise.all(
-		filteredMetrics
-			.filter((d) => !Number.isNaN(d.value) && d.value !== null)
-			.map(async (d) => {
-				try {
-					return {
-						...d,
-						name: await countryName(d.ISO)
-					};
-				} catch (error) {
-					return {
-						...d,
-						name: d.ISO
-					};
-				}
-			})
+	const metricName = totals.variable || scenarios.variable;
+	const metrics = bordersDb.addNames(
+		rawMetrics.filter((d) => !Number.isNaN(d.value) && d.value !== null && d.value !== undefined)
 	);
-
-	const variables = await totals.variables();
-
-	return { metrics, metricName, years, year, variables };
+	return { metrics, metricName, totals, years, year, scenarios, borders: bordersDb.geojson };
 }

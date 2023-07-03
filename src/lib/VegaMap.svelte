@@ -1,19 +1,40 @@
 <script lang="ts">
 	import type { SignalListeners, VisualizationSpec } from 'svelte-vega';
 	import { Vega } from 'svelte-vega';
+	import type { Scale } from 'vega';
+
+	import type { NamedSpatialMetric } from './server/db/utils';
+	import type { BordersCollection } from './server/db/borders';
 
 	export let metricName: string;
-	export let metrics: any;
-	export let country: any;
+	export let borders: BordersCollection;
+	export let metrics: NamedSpatialMetric[];
+	export let region = '';
 
-	function updateCountry(_: string, value: unknown) {
-		country = value;
+	function updateRegion(_: string, value: unknown) {
+		if (typeof value === 'string') {
+			region = value;
+		}
 	}
 
 	const signalListeners: SignalListeners = {
-		selectedCountry: updateCountry
+		selectedRegion: updateRegion
 	};
 
+	function generateScale(data: NamedSpatialMetric[]): Scale {
+		// From https://github.com/vega/vega/blob/60916a9287cdb56646616cb13359aef982fec4d6/packages/vega-encode/src/Scale.js#L208C13-L208C84
+		const s = Math.abs(data.reduce((s, v) => s + (v.value < 0 ? -1 : v.value > 0 ? 1 : 0), 0));
+		// Log scale domain can not includes zero
+		const scaleType = s === data.length ? 'log' : 'linear';
+		return {
+			name: 'color',
+			type: scaleType,
+			domain: { data: 'regions', field: 'value' },
+			range: { scheme: 'cividis' }
+		};
+	}
+
+	$: scale = generateScale(metrics);
 	$: spec = {
 		$schema: 'https://vega.github.io/schema/vega/v5.json',
 		description: 'World map',
@@ -22,8 +43,8 @@
 		autosize: 'none',
 		signals: [
 			{
-				name: 'selectedCountry',
-				description: 'A country ISO code that updates in response to mouse click',
+				name: 'selectedRegion',
+				description: 'A region ISO code that updates in response to mouse click',
 				value: '',
 				on: [{ events: 'dblclick', update: "datum ? datum.properties.ISO_A3_EH : ''" }] // ISO_A3 not set for FRA
 			},
@@ -119,15 +140,15 @@
 				// async: true,
 			},
 			{
-				name: 'countries',
-				url: '/country_borders.geojson',
+				name: 'regions',
+				values: borders,
 				format: { type: 'json', property: 'features' },
 				transform: [
 					{
 						type: 'lookup',
 						from: 'metrics',
 						key: 'ISO',
-						fields: ['properties.ISO_A3_EH'], // fields from countries for joining the data
+						fields: ['properties.ISO_A3_EH'], // fields from regions for joining the data
 						values: ['value'], // fields from metrics to add to the data
 						default: 'unknown'
 					}
@@ -144,14 +165,7 @@
 				translate: [{ signal: 'tx' }, { signal: 'ty' }]
 			}
 		],
-		scales: [
-			{
-				name: 'color',
-				type: 'log',
-				domain: { data: 'countries', field: 'value' },
-				range: { scheme: 'cividis' }
-			}
-		],
+		scales: [scale],
 		legends: [
 			{
 				fill: 'color',
@@ -162,7 +176,7 @@
 		marks: [
 			{
 				type: 'shape',
-				from: { data: 'countries' },
+				from: { data: 'regions' },
 				encode: {
 					enter: {
 						tooltip: {

@@ -8,13 +8,17 @@
 <h1>{data.name}</h1>
 <main>
 	<div>
-		<h2>GDP</h2>
-		<VegaTimeSeries data={data.gdp} metricName="value" />
-		<h2>Population</h2>
-		<VegaTimeSeries data={data.population} metricName="value" />
+		<VegaTimeSeries data={data.gdp} yLabel="GDP" />
+		<VegaTimeSeries data={data.population} yLabel="Population" />
+		<VegaTimeSeries
+			data={data.GF}
+			title="Grand fathering principle"
+			yLabel="Temperature rise associated with NDC"
+		/>
+		<!-- TODO add more scenarios -->
 	</div>
 	<div>
-		<MiniMap />
+		<MiniMap borders={data.borders} />
 	</div>
 </main>
 <footer>

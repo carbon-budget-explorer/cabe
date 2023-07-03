@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { NamedMetric } from './metrics';
+	import type { NamedSpatialMetric } from './server/db/utils';
 
-	export let metrics: any;
+	export let metrics: NamedSpatialMetric[];
 	let query = '';
 	$: filteredMetrics = metrics
 		.filter((a) => a.ISO !== undefined && a.ISO !== null)
@@ -15,7 +15,7 @@
 		});
 	// TODO when hovered higlight in map and vice versa
 	// TODO use same color as in map
-	// TODO some country does not have name, only ISO
+	// TODO some region does not have name, only ISO
 </script>
 
 <div>
@@ -23,9 +23,9 @@
 	<button title="Clear query" disabled={query === ''} on:click={() => (query = '')}>X</button>
 </div>
 <ul>
-	{#each filteredMetrics as country}
+	{#each filteredMetrics as region}
 		<li>
-			<a href={`/countries/${country.ISO}`}>{country.name}</a>
+			<a href={`/regions/${region.ISO}`}>{region.name}</a>
 		</li>
 	{/each}
 </ul>
