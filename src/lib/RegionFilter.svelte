@@ -19,13 +19,13 @@
 </script>
 
 <div>
-	<input bind:value={query} />
+	<input type="text" bind:value={query} placeholder="Filter regions..."/>
 	<button title="Clear query" disabled={query === ''} on:click={() => (query = '')}>X</button>
 </div>
 <ul>
 	{#each filteredMetrics as region}
 		<li>
-			<a href={`/regions/${region.ISO}`}>{region.name}</a>
+			<a class="underline" href={`/regions/${region.ISO}`}>{region.name}</a>
 		</li>
 	{/each}
 </ul>

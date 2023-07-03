@@ -5,8 +5,8 @@
 	export let data: PageData;
 </script>
 
-<h1>{data.name}</h1>
-<main>
+<h1 class="font-bold text-3xl">{data.name}</h1>
+<main class="flex flex-row justify-between">
 	<div>
 		<VegaTimeSeries data={data.gdp} yLabel="GDP" />
 		<VegaTimeSeries data={data.population} yLabel="Population" />
@@ -22,13 +22,5 @@
 	</div>
 </main>
 <footer>
-	<a href="/world">Go back</a>
+	<a class="underline" href="/world">Go back</a>
 </footer>
-
-<style>
-	main {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-	}
-</style>

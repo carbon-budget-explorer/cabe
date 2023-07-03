@@ -68,8 +68,8 @@
 	}
 </script>
 
-<h1>World explorer</h1>
-<main>
+<h1 class="text-3xl font-bold ">World explorer</h1>
+<main class="flex flex-row justify-between">
 	<div>
 		<div>
 			<p>
@@ -85,9 +85,9 @@
 			/>
 			<p />
 		</div>
-		<div class="filter">
+		<div class="flex flew-row items-center gap-4">
 			<div>
-				<h3>Year</h3>
+				<h3 class="text-xl">Year</h3>
 				<select bind:value={selectedYear} on:change={gotoYear}>
 					{#each data.years as year}
 						<option value={year}>
@@ -97,7 +97,7 @@
 				</select>
 			</div>
 			<div>
-				<h3>Totals</h3>
+				<h3 class="text-xl">Totals</h3>
 				<select bind:value={data.metricName} on:change={gotoTotalVariable}>
 					<option value="" />
 					{#each data.totals.variables as variable}
@@ -108,7 +108,7 @@
 				</select>
 			</div>
 			<div>
-				<h3>Scenarios</h3>
+				<h3 class="text-xl">Scenarios</h3>
 				<label
 					>Category
 					<select value={data.scenarios.category} on:change={gotoScenarioCategory}>
@@ -128,8 +128,8 @@
 								{variable}
 							</option>
 						{/each}
-					</select></label
-				>
+					</select>
+				</label>
 			</div>
 		</div>
 	</div>
@@ -140,18 +140,3 @@
 <footer>
 	<a href="/">Go back</a>
 </footer>
-
-<style>
-	main {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-	}
-
-	.filter {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		gap: 1rem;
-	}
-</style>
