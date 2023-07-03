@@ -11,8 +11,8 @@
 		<VegaTimeSeries data={data.gdp} yLabel="GDP" />
 		<VegaTimeSeries data={data.population} yLabel="Population" />
 		<VegaTimeSeries
-			data={data.GF}
-			title="Grand fathering principle"
+			data={data.GF.data}
+			title={`${data.GF.label} effort-sharing principle`}
 			yLabel="Temperature rise associated with NDC"
 		/>
 		<!-- TODO add more scenarios -->

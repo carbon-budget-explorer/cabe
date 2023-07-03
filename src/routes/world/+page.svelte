@@ -46,7 +46,7 @@
 			params.set('sc', event.currentTarget.value);
 			params.set(
 				'sv',
-				data.scenarios.variable ? data.scenarios.variable : data.scenarios.variables[0]
+				data.scenarios.variable ? data.scenarios.variable : data.scenarios.variables[0][0]
 			);
 			params.set('year', selectedYear.toString());
 			goto(`?${params.toString()}`);
@@ -121,11 +121,11 @@
 					</select>
 				</label>
 				<label>
-					Variable
+					Effort-sharing principle
 					<select value={data.scenarios.variable} on:change={gotoScenarioVariable}>
-						{#each data.scenarios.variables as variable}
+						{#each data.scenarios.variables as [variable, label]}
 							<option value={variable}>
-								{variable}
+								{label}
 							</option>
 						{/each}
 					</select>

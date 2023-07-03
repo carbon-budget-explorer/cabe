@@ -35,8 +35,8 @@ describe('Scanarios', () => {
 		expect(isos).toEqual(['NLD', 'USA', 'CHN', 'IND']);
 	});
 
-	test('variables', async () => {
-		const variables = scenarios.variables();
+	test('variablesNames', async () => {
+		const variables = scenarios.variablesNames();
 		expect(variables).toEqual(['principle1', 'principle2', 'principle3']);
 	});
 

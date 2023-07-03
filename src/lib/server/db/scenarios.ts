@@ -23,7 +23,7 @@ export class Scenarios {
 		return this.reader.getDataVariable('Time');
 	}
 
-	variables() {
+	variablesNames() {
 		const variables = this.reader.variables;
 		// only return variables with Category, ISO and Time dimensions in any order
 		const dimNames = this.reader.dimensions.map((d) => d.name);
@@ -32,13 +32,33 @@ export class Scenarios {
 			dimNames.indexOf('ISO'),
 			dimNames.indexOf('Time')
 		]);
-		// TODO add labels in variable attribute as variable might not be human friendly
 		return variables
 			.filter(
 				(v) =>
 					v.dimensions.every((d) => dimIndexes.has(d)) && v.dimensions.length === dimIndexes.size
 			)
 			.map((v) => v.name);
+	}
+
+	variables(): [string, string][] {
+		const variables = this.variablesNames();
+		// TODO move lookup to label attribute of each variable
+		const lookup: Record<string, string> = {
+			GF: 'Grandfathering',
+			PC: 'Per capita',
+			PCC: 'Per capita convergence',
+			AP: 'Ability to pay',
+			GDR: 'Greenhouse development rights',
+			ECPC: 'Equal cumulative per capita'
+		};
+
+		return variables.map((v) => {
+			const label = lookup[v];
+			if (label) {
+				return [v, label];
+			}
+			return [v, v];
+		});
 	}
 
 	categories() {
