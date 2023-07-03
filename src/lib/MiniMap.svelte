@@ -1,9 +1,20 @@
 <script lang="ts">
 	import { Vega, type SignalListeners, type VisualizationSpec } from 'svelte-vega';
 
+	interface Feature {
+		properties: {
+			ISO_A3_EH: string;
+		};
+	}
+
 	const signalListeners: SignalListeners = {
-		onCountryClick: (_, shape: any) => {
-			const iso = shape.properties.ISO_A3_EH;
+		onCountryClick: (_, value: unknown) => {
+			if (value === null) {
+				document.location.href = `/world`;
+				return;
+			}
+
+			const iso = (value as Feature).properties.ISO_A3_EH;
 			document.location.href = `/countries/${iso}`;
 		}
 	};
