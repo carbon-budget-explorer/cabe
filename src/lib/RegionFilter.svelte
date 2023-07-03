@@ -19,7 +19,7 @@
 </script>
 
 <div>
-	<input type="text" bind:value={query} placeholder="Filter regions..."/>
+	<input type="text" bind:value={query} placeholder="Filter regions..." />
 	<button title="Clear query" disabled={query === ''} on:click={() => (query = '')}>X</button>
 </div>
 <ul>

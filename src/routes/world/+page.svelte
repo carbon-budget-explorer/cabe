@@ -68,7 +68,7 @@
 	}
 </script>
 
-<h1 class="text-3xl font-bold ">World explorer</h1>
+<h1 class="text-3xl font-bold">World explorer</h1>
 <main class="flex flex-row justify-between">
 	<div>
 		<div>
@@ -85,7 +85,7 @@
 			/>
 			<p />
 		</div>
-		<div class="flex flew-row items-center gap-4">
+		<div class="flew-row flex items-center gap-4">
 			<div>
 				<h3 class="text-xl">Year</h3>
 				<select bind:value={selectedYear} on:change={gotoYear}>

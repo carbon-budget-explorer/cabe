@@ -5,7 +5,7 @@
 	export let data: PageData;
 </script>
 
-<h1 class="font-bold text-3xl">{data.name}</h1>
+<h1 class="text-3xl font-bold">{data.name}</h1>
 <main class="flex flex-row justify-between">
 	<div>
 		<VegaTimeSeries data={data.gdp} yLabel="GDP" />
