@@ -17,7 +17,7 @@
 	};
 	$: gotoRegion(region);
 
-	type ChangeEvent = Event & { currentTarget: EventTarget & HTMLSelectElement} ;
+	type ChangeEvent = Event & { currentTarget: EventTarget & HTMLSelectElement };
 
 	let selectedYear: number = data.year;
 	function gotoYear(event: ChangeEvent) {

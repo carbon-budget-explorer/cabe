@@ -45,8 +45,8 @@ npm run check
 ## Testing
 
 The unit test can be run with
-    
-```bash 
+
+```bash
 npm run test:unit
 ```
 

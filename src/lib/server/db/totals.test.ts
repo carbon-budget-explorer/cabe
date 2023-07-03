@@ -15,12 +15,11 @@ import { Totals, open_totals } from './totals';
 // ds.to_netcdf('__tests__/totals.nc', format='NETCDF3_CLASSIC')
 const testnc = '__tests__/totals.nc';
 
-
 describe('Totals', () => {
 	let totals: Totals;
 	beforeAll(async () => {
 		totals = await open_totals(testnc);
-	})
+	});
 
 	test('years', () => {
 		const years = totals.years();

@@ -24,7 +24,7 @@ describe('Scanarios', () => {
 	let scenarios: Scenarios;
 	beforeAll(async () => {
 		scenarios = await open_scenarios(testnc);
-	})
+	});
 
 	test('years', async () => {
 		const years = scenarios.years();
