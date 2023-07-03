@@ -17,7 +17,9 @@
 	};
 	$: gotoRegion(region);
 
-	type ChangeEvent = Event & { currentTarget: EventTarget & (HTMLSelectElement | HTMLInputElement) };
+	type ChangeEvent = Event & {
+		currentTarget: EventTarget & (HTMLSelectElement | HTMLInputElement);
+	};
 
 	let selectedYear: number = data.year;
 	function gotoYear(event: ChangeEvent) {
@@ -69,7 +71,7 @@
 </script>
 
 <h1 class="text-3xl font-bold">World explorer</h1>
-<main class="flex flex-row gap-4">
+<main class="flex flex-row justify-between gap-4">
 	<div>
 		<div>
 			<p>
@@ -85,7 +87,7 @@
 			/>
 			<p />
 		</div>
-		<div class="flew-row flex gap-4 justify-around">
+		<div class="flew-row flex justify-around gap-4">
 			<div>
 				<h3 class="text-xl">Year</h3>
 				<select bind:value={selectedYear} on:change={gotoYear}>
@@ -101,10 +103,16 @@
 				<label class="block">
 					<div class="flex flex-col">
 						{#each data.totals.variables as variable}
-						<label>
-							<input type="radio" name="sv" value={variable} checked={data.totals.variable === variable} on:change={gotoTotalVariable}>
-							{variable}
-						</label>
+							<label>
+								<input
+									type="radio"
+									name="sv"
+									value={variable}
+									checked={data.totals.variable === variable}
+									on:change={gotoTotalVariable}
+								/>
+								{variable}
+							</label>
 						{/each}
 					</div>
 				</label>
@@ -126,13 +134,19 @@
 					<p>Effort-sharing principle</p>
 					<div class="flex flex-col">
 						{#each data.scenarios.variables as [variable, label]}
-						<!-- TODO render variable without label -->
-						{#if label !== variable}
-						<label>
-							<input type="radio" name="sv" value={variable} checked={data.scenarios.variable === variable} on:change={gotoScenarioVariable}>
-							{label}
-						</label>
-						{/if}
+							<!-- TODO render variable without label -->
+							{#if label !== variable}
+								<label>
+									<input
+										type="radio"
+										name="sv"
+										value={variable}
+										checked={data.scenarios.variable === variable}
+										on:change={gotoScenarioVariable}
+									/>
+									{label}
+								</label>
+							{/if}
 						{/each}
 					</div>
 				</label>
