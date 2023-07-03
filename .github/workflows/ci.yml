@@ -113,5 +113,5 @@ jobs:
       - name: ⚙️  Build
         run: npm run build
         env:
-            CABE_TOTALS_PATH: __tests__/totals.nc
-            CABE_SCENARIOS_PATH: __tests__/scenarios.nc
+          CABE_TOTALS_PATH: __tests__/totals.nc
+          CABE_SCENARIOS_PATH: __tests__/scenarios.nc
