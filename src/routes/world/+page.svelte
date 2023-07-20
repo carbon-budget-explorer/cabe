@@ -5,6 +5,7 @@
 	import RegionFilter from '$lib/RegionFilter.svelte';
 
 	import VegaMap from '$lib/VegaMap.svelte';
+	import { categories } from '$lib/categories';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
@@ -120,12 +121,12 @@
 			<div>
 				<h3 class="text-xl">Scenarios</h3>
 				<label>
-					Category
-					<select value={data.scenarios.category} on:change={gotoScenarioCategory}>
+					<p>Temperature rise by 2100</p>
+					<select class="w-80" value={data.scenarios.category} on:change={gotoScenarioCategory}>
 						<option value="" />
 						{#each data.scenarios.categories as category}
 							<option value={category}>
-								{category}
+								{categories.get(category) || category}
 							</option>
 						{/each}
 					</select>
