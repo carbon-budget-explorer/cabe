@@ -4,7 +4,7 @@ import type { NamedSpatialMetric, SpatialMetric } from './utils';
 
 export interface BorderProperties {
 	ISO_A3_EH: string;
-	FORMAL_EN: string;
+	NAME: string;
 }
 
 export async function open_borders(fn: string) {
@@ -22,10 +22,10 @@ export class Borders {
 	constructor(public geojson: BordersCollection, public lastModified: Date) {
 		for (const feature of geojson.features) {
 			const iso = feature.properties.ISO_A3_EH;
-			const label = feature.properties.FORMAL_EN;
+			const label = feature.properties.NAME;
 			feature.properties = {
 				ISO_A3_EH: iso,
-				FORMAL_EN: label
+				NAME: label
 			};
 			this.labels.set(iso, label);
 		}

@@ -18,7 +18,13 @@
 		<!-- TODO add more scenarios -->
 	</div>
 	<div>
-		<MiniMap borders={data.borders} />
+		<div>
+			Minimap
+		</div>
+		<div>
+			Side bar
+		</div>
+		<!-- <MiniMap borders={data.borders} /> -->
 	</div>
 </main>
 <footer>
