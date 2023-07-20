@@ -19,7 +19,7 @@ export async function load({ url }: { url: URL }) {
 	// TODO are years same for totals and scenarios?
 	const years = totalsDb.years();
 
-	const rawyear = searchParam(url, 'year', new Date().getFullYear().toString());
+	const rawyear = searchParam(url, 'year', "2030");
 	const year = parseInt(rawyear);
 
 	const totals = {
