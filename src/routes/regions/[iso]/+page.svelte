@@ -1,5 +1,5 @@
 <script lang="ts">
-	import MiniMap from '$lib/MiniMap.svelte';
+	// import MiniMap from '$lib/MiniMap.svelte';
 	import VegaTimeSeries from '$lib/VegaTimeSeries.svelte';
 	import type { PageData } from './$types';
 	export let data: PageData;

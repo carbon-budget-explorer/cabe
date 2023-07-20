@@ -3,6 +3,7 @@ import { readFile } from 'fs/promises';
 import { NetCDFReader } from 'netcdfjs';
 
 import { getStringVariable, getVariableDimensions, type SpatialMetric } from './utils';
+import { principles } from '../../principles';
 
 export const open_scenarios = async (path: string) => {
 	const data = await readFile(path);
@@ -42,18 +43,8 @@ export class Scenarios {
 
 	variables(): [string, string][] {
 		const variables = this.variablesNames();
-		// TODO move lookup to label attribute of each variable
-		const lookup: Record<string, string> = {
-			GF: 'Grandfathering',
-			PC: 'Per capita',
-			PCC: 'Per capita convergence',
-			AP: 'Ability to pay',
-			GDR: 'Greenhouse development rights',
-			ECPC: 'Equal cumulative per capita'
-		};
-
 		return variables.map((v) => {
-			const label = lookup[v];
+			const label = principles.get(v);
 			if (label) {
 				return [v, label];
 			}
