@@ -27,6 +27,4 @@
 		<!-- <MiniMap borders={data.borders} /> -->
 	</div>
 </main>
-<footer>
-	<a class="underline" href="/world">Go back</a>
-</footer>
+

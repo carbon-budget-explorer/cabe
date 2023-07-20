@@ -157,6 +157,3 @@
 		<RegionFilter metrics={data.metrics} />
 	</div>
 </main>
-<footer>
-	<a href="/">Go back</a>
-</footer>
