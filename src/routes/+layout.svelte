@@ -4,7 +4,7 @@
 </script>
 
 <nav class="p-4 bg-slate-100 flex flex-row space-x-8">
-	<p>Carbon Budget Explorer logo</p>
+	<a href="/">Carbon Budget Explorer logo</a>
 	<ul class="flex flex-row space-x-6">
 		<li>
 			<a href="/" title="Home" class:font-bold={$page.url.pathname === '/'}>Home</a>
