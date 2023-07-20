@@ -15,6 +15,9 @@
 		<li>
 			<a href="/world" class:font-bold={$page.url.pathname.startsWith('/region')}>Region</a>
 		</li>
+		<li>
+			<a href="/about" class:font-bold={$page.url.pathname === '/about'}>About</a>
+		</li>
 	</ul>
 </nav>
 <div class="p-2">
