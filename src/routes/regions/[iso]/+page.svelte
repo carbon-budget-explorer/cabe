@@ -23,9 +23,6 @@
 			Minimap
 			<!-- <MiniMap borders={data.borders} /> -->
 		</div>
-		<div>
-			Side bar
-		</div>
+		<div>Side bar</div>
 	</div>
 </main>
-
