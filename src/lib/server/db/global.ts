@@ -29,7 +29,7 @@ export function globalBudget(query: GlobalBudgetQuery): GlobalBudgetResult {
 	const non = nonCO2MitigationValues[nonCO2MitigationChoices.indexOf(query.nonCO2Mitigation)];
 	const neg = negativeEmissionsValues[negativeEmissionsChoices.indexOf(query.negativeEmissions)];
 
-	const total = 3000 * (1 + t / 10) * (1 - p / 100) * (1 - non / 100) * (1 + neg / 100);
+	const total = 6000 * (1 + t / 10) * (p / 100) * (1 - non / 100) * (1 + neg / 100);
 	const used = 2500;
 	const remaining = total - used;
 

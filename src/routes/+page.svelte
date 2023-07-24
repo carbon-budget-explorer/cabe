@@ -117,7 +117,7 @@
 	</div>
 	<div class="flex flex-col justify-around">
 		<div>
-			<PieChart used={data.result.total} remaining={data.result.remaining} />
+			<PieChart used={data.result.used} remaining={data.result.remaining} />
 		</div>
 		<div>temperature plot</div>
 	</div>
