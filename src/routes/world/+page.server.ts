@@ -3,15 +3,8 @@ import {
 	totals as totalsDb,
 	borders as bordersDb
 } from '$lib/server/db/data';
+import { searchParam } from '$lib/searchparam';
 import type { SpatialMetric } from '$lib/server/db/utils';
-
-function searchParam(url: URL, name: string, defaultValue = '') {
-	const param = url.searchParams.get(name);
-	if (param === null) {
-		return defaultValue;
-	}
-	return param;
-}
 
 export async function load({ url }: { url: URL }) {
 	// TODO validate searchParam with zod.js

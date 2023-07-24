@@ -1,18 +1,122 @@
 <script lang="ts">
-	import { principles as principlesMap } from '$lib/principles';
-	export const principles = Array.from(principlesMap);
+	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
+	import { page } from '$app/stores';
+	import type { PageData } from './$types';
+
+	export let data: PageData;
+
+	type ChangeEvent = Event & {
+		currentTarget: EventTarget & HTMLInputElement;
+	};
+
+	function changeWarming(event: ChangeEvent) {
+		if (browser) {
+			const params = new URLSearchParams($page.url.search);
+			params.set('warming', event.currentTarget.value);
+			goto(`?${params.toString()}`);
+		}
+	}
+
+	function changeProbability(event: ChangeEvent) {
+		if (browser) {
+			const params = new URLSearchParams($page.url.search);
+			params.set('probability', event.currentTarget.value);
+			goto(`?${params.toString()}`);
+		}
+	}
+
+	function changeNonCO2Mitigation(event: ChangeEvent) {
+		if (browser) {
+			const params = new URLSearchParams($page.url.search);
+			params.set('nonCO2Mitigation', event.currentTarget.value);
+			goto(`?${params.toString()}`);
+		}
+	}
+
+	function changeNegativeEmissions(event: ChangeEvent) {
+		if (browser) {
+			const params = new URLSearchParams($page.url.search);
+			params.set('negativeEmissions', event.currentTarget.value);
+			goto(`?${params.toString()}`);
+		}
+	}
+	// TODO show loading message when server is processing
 </script>
 
 <h1 class="pb-20 text-3xl font-bold">Welcome to Carbon Budget Explorer</h1>
 
-<div class="flex flex-wrap gap-10">
-	{#each principles as principle}
-		<div class="h-100 flex w-64 flex-col gap-2 rounded-md bg-gray-100 p-4 shadow-md">
-			<h2 class="h-20 text-lg font-bold">{principle[1]}</h2>
-			<a href={`/world?sv=${principle[0]}`}>
-				<p class="w-42 bg-muted h-48 rounded-sm bg-slate-300 text-center">Logo</p>
-			</a>
-			<a class="underline" href={`/world?sv=${principle[0]}`}>Explore principle</a>
+<div class="flex flex-row justify-around">
+	<div class="">
+		<div>
+			<p>Limit global warming to</p>
+			{#each data.choices.warming as warmingChoice}
+				<label>
+					<input
+						type="radio"
+						name="target"
+						value={warmingChoice}
+						checked={warmingChoice === data.query.warming}
+						on:change={changeWarming}
+					/>
+					{warmingChoice}°C
+				</label>
+			{/each}
 		</div>
-	{/each}
+		<div>
+			<p>Acceptable risk of exceeding global warming limit</p>
+			{#each data.choices.probability as probabilityChoice}
+				<label>
+					<input
+						type="radio"
+						name="probability"
+						value={probabilityChoice}
+						checked={probabilityChoice === data.query.probability}
+						on:change={changeProbability}
+					/>
+					{100-parseFloat(probabilityChoice)}%
+				</label>
+			{/each}
+		</div>
+		<div>
+			<p>Assumption of non CO2 emissions to mitigate</p>
+			{#each data.choices.nonCO2Mitigation as nonCO2MitigationChoice}
+				<label>
+					<input
+						type="radio"
+						name="nonCO2Mitigation"
+						value={nonCO2MitigationChoice}
+						checked={nonCO2MitigationChoice === data.query.nonCO2Mitigation}
+						on:change={changeNonCO2Mitigation}
+					/>
+					{nonCO2MitigationChoice}
+				</label>
+				
+			{/each}
+		</div>
+		<div>
+			<p>Assumption amount of negative emissions in 2050 - 2100.</p>
+			{#each data.choices.negativeEmissions as negativeEmissionsChoice}
+				<label>
+					<input
+						type="radio"
+						name="negativeEmissions"
+						value={negativeEmissionsChoice}
+						checked={negativeEmissionsChoice === data.query.negativeEmissions}
+						on:change={changeNegativeEmissions}
+					/>
+					{negativeEmissionsChoice}
+				</label>
+				
+			{/each}
+		</div>
+	</div>
+	<div class="flex flex-col justify-around">
+			<div>
+				PieChart
+				<pre>{JSON.stringify(data.result)}</pre>
+			</div>
+			<div>temperature plot</div>
+	</div>
+	<div>Line plot</div>
 </div>
