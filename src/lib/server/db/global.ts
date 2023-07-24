@@ -3,9 +3,12 @@ export type Warming = (typeof warmingChoices)[number];
 export const probabilityChoices = ['50', '67'] as const;
 export type Probability = (typeof probabilityChoices)[number];
 export const nonCO2MitigationChoices = ['low', 'medium', 'high'] as const;
+const nonCO2MitigationValues = [0, 10, 20] as const;
 export type NonCO2Mitigation = (typeof nonCO2MitigationChoices)[number];
 export const negativeEmissionsChoices = ['low', 'medium', 'high'] as const;
+const negativeEmissionsValues = [0, 10, 20] as const;
 export type NegativeEmissions = (typeof negativeEmissionsChoices)[number];
+
 
 export interface GlobalBudgetQuery {
 	warming: Warming;
@@ -20,48 +23,20 @@ export interface GlobalBudgetResult {
 	remaining: number;
 }
 
-interface GlobalBudget extends GlobalBudgetQuery, GlobalBudgetResult {}
-
-/**
- * The total budget of CO2 in the world from 1860 - 2100 in Gt CO2.
- *
- */
-const co2_budget: GlobalBudget[] = [
-	{
-		warming: '1.5',
-		probability: '50',
-		nonCO2Mitigation: 'low',
-		negativeEmissions: 'low',
-		total: 3000,
-		used: 2500,
-		remaining: 500
-	},
-	{
-		warming: '2',
-		probability: '50',
-		nonCO2Mitigation: 'low',
-		negativeEmissions: 'low',
-		total: 4000,
-		used: 2500,
-		remaining: 1500
-	}
-];
-
 export function globalBudget(query: GlobalBudgetQuery): GlobalBudgetResult {
 	// TODO validate args
-	let result = co2_budget.find(
-		(b) =>
-			b.warming === query.warming &&
-			b.probability === query.probability &&
-			b.nonCO2Mitigation === query.nonCO2Mitigation &&
-			b.negativeEmissions === query.negativeEmissions
-	);
-	if (!result) {
-		result = co2_budget[0];
-	}
+	const t = parseFloat(query.warming)
+	const p = parseFloat(query.probability)
+	const non = nonCO2MitigationValues[nonCO2MitigationChoices.indexOf(query.nonCO2Mitigation)]
+	const neg = negativeEmissionsValues[negativeEmissionsChoices.indexOf(query.negativeEmissions)]
+
+	const total = 3000 * (1 + t / 10) * (1 - p / 100) * (1 - non / 100) * (1 + neg / 100)
+	const used = 2500
+	const remaining = total - used
+
 	return {
-		total: result.total,
-		used: result.used,
-		remaining: result.remaining
+		total,
+		used,
+		remaining
 	};
 }
