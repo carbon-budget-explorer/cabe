@@ -48,7 +48,7 @@
 <h1 class="pb-20 text-3xl font-bold">Welcome to Carbon Budget Explorer</h1>
 
 <div class="flex flex-row justify-around">
-	<div class="flex flex-col gap-2 justify-between">
+	<div class="flex flex-col justify-between gap-2">
 		<div>
 			<div>
 				<p>Limit global warming to</p>
@@ -112,7 +112,11 @@
 			</div>
 		</div>
 		<div>
-			<a class="rounded bg-slate-200 p-2 text-4xl" href={`/world${$page.url.search}`} title="Look at budget for each country">🌍</a>
+			<a
+				class="rounded bg-slate-200 p-2 text-4xl"
+				href={`/world${$page.url.search}`}
+				title="Look at budget for each country">🌍</a
+			>
 		</div>
 	</div>
 	<div class="flex flex-col justify-around">

@@ -17,7 +17,7 @@ export async function load({ url }: { url: URL }) {
 
 	const totals = {
 		variables: totalsDb.variables(),
-		variable: searchParam(url, 'tv')
+		variable: searchParam(url, 'tv', '')
 	};
 
 	const scenarios = {
