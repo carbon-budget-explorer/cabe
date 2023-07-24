@@ -28,14 +28,13 @@
 				mark: { type: 'arc', outerRadius: 260 }
 			},
 			{
-				mark: { type: 'text', radius: 290 },
+				mark: { type: 'text', radius: 190, stroke: 'white', fontSize: 20, fill: 'white' },
 				encoding: {
 					text: { field: 'category', type: 'nominal' }
 				}
 			}
 		]
 	} as VisualizationSpec;
-
 </script>
 
 <VegaLite {spec} {data} />

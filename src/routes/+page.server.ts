@@ -27,4 +27,4 @@ export const load = (async ({ url }: { url: URL }) => {
 		},
 		result
 	};
-}) satisfies PageServerLoad
+}) satisfies PageServerLoad;

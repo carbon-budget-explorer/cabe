@@ -9,7 +9,6 @@ export const negativeEmissionsChoices = ['low', 'medium', 'high'] as const;
 const negativeEmissionsValues = [0, 10, 20] as const;
 export type NegativeEmissions = (typeof negativeEmissionsChoices)[number];
 
-
 export interface GlobalBudgetQuery {
 	warming: Warming;
 	probability: Probability;
@@ -25,14 +24,14 @@ export interface GlobalBudgetResult {
 
 export function globalBudget(query: GlobalBudgetQuery): GlobalBudgetResult {
 	// TODO validate args
-	const t = parseFloat(query.warming)
-	const p = parseFloat(query.probability)
-	const non = nonCO2MitigationValues[nonCO2MitigationChoices.indexOf(query.nonCO2Mitigation)]
-	const neg = negativeEmissionsValues[negativeEmissionsChoices.indexOf(query.negativeEmissions)]
+	const t = parseFloat(query.warming);
+	const p = parseFloat(query.probability);
+	const non = nonCO2MitigationValues[nonCO2MitigationChoices.indexOf(query.nonCO2Mitigation)];
+	const neg = negativeEmissionsValues[negativeEmissionsChoices.indexOf(query.negativeEmissions)];
 
-	const total = 3000 * (1 + t / 10) * (1 - p / 100) * (1 - non / 100) * (1 + neg / 100)
-	const used = 2500
-	const remaining = total - used
+	const total = 3000 * (1 + t / 10) * (1 - p / 100) * (1 - non / 100) * (1 + neg / 100);
+	const used = 2500;
+	const remaining = total - used;
 
 	return {
 		total,
