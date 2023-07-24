@@ -25,7 +25,7 @@
 		},
 		layer: [
 			{
-				mark: { type: 'arc', outerRadius: 180 }
+				mark: { type: 'arc', outerRadius: 260 }
 			},
 			{
 				mark: { type: 'text', radius: 290 },
