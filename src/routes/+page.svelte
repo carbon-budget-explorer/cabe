@@ -4,6 +4,7 @@
 	import { page } from '$app/stores';
 	import type { PageData } from './$types';
 	import PieChart from '$lib/PieChart.svelte';
+	import AreaChart from '$lib/AreaChart.svelte';
 
 	export let data: PageData;
 
@@ -125,5 +126,7 @@
 		</div>
 		<div>temperature plot</div>
 	</div>
-	<div>Line plot</div>
+	<div>
+		<AreaChart />
+	</div>
 </div>
