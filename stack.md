@@ -32,10 +32,11 @@ Requirements:
 
 ## Visualization
 
-vega / vega-lite / altair / vega-embed
+vega / vega-lite / altair / vega-embed --> can't do nice transitions and svelte-vega breaks production build.
 plotly
 d3
 nivo (react only)
+layercake --> seems promising
 
 ## Data
 

@@ -3,8 +3,9 @@
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import type { PageData } from './$types';
-	import PieChart from '$lib/PieChart.svelte';
-	import AreaChart from '$lib/AreaChart.svelte';
+	// import PieChart from '$lib/PieChart.svelte';
+	import Example from '$lib/charts/TimeSeries.svelte';
+	import Pie from '$lib/charts/components/Pie.svelte';
 
 	export let data: PageData;
 
@@ -122,11 +123,13 @@
 	</div>
 	<div class="flex flex-col justify-around">
 		<div>
-			<PieChart used={data.result.used} remaining={data.result.remaining} />
+			<!-- <PieChart used={data.result.used} remaining={data.result.remaining} /> -->
+			<Pie used={data.result.used} remaining={data.result.remaining} />
+
 		</div>
 		<div>temperature plot</div>
 	</div>
 	<div>
-		<AreaChart />
+		<Example />
 	</div>
 </div>
