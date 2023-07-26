@@ -3,24 +3,36 @@
 	import { arc as d3arc } from 'd3-shape';
 	import { pie as d3pie } from 'd3-shape';
 	import { getContext } from 'svelte';
+	import { cubicInOut } from 'svelte/easing';
+	import type { Readable } from 'svelte/store';
+	import { tweened, type TweenedOptions } from 'svelte/motion';
 	import type { PieData } from './Pie';
 
+	const tweenOptions: TweenedOptions<PieData[]> = {
+		duration: 1500,
+		easing: cubicInOut
+	};
+
 	const { data, zScale, width, height } = getContext<{
-		data: SvelteStore<PieData[]>;
-		zScale: SvelteStore<ScaleOrdinal<string, string, never>>;
-		width: SvelteStore<number>;
-		height: SvelteStore<number>;
+		data: Readable<PieData[]>;
+		zScale: Readable<ScaleOrdinal<string, string, never>>;
+		width: Readable<number>;
+		height: Readable<number>;
 	}>('LayerCake');
 
 	$: radius = Math.min($width, $height) / 2 - 1;
 
 	// Compute the position of each group on the pie:
-	const pie = d3pie<any, PieData>()
+	const pie = d3pie<unknown, PieData>()
 		.sort(null) // Don't sort
 		.sortValues(null) // Really don't sort
 		.value((d) => d[1]);
-	$: slices = pie($data);
-	$: arcGenerator = d3arc<any, PieArcDatum<PieData>>().innerRadius(0).outerRadius(radius);
+
+	const animatedData = tweened<PieData[]>($data, tweenOptions);
+	$: animatedData.set($data);
+
+	$: slices = pie($animatedData);
+	$: arcGenerator = d3arc<unknown, PieArcDatum<PieData>>().innerRadius(0).outerRadius(radius);
 </script>
 
 <g transform="translate({$width / 2}, {$height / 2})">

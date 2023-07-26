@@ -12,18 +12,13 @@
 		['remaining', remaining]
 	] as PieData[];
 
-    const seriesColors = ['red', 'green']
+	const seriesColors = ['red', 'green'];
 </script>
 
 <div class="chart-container">
-	<LayerCake
-        z={0}
-        zScale={scaleOrdinal()}
-        zRange={seriesColors}
-		{data}
-	>
+	<LayerCake z={0} zScale={scaleOrdinal()} zRange={seriesColors} {data}>
 		<Svg>
-            <Pie />
+			<Pie />
 		</Svg>
 	</LayerCake>
 </div>
