@@ -3,8 +3,8 @@
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import type { PageData } from './$types';
-	import Example from '$lib/charts/TimeSeries.svelte';
 	import GlobalBudget from '$lib/charts/GlobalBudget.svelte';
+	import TimeSeries from '$lib/charts/TimeSeries.svelte';
 
 	export let data: PageData;
 
@@ -127,6 +127,6 @@
 		<div>temperature plot</div>
 	</div>
 	<div>
-		<Example />
+		<TimeSeries />
 	</div>
 </div>
