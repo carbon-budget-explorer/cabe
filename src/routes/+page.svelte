@@ -6,6 +6,7 @@
 	// import PieChart from '$lib/PieChart.svelte';
 	import Example from '$lib/charts/TimeSeries.svelte';
 	import Pie from '$lib/charts/components/Pie.svelte';
+	import GlobalBudget from '$lib/charts/GlobalBudget.svelte';
 
 	export let data: PageData;
 
@@ -124,7 +125,7 @@
 	<div class="flex flex-col justify-around">
 		<div>
 			<!-- <PieChart used={data.result.used} remaining={data.result.remaining} /> -->
-			<Pie used={data.result.used} remaining={data.result.remaining} />
+			<GlobalBudget used={data.result.used} remaining={data.result.remaining} />
 
 		</div>
 		<div>temperature plot</div>

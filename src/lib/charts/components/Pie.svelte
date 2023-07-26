@@ -1,55 +1,38 @@
 <script lang="ts">
-	import type { PieArcDatum } from 'd3';
-	import { scaleOrdinal } from 'd3-scale';
+	import type { PieArcDatum, ScaleOrdinal } from 'd3';
 	import { arc as d3arc } from 'd3-shape';
 	import { pie as d3pie } from 'd3-shape';
+	import { getContext } from 'svelte';
+	import type { PieData } from './Pie';
 
-	const width = 500;
-	const height = 500;
+	const { data, zScale, width, height } = getContext<{
+		data: SvelteStore<PieData[]>;
+		zScale: SvelteStore<ScaleOrdinal<string, string, never>>;
+		width: SvelteStore<number>;
+		height: SvelteStore<number>;
+	}>('LayerCake');
 
-	export let used: number;
-	export let remaining: number;
-
-	const radius = 250;
-
-	type PieData = [string, number];
-	$: data = [
-		['used', used],
-		['remaining', remaining]
-	] as PieData[];
-
-	$: color = scaleOrdinal<string>()
-		.range(['red', 'green'])
-		.domain(data.map((d) => d[0]));
+	$: radius = Math.min($width, $height) / 2 - 1;
 
 	// Compute the position of each group on the pie:
 	const pie = d3pie<any, PieData>()
-		.sort(null)  // Don't sort
+		.sort(null) // Don't sort
 		.sortValues(null) // Really don't sort
 		.value((d) => d[1]);
-	$: data_ready = pie(data);
-	const arcGenerator = d3arc<any, PieArcDatum<PieData>>().innerRadius(0).outerRadius(radius);
+	$: slices = pie($data);
+	$: arcGenerator = d3arc<any, PieArcDatum<PieData>>().innerRadius(0).outerRadius(radius);
 </script>
 
-<div class="chart-container">
-	<svg {width} {height}>
-		<g transform="translate({width / 2}, {height / 2})">
-			{#each data_ready as slice}
-				<path d={arcGenerator(slice)} fill={color(slice.data[0])} stroke="black" />
-				<text transform="translate({arcGenerator.centroid(slice)})">
-					{slice.data[0]}
-				</text>
-			{/each}
-		</g>
-	</svg>
-</div>
+<g transform="translate({$width / 2}, {$height / 2})">
+	{#each slices as slice}
+		<path d={arcGenerator(slice)} fill={$zScale(slice.data[0])} stroke="black" />
+		<text transform="translate({arcGenerator.centroid(slice)})">
+			{slice.data[0]}
+		</text>
+	{/each}
+</g>
 
 <style>
-	.chart-container {
-		width: 500px;
-		height: 500px;
-		margin: 40;
-	}
 	path {
 		stroke-width: style2px;
 		opacity: 0.7;
