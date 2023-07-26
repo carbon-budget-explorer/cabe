@@ -14,7 +14,7 @@
 	/** @type {Function} [curve=curveLinear] - An optional D3 interpolation function. See [d3-shape](https://github.com/d3/d3-shape#curves) for options. Pass this function in uncalled, i.e. without the open-close parentheses. */
 	export let curve = curveLinear;
 
-	console.log($data.map((d: any) => $yScale(d.y)));
+	// console.log($data.map((d: any) => $yScale(d.y)));
 
 	$: path = area()
 		.x($xGet)
@@ -23,4 +23,8 @@
 		.curve(curve);
 </script>
 
-<path class="path-area" d={path($data)} {fill} />
+<g>
+	{#each $data as group}
+		<path class="path-area" d={path(group.values)} {fill} />
+	{/each}
+</g>
