@@ -1,6 +1,10 @@
 <!--
     @component
     Generates an SVG multi-series line chart with shading for uncertainty.
+
+	Paths are animated using svelte transitions, see
+	https://devdocs.io/svelte/index#run-time-svelte-transition
+
     Data should look like this:
 
     const data = [
@@ -21,6 +25,8 @@
 <script>
 	import { getContext } from 'svelte';
 	import { area, line as d3line, curveLinear } from 'd3-shape';
+	import { draw, fade } from 'svelte/transition';
+	import { cubicInOut, cubicOut, linear, quintIn, quintOut } from 'svelte/easing';
 
 	const { data, xGet, yGet, yScale } = getContext('LayerCake');
 
@@ -35,8 +41,18 @@
 
 <g class="line-group">
 	{#each $data as group}
-		<path class="path-area" d={shade(group.values)} fill={group.fill} />
-		<path class="path-line" d={line(group.values)} stroke={group.stroke} />
+		<path
+			in:fade={{ duration: 3000, delay: 3000, easing: linear }}
+			class="path-area"
+			d={shade(group.values)}
+			fill={group.fill}
+		/>
+		<path
+			in:draw={{ duration: 3000, delay: 0, easing: linear }}
+			class="path-line"
+			d={line(group.values)}
+			stroke={group.stroke}
+		/>
 	{/each}
 </g>
 
