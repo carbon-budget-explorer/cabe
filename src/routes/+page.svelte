@@ -121,12 +121,15 @@
 		</div>
 	</div>
 	<div class="flex flex-col justify-around">
-		<div>
+		<div class="flex flex-col items-center gap-6 pb-4">
+			<h1 class="text-bold text-2xl">Global carbon budget</h1>
 			<GlobalBudget used={data.result.used} remaining={data.result.remaining} />
 		</div>
-		<div>temperature plot</div>
 	</div>
-	<div>
+	<div class="flex flex-col gap-6 pb-4">
+		<h1 class="text-bold text-2xl">Evolution of carbon emissions</h1>
+		<TimeSeries />
+		<h1 class="text-bold text-2xl">Evolution of global mean temperature</h1>
 		<TimeSeries />
 	</div>
 </div>

@@ -5,10 +5,21 @@
 	import AxisY from './components/AxisY.svelte';
 	import Area from './components/Area.svelte';
 	import Line from './components/Line.svelte';
+	import MultiLine from './components/MultiLine.svelte';
+
+	const ipcc_fill_green = '#dbe3d2';
+	const ipcc_stroke_green = '#82a56e';
+	const ipcc_fill_red = '#f39995';
+	const ipcc_fill2_red = '#f3c6c5'; // lighter
+	const ipcc_stroke_red = '#f5331e';
+	const ipcc_fill_blue = '#c2e0e7';
+	const ipcc_stroke_blue = '#5bb0c6';
 
 	const points = [
 		{
 			group: 'a',
+			stroke: ipcc_stroke_red,
+			fill: ipcc_fill_red,
 			values: [
 				{ x: 2000, y: 61, y0: 60, y1: 64, group: 'a' },
 				{ x: 2005, y: 56, y0: 51, y1: 58, group: 'a' },
@@ -24,6 +35,8 @@
 		},
 		{
 			group: 'b',
+			stroke: ipcc_stroke_green,
+			fill: ipcc_fill_green,
 			values: [
 				{ x: 2000, y: 65, y0: 55, y1: 68, group: 'b' },
 				{ x: 2005, y: 54, y0: 49, y1: 58, group: 'b' },
@@ -38,23 +51,14 @@
 			]
 		}
 	];
-
-	const ipcc_fill_green = '#dbe3d2';
-	const ipcc_stroke_green = '#82a56e';
-	const ipcc_fill_red = '#f39995';
-	const ipcc_fill2_red = '#f3c6c5'; // lighter
-	const ipcc_stroke_red = '#f5331e';
-	const ipcc_fill_blue = '#c2e0e7';
-	const ipcc_stroke_blue = '#5bb0c6';
 </script>
 
 <div class="chart-container">
-	<LayerCake x="x" y="y" data="{points}," flatData={flatten(points, 'values')}>
+	<LayerCake x="x" y="y" z="group" data={points} flatData={flatten(points, 'values')}>
 		<Svg>
 			<AxisX gridlines={true} />
 			<AxisY gridlines={true} ticks={4} textAnchor={'end'} />
-			<Area fill={ipcc_fill_blue} />
-			<Line stroke={ipcc_stroke_blue} />
+			<MultiLine />
 		</Svg>
 	</LayerCake>
 </div>
@@ -67,7 +71,7 @@
     expand to fill it.
   */
 	.chart-container {
-		width: 300px;
-		height: 300px;
+		width: 500px;
+		height: 200px;
 	}
 </style>
