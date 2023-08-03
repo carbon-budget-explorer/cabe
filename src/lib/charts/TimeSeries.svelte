@@ -1,26 +1,20 @@
 <!-- { filename: 'App.svelte' } -->
-<script>
-	import { LayerCake, Svg } from 'layercake';
-	import Scatter from './components/Scatter.svelte';
+<script lang="ts">
+	import { LayerCake, Svg, flatten } from 'layercake';
 	import AxisX from './components/AxisX.svelte';
 	import AxisY from './components/AxisY.svelte';
+	import MultiLine from './components/MultiLine.svelte';
+	import type { LineData } from './components/MultiLine';
 
-	const points = [
-		{ x: 0, y: 0 },
-		{ x: 5, y: 10 },
-		{ x: 10, y: 20 },
-		{ x: 15, y: 30 },
-		{ x: 20, y: 40 }
-	];
+	export let data: LineData[];
 </script>
 
 <div class="chart-container">
-	<LayerCake x="x" y="y" data={points}>
+	<LayerCake x="x" y="y" z="group" {data} flatData={flatten(data, 'values')}>
 		<Svg>
 			<AxisX gridlines={true} />
 			<AxisY gridlines={true} ticks={4} textAnchor={'end'} />
-			<!-- You can expose properties on your chart components to make them more reusable -->
-			<Scatter fill={'blue'} r={3} />
+			<MultiLine />
 		</Svg>
 	</LayerCake>
 </div>
@@ -33,7 +27,7 @@
     expand to fill it.
   */
 	.chart-container {
-		width: 300px;
-		height: 300px;
+		width: 500px;
+		height: 200px;
 	}
 </style>

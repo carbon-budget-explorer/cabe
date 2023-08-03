@@ -3,10 +3,45 @@
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';
 	import type { PageData } from './$types';
-	import Example from '$lib/charts/TimeSeries.svelte';
 	import GlobalBudget from '$lib/charts/GlobalBudget.svelte';
+	import TimeSeries from '$lib/charts/TimeSeries.svelte';
+	import type { TimeSeriesValue } from '$lib/server/db/global';
+	import type { LineValue } from '$lib/charts/components/MultiLine';
 
 	export let data: PageData;
+
+	// TODO generalize to colormap component or so
+	const ipcc_fill_green = '#dbe3d2';
+	const ipcc_stroke_green = '#82a56e';
+	const ipcc_fill_red = '#f39995';
+	const ipcc_fill2_red = '#f3c6c5'; // lighter
+	const ipcc_stroke_red = '#f5331e';
+	const ipcc_fill_blue = '#c2e0e7';
+	const ipcc_stroke_blue = '#5bb0c6';
+
+	function tsDataToLine(d: TimeSeriesValue): LineValue {
+		return {
+			x: d.time,
+			y: d.mean,
+			ymin: d.min,
+			ymax: d.max
+		};
+	}
+
+	$: carbonTSData = [
+		{
+			name: data.result.carbonTS.name,
+			values: data.result.carbonTS.values.map(tsDataToLine),
+			fill: ipcc_fill_green,
+			stroke: ipcc_stroke_green
+		},
+		{
+			name: data.result.temperatureTS.name,
+			values: data.result.temperatureTS.values.map(tsDataToLine),
+			fill: ipcc_fill_blue,
+			stroke: ipcc_stroke_blue
+		}
+	];
 
 	type ChangeEvent = Event & {
 		currentTarget: EventTarget & HTMLInputElement;
@@ -121,12 +156,18 @@
 		</div>
 	</div>
 	<div class="flex flex-col justify-around">
-		<div>
-			<GlobalBudget used={data.result.used} remaining={data.result.remaining} />
+		<div class="flex flex-col items-center gap-6 pb-4">
+			<h1 class="text-bold text-2xl">Global carbon budget</h1>
+			<GlobalBudget
+				used={data.result.carbonTotal.used}
+				remaining={data.result.carbonTotal.remaining}
+			/>
 		</div>
-		<div>temperature plot</div>
 	</div>
-	<div>
-		<Example />
+	<div class="flex flex-col gap-6 pb-4">
+		<h1 class="text-bold text-2xl">Evolution of carbon emissions</h1>
+		<TimeSeries data={carbonTSData} />
+		<h1 class="text-bold text-2xl">Evolution of global mean temperature</h1>
+		<TimeSeries data={carbonTSData} />
 	</div>
 </div>
