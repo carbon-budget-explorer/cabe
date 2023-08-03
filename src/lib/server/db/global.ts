@@ -25,16 +25,15 @@ export interface CarbonTotalResult {
 }
 
 function carbonTotal(query: GlobalBudgetQuery): CarbonTotalResult {
-	const spent = totals.carbon(query.warming, 1990, 2021);
-
-	const t = parseFloat(query.warming);
-	const p = parseFloat(query.probability);
-	const non = nonCO2MitigationValues[nonCO2MitigationChoices.indexOf(query.nonCO2Mitigation)];
-	const neg = negativeEmissionsValues[negativeEmissionsChoices.indexOf(query.negativeEmissions)];
-
-	const total = 6000 * (1 + t / 10) * (p / 100) * (1 - non / 100) * (1 + neg / 100);
-	const used = 2500;
-	const remaining = total - used;
+	const used = totals
+		.carbon(query.warming, 1990, 2021)
+		.filter((d) => !Number.isNaN(d))
+		.reduce((a, b) => a + b, 0);
+	const remaining = totals
+		.carbon(query.warming, 2022, 2100)
+		.filter((d) => !Number.isNaN(d))
+		.reduce((a, b) => a + b, 0);
+	const total = used + remaining;
 
 	const result = {
 		total,

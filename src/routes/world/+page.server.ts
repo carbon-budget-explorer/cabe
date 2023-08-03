@@ -10,7 +10,7 @@ export async function load({ url }: { url: URL }) {
 	// TODO validate searchParam with zod.js
 
 	// TODO are years same for totals and scenarios?
-	const years = totalsDb.years();
+	const years = totalsDb.times();
 
 	const rawyear = searchParam(url, 'year', '2030');
 	const year = parseInt(rawyear);
