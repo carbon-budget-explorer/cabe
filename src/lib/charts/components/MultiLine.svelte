@@ -42,8 +42,8 @@
 	$: line = d3line<LineValue>().x($xGet).y($yGet).curve(curve);
 	$: shade = area<LineValue>()
 		.x($xGet)
-		.y1((d) => $yScale(d.y1))
-		.y0((d) => $yScale(d.y0))
+		.y1((d) => $yScale(d.ymax))
+		.y0((d) => $yScale(d.ymin))
 		.curve(curve);
 </script>
 

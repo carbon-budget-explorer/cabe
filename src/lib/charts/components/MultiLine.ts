@@ -1,13 +1,12 @@
 export type LineValue = {
 	x: number;
 	y: number;
-	y0: number;
-	y1: number;
-	group: string;
+	ymin: number;
+	ymax: number;
 };
 
 export type LineData = {
-	group: string;
+	name: string;
 	stroke: string;
 	fill: string;
 	values: LineValue[];
