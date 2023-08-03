@@ -3,10 +3,9 @@
 	import { LayerCake, Svg, flatten } from 'layercake';
 	import AxisX from './components/AxisX.svelte';
 	import AxisY from './components/AxisY.svelte';
-	import Area from './components/Area.svelte';
-	import Line from './components/Line.svelte';
 	import MultiLine from './components/MultiLine.svelte';
 
+	// TODO generalize to colormap component or so
 	const ipcc_fill_green = '#dbe3d2';
 	const ipcc_stroke_green = '#82a56e';
 	const ipcc_fill_red = '#f39995';

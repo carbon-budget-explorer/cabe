@@ -3,7 +3,7 @@
     Generates an SVG multi-series line chart with shading for uncertainty.
 
 	Paths are animated using svelte transitions, see
-	https://devdocs.io/svelte/index#run-time-svelte-transition
+	https://svelte.dev/docs/svelte-transition#draw
 
     Data should look like this:
 
@@ -22,17 +22,25 @@
 		}
 	]
  -->
-<script>
+<script lang="ts">
 	import { getContext } from 'svelte';
 	import { area, line as d3line, curveLinear } from 'd3-shape';
 	import { draw, fade } from 'svelte/transition';
-	import { cubicInOut, cubicOut, linear, quintIn, quintOut } from 'svelte/easing';
+	import { linear, sineIn } from 'svelte/easing';
+	import type { Readable } from 'svelte/motion';
+	import type { ScaleLinear } from 'd3';
+	import type { LineData, LineValue } from './MultiLine';
 
-	const { data, xGet, yGet, yScale } = getContext('LayerCake');
+	const { data, xGet, yGet, yScale } = getContext<{
+		data: Readable<LineData[]>;
+		xGet: Readable<number>;
+		yGet: Readable<number>;
+		yScale: Readable<ScaleLinear<number, number, never>>;
+	}>('LayerCake');
 
 	let curve = curveLinear;
-	$: line = d3line().x($xGet).y($yGet).curve(curve);
-	$: shade = area()
+	$: line = d3line<LineValue>().x($xGet).y($yGet).curve(curve);
+	$: shade = area<LineValue>()
 		.x($xGet)
 		.y1((d) => $yScale(d.y1))
 		.y0((d) => $yScale(d.y0))
@@ -42,13 +50,13 @@
 <g class="line-group">
 	{#each $data as group}
 		<path
-			in:fade={{ duration: 3000, delay: 3000, easing: linear }}
+			in:fade={{ duration: 2000, delay: 2000, easing: sineIn }}
 			class="path-area"
 			d={shade(group.values)}
 			fill={group.fill}
 		/>
 		<path
-			in:draw={{ duration: 3000, delay: 0, easing: linear }}
+			in:draw={{ duration: 2000, delay: 0, easing: linear }}
 			class="path-line"
 			d={line(group.values)}
 			stroke={group.stroke}
