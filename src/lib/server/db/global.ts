@@ -1,4 +1,6 @@
-export const warmingChoices = ['1.5', '2'] as const;
+import { totals } from './data';
+
+export const warmingChoices = totals.temperatures();
 export type Warming = (typeof warmingChoices)[number];
 export const probabilityChoices = ['50', '67'] as const;
 export type Probability = (typeof probabilityChoices)[number];
@@ -23,6 +25,8 @@ export interface CarbonTotalResult {
 }
 
 function carbonTotal(query: GlobalBudgetQuery): CarbonTotalResult {
+	const spent = totals.carbon(query.warming, 1990, 2021);
+
 	const t = parseFloat(query.warming);
 	const p = parseFloat(query.probability);
 	const non = nonCO2MitigationValues[nonCO2MitigationChoices.indexOf(query.nonCO2Mitigation)];
