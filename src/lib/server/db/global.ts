@@ -1,4 +1,5 @@
 import { totals } from './data';
+import { totals2 } from './data';
 
 export const warmingChoices = totals.temperatures();
 export type Warming = (typeof warmingChoices)[number];
@@ -10,6 +11,11 @@ export type NonCO2Mitigation = (typeof nonCO2MitigationChoices)[number];
 export const negativeEmissionsChoices = ['low', 'medium', 'high'] as const;
 const negativeEmissionsValues = [0, 10, 20] as const;
 export type NegativeEmissions = (typeof negativeEmissionsChoices)[number];
+
+console.log(totals2.dimensions[0].quickview);
+console.log(totals2.coordinates[0].quickview);
+console.log(totals2.data_vars[0].quickview);
+console.log(totals2.coordinates[0].values);
 
 export interface GlobalBudgetQuery {
 	warming: Warming;
