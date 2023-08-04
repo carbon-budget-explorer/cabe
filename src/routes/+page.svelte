@@ -34,7 +34,10 @@
 			values: data.result.carbonTS.values.map(tsDataToLine),
 			fill: ipcc_fill_green,
 			stroke: ipcc_stroke_green
-		},
+		}
+	];
+
+	$: temperatureTSData = [
 		{
 			name: data.result.temperatureTS.name,
 			values: data.result.temperatureTS.values.map(tsDataToLine),
@@ -168,6 +171,6 @@
 		<h1 class="text-bold text-2xl">Evolution of carbon emissions</h1>
 		<TimeSeries data={carbonTSData} />
 		<h1 class="text-bold text-2xl">Evolution of global mean temperature</h1>
-		<TimeSeries data={carbonTSData} />
+		<TimeSeries data={temperatureTSData} />
 	</div>
 </div>

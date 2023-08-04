@@ -1,3 +1,4 @@
+import { error } from '@sveltejs/kit';
 import { totals } from './data';
 
 export const warmingChoices = totals.temperatures();
@@ -50,6 +51,7 @@ export interface TimeSeriesValue {
 	max: number;
 }
 
+// TODO transpose structure: time, mean, min and max arrays as attributes
 export interface TimeSeries {
 	name: string;
 	values: TimeSeriesValue[];
@@ -73,21 +75,28 @@ function temperatureTimeSeries(query: GlobalBudgetQuery): TimeSeries {
 	};
 }
 
+function arrays2TimeSeries(time: number[], values: number[], err = 5000): TimeSeriesValue[] {
+	//  TODO get variable errors from additional data arrays
+	const toValues = (t: number, i: number) => ({
+		time: t,
+		mean: values[i],
+		min: values[i] - err,
+		max: values[i] + err
+	});
+
+	return Array.from(time).map(toValues);
+}
+
 function carbonTimeSeries(query: GlobalBudgetQuery): TimeSeries {
+	const ts = totals.carbon(query.warming, 1850, 2100).slice(171, -1);
+	const time = totals.times().slice(171, -1);
+	// TODO remove nans (what to do with them?)
+	// TODO also make time indexable (somehow)
+	// TODO if no time index provided for .carbon, return all data
+
 	return {
 		name: 'carbon emissions',
-		values: [
-			{ time: 2000, mean: 65, min: 55, max: 68 },
-			{ time: 2005, mean: 54, min: 49, max: 58 },
-			{ time: 2011, mean: 51, min: 48, max: 56 },
-			{ time: 2016, mean: 24, min: 22, max: 29 },
-			{ time: 2022, mean: 20, min: 12, max: 27 },
-			{ time: 2027, mean: 25, min: 18, max: 30 },
-			{ time: 2033, mean: 22, min: 15, max: 26 },
-			{ time: 2038, mean: 15, min: 14, max: 18 },
-			{ time: 2044, mean: 1, min: -5, max: 8 },
-			{ time: 2050, mean: 18, min: 12, max: 22 }
-		]
+		values: arrays2TimeSeries(time, ts)
 	};
 }
 
