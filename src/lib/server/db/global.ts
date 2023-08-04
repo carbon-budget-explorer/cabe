@@ -1,4 +1,3 @@
-import { error } from '@sveltejs/kit';
 import { totals } from './data';
 
 export const warmingChoices = totals.temperatures();

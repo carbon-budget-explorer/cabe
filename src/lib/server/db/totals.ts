@@ -8,6 +8,73 @@ export const open_totals = async (path: string) => {
 export class Totals {
 	constructor(private reader: File) {}
 
+	getVariable(name: string){
+		// TODO: implement
+		return name
+	}
+
+	dimensions() {
+		const keys = this.reader.keys()
+		// TODO verify all keys corresponds to Datasets, i.e. no groups present
+		const datasets = keys.map(k => this.reader.get(k) as Dataset)
+		const dims = datasets.filter(d => ("CLASS" in d.attrs))
+		return dims.map(d => ({
+			id: d.get_attribute("_Netcdf4Dimid", true) as number,
+			name: d.get_attribute("NAME", true) as string,
+			shape: d.shape,
+		})).sort((a, b) => a.id - b.id)
+	}
+
+	datasets(){
+		const keys = this.reader.keys()
+		const datasets = keys.map(k => ({name: k, dataset: this.reader.get(k) as Dataset}))
+		// TODO verify all keys corresponds to Datasets, i.e. no groups present
+		return datasets.map(ds => {
+			let dimIds = ds.dataset.get_attribute("_Netcdf4Coordinates", true) as number[]
+			let dims = dimIds.map(id => this.dimensions()[id].name)
+			return {name: ds.name, dimensions: dims}
+		})
+	}
+
+	// temp() {
+	// 	const keys = this.reader.keys()
+	// 	const datasets = keys.map(v => this.reader.get(v))
+	// 	datasets.forEach(dataset => {
+	// 		let meta = dataset.metadata
+	// 		console.log(dataset)
+	// 	})
+	// 	const ds = this.reader.get('CO2') as Dataset;
+	// 	console.log(ds.attrs)
+	// 	console.log(ds.get_attribute("_Netcdf4Coordinates"))  // gives the order of the dimensions
+	// 	console.log(ds.get_attribute("_Netcdf4Dimid"))
+	// 	console.log(ds.get_attribute("DIMENSION_LIST"))
+	// 	// console.log(ds.dtype)
+	// 	// console.log(ds.filters)
+	// 	// console.log(ds.shape)
+	// 	// console.log(ds.slice)
+	// 	// console.log(ds.to_array)
+	// 	// console.log(ds.type)
+	// 	// console.log(ds.value)
+	// 	console.log('new')
+	// 	const ds2 = this.reader.get('Time') as Dataset;
+	// 	console.log(ds2.attrs)
+	// 	console.log(ds2.get_attribute("CLASS"))
+	// 	console.log(ds2.get_attribute("NAME"))
+	// 	// console.log(ds2.get_attribute("REFERENCE_LIST"))
+	// 	console.log(ds2.get_attribute("_Netcdf4Coordinates"))
+	// 	console.log(ds2.get_attribute("_Netcdf4Dimid"))
+
+
+	// 	console.log(dimensions)
+	// 	return 'ready'
+	// }
+
+	//
+	//
+	//
+	//
+	//
+
 	temperatures() {
 		const ds = this.reader.get('Temperature') as Dataset;
 		return ds.value as string[];
