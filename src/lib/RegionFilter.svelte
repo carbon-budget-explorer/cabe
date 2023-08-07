@@ -1,5 +1,4 @@
 <script lang="ts">
-
 	import type { NamedSpatialMetric } from './server/db/utils';
 
 	export let searchParams: string;

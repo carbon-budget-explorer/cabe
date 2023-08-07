@@ -7,13 +7,20 @@
 	<a href={`/${$page.url.search}`}>Carbon Budget Explorer logo</a>
 	<ul class="flex flex-row space-x-6">
 		<li>
-			<a href={`/${$page.url.search}`} title="Home" class:font-bold={$page.url.pathname === '/'}>Home</a>
+			<a href={`/${$page.url.search}`} title="Home" class:font-bold={$page.url.pathname === '/'}
+				>Home</a
+			>
 		</li>
 		<li>
-			<a href={`/world${$page.url.search}`} class:font-bold={$page.url.pathname === '/world'}>World</a>
+			<a href={`/world${$page.url.search}`} class:font-bold={$page.url.pathname === '/world'}
+				>World</a
+			>
 		</li>
 		<li>
-			<a href={`/world${$page.url.search}`} class:font-bold={$page.url.pathname.startsWith('/region')}>Region</a>
+			<a
+				href={`/world${$page.url.search}`}
+				class:font-bold={$page.url.pathname.startsWith('/region')}>Region</a
+			>
 		</li>
 		<li>
 			<a href="/about" class:font-bold={$page.url.pathname === '/about'}>About</a>

@@ -50,9 +50,9 @@
 		<details>
 			<summary>Global</summary>
 			<GlobalBudgetForm
-			choices={data.globalBudget.choices}
-			query={data.globalBudget.query}
-			onChange={updateQueryParam}
+				choices={data.globalBudget.choices}
+				query={data.globalBudget.query}
+				onChange={updateQueryParam}
 			/>
 		</details>
 		<div>
@@ -108,12 +108,7 @@
 				map.
 			</p>
 
-			<VegaMap
-				borders={data.borders}
-				metrics={data.metrics}
-				metricName={'CO2'}
-				bind:region
-			/>
+			<VegaMap borders={data.borders} metrics={data.metrics} metricName={'CO2'} bind:region />
 			<p />
 		</div>
 	</div>
