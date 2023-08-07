@@ -14,13 +14,13 @@ import {
 } from '$lib/server/db/global';
 
 export async function load({ url }: { url: URL }) {
-	const query: GlobalBudgetQuery = {
+	const globalBudgetQuery: GlobalBudgetQuery = {
 		warming: searchParam(url, 'warming', warmingChoices[0]),
 		probability: searchParam(url, 'probability', '50'),
 		nonCO2Mitigation: searchParam(url, 'nonCO2Mitigation', 'low'),
 		negativeEmissions: searchParam(url, 'negativeEmissions', 'low')
 	};
-	const choices = {
+	const globalBudgetChoices = {
 		warming: warmingChoices,
 		nonCO2Mitigation: nonCO2MitigationChoices,
 		probability: probabilityChoices,
@@ -49,7 +49,7 @@ export async function load({ url }: { url: URL }) {
 	const effortSharingQuery = searchParam(url, 'effortSharing', 'None');
 	const regions = totalsDb.regions();
 	const rawMetrics: SpatialMetric[] = Array.from(
-		totalsDb.carbonMap(query.warming, year, effortSharingQuery)
+		totalsDb.carbonMap(globalBudgetQuery.warming, year, effortSharingQuery)
 	).map((d, i) => ({
 		ISO: regions[i],
 		value: d
@@ -64,7 +64,7 @@ export async function load({ url }: { url: URL }) {
 		query: effortSharingQuery
 	};
 	const data = {
-		globalBudget: { query, choices },
+		globalBudget: { query: globalBudgetQuery, choices: globalBudgetChoices },
 		effortSharing,
 		metrics,
 		years,

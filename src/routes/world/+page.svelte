@@ -15,7 +15,7 @@
 	let region: string;
 	const gotoRegion = (region: string) => {
 		if (browser && region !== undefined && region !== '') {
-			goto(`/regions/${region}`);
+			goto(`/regions/${region}${$page.url.search}`);
 		}
 	};
 	$: gotoRegion(region);
@@ -47,11 +47,14 @@
 <h1 class="text-3xl font-bold">World explorer</h1>
 <main class="flex flex-row justify-between gap-4">
 	<div class="flex flex-col gap-4">
-		<GlobalBudgetForm
+		<details>
+			<summary>Global</summary>
+			<GlobalBudgetForm
 			choices={data.globalBudget.choices}
 			query={data.globalBudget.query}
 			onChange={updateQueryParam}
-		/>
+			/>
+		</details>
 		<div>
 			<p>Effort-sharing principle</p>
 			<div class="flex flex-col">
@@ -105,7 +108,12 @@
 				map.
 			</p>
 
-			<VegaMap borders={data.borders} metrics={data.metrics} metricName={'CO2'} bind:region />
+			<VegaMap
+				borders={data.borders}
+				metrics={data.metrics}
+				metricName={'CO2'}
+				bind:region
+			/>
 			<p />
 		</div>
 	</div>
@@ -113,7 +121,7 @@
 		<button on:click={() => (showCountriesPanel = !showCountriesPanel)}>🔎</button>
 		{#if showCountriesPanel}
 			<div transition:slide={{ axis: 'x' }}>
-				<RegionFilter metrics={data.metrics} />
+				<RegionFilter metrics={data.metrics} searchParams={$page.url.search} />
 			</div>
 		{/if}
 	</div>
