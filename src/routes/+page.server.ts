@@ -16,15 +16,16 @@ export const load = (async ({ url }: { url: URL }) => {
 		nonCO2Mitigation: searchParam(url, 'nonCO2Mitigation', 'low'),
 		negativeEmissions: searchParam(url, 'negativeEmissions', 'low')
 	};
+	const choices = {
+		warming: warmingChoices,
+		nonCO2Mitigation: nonCO2MitigationChoices,
+		probability: probabilityChoices,
+		negativeEmissions: negativeEmissionsChoices
+	};
 	const result = globalBudget(query);
 	return {
 		query,
-		choices: {
-			warming: warmingChoices,
-			nonCO2Mitigation: nonCO2MitigationChoices,
-			probability: probabilityChoices,
-			negativeEmissions: negativeEmissionsChoices
-		},
+		choices,
 		result
 	};
 }) satisfies PageServerLoad;

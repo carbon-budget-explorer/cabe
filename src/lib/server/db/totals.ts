@@ -70,6 +70,34 @@ export class Totals {
 		return values as Float64Array;
 	}
 
+	carbonMap(
+		temperature: string,
+		year: number,
+		effortSharing = 'None',
+		scenario = 'SSP2',
+		converganceYear = 2030
+	) {
+		const variable = 'CO2';
+		const ds = this.reader.get(variable) as Dataset;
+
+		const temperatureIndex = this.temperatures().indexOf(temperature);
+		const effortSharingIndex = this.effortSharings().indexOf(effortSharing);
+		const scenarioIndex = this.scenarios().indexOf(scenario);
+		const converganceYearIndex = this.converganceYears().indexOf(converganceYear);
+		const timeIndex = this.times().indexOf(year);
+
+		const indices = [
+			[temperatureIndex, temperatureIndex + 1],
+			[timeIndex, timeIndex + 1],
+			[], // Select all regions
+			[effortSharingIndex, effortSharingIndex + 1],
+			[scenarioIndex, scenarioIndex + 1],
+			[converganceYearIndex, converganceYearIndex + 1]
+		];
+		const values = ds.slice(indices);
+		return values as Float64Array;
+	}
+
 	region(variable: string, region: string) {
 		// TODO impmlement
 		return [];
@@ -80,7 +108,7 @@ export class Totals {
 		return [];
 	}
 
-	global(variable: string, time: number) {
+	global(variable: 'Population' | 'GDP' | 'CO2_base' | 'CO2_hist', time: number) {
 		/// TODO implement
 		return [];
 	}

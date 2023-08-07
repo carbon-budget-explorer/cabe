@@ -5,8 +5,27 @@ import {
 } from '$lib/server/db/data';
 import { searchParam } from '$lib/searchparam';
 import type { SpatialMetric } from '$lib/server/db/utils';
+import {
+	type GlobalBudgetQuery,
+	warmingChoices,
+	nonCO2MitigationChoices,
+	probabilityChoices,
+	negativeEmissionsChoices
+} from '$lib/server/db/global';
 
 export async function load({ url }: { url: URL }) {
+	const query: GlobalBudgetQuery = {
+		warming: searchParam(url, 'warming', warmingChoices[0]),
+		probability: searchParam(url, 'probability', '50'),
+		nonCO2Mitigation: searchParam(url, 'nonCO2Mitigation', 'low'),
+		negativeEmissions: searchParam(url, 'negativeEmissions', 'low')
+	};
+	const choices = {
+		warming: warmingChoices,
+		nonCO2Mitigation: nonCO2MitigationChoices,
+		probability: probabilityChoices,
+		negativeEmissions: negativeEmissionsChoices
+	};
 	// TODO validate searchParam with zod.js
 
 	// TODO are years same for totals and scenarios?
@@ -27,16 +46,30 @@ export async function load({ url }: { url: URL }) {
 		variable: searchParam(url, 'sv', totals.variable ? '' : 'GF')
 	};
 
-	let rawMetrics: SpatialMetric[];
-	if (scenarios.category && scenarios.variable) {
-		rawMetrics = scenariosDb.global(scenarios.category, scenarios.variable, year);
-	} else {
-		rawMetrics = totalsDb.global(totals.variable, year);
-	}
-	const metricName = totals.variable || scenarios.variable;
+	const effortSharingQuery = searchParam(url, 'effortSharing', 'None');
+	const regions = totalsDb.regions();
+	const rawMetrics: SpatialMetric[] = Array.from(
+		totalsDb.carbonMap(query.warming, year, effortSharingQuery)
+	).map((d, i) => ({
+		ISO: regions[i],
+		value: d
+	}));
 	const metrics = bordersDb.addNames(
 		rawMetrics.filter((d) => !Number.isNaN(d.value) && d.value !== null && d.value !== undefined)
 	);
-	const data = { metrics, metricName, totals, years, year, scenarios, borders: bordersDb.geojson };
-	return data
+
+	const effortSharingChoices = totalsDb.effortSharings();
+	const effortSharing = {
+		choices: effortSharingChoices,
+		query: effortSharingQuery
+	};
+	const data = {
+		globalBudget: { query, choices },
+		effortSharing,
+		metrics,
+		years,
+		year,
+		borders: bordersDb.geojson
+	};
+	return data;
 }
