@@ -10,6 +10,16 @@ export async function open_dataset(path: string) {
 const isDim = (dataset: HDF5Dataset) =>
 	'CLASS' in dataset.attrs && dataset.get_attribute('CLASS', true) === 'DIMENSION_SCALE';
 
+export class Slice {
+	start: number;
+	stop: number;
+
+	constructor(start: number, stop: number) {
+		this.start = start;
+		this.stop = stop;
+	}
+}
+
 export class Coordinate {
 	// Note: this assumes coords are 1-dimensional
 	id: number;
@@ -30,35 +40,47 @@ export class Coordinate {
 		return this.ds.to_array() as number[];
 	}
 
-	sel(start?: number | string, stop?: number | string) {
-		// Note: this assumes coords are 1-dimensional
-		let startIndex: number = 0;
-		let stopIndex: number = -1;
-		if (this.ds.dtype === 'S') {
-			const values = this.values as string[];
-			startIndex = typeof start === 'string' ? values.indexOf(start) : 0;
-			stopIndex = typeof stop === 'string' ? values.indexOf(stop) : this.shape[0];
+	indexOf(value: string | number) {
+		let index = -1;
+		if (typeof value === 'string') {
+			index = (this.values as string[]).indexOf(value);
 		} else {
-			const values = this.values as number[];
-			startIndex = typeof start === 'number' ? values.indexOf(start) : 0;
-			stopIndex = typeof stop === 'number' ? values.indexOf(stop) : this.shape[0];
+			index = (this.values as number[]).indexOf(value);
 		}
-
-		return this.isel(startIndex, stopIndex);
+		if (index === -1) throw new Error(`Value ${value} not found in ${this.name}`);
+		return index;
 	}
 
-	isel(start?: number, stop?: number) {
-		let slice: number[] = [];
-		if (start === undefined && stop === undefined) {
-			slice = [];
-		} else if (start !== undefined && stop === undefined) {
-			slice = [start, start + 1];
-		} else if (start === undefined && stop !== undefined) {
-			slice = [0, stop];
-		} else if (start !== undefined && stop !== undefined) {
-			slice = [start, stop];
+	sel(indexer?: string | number | string[] | number[] | Slice) {
+		// Note: this assumes coords are 1-dimensional
+		let iindexer: undefined | number | Slice | number[] = undefined;
+		if (indexer === undefined) {
+			iindexer = undefined;
+		} else if (typeof indexer === 'number' || typeof indexer === 'string') {
+			iindexer = this.indexOf(indexer);
+		} else if (indexer instanceof Slice) {
+			iindexer = new Slice(this.indexOf(indexer.start), this.indexOf(indexer.stop));
+		} else if (Array.isArray(indexer)) {
+			iindexer = indexer.map((i) => this.indexOf(i));
 		}
 
+		return this.isel(iindexer);
+	}
+
+	isel(indexer?: number | Slice | number[]): number[] | string[] {
+		let slice: number[] = [];
+		if (indexer === undefined) {
+			slice = [];
+		} else if (typeof indexer === 'number') {
+			slice = [indexer, indexer + 1];
+		} else if (indexer instanceof Slice) {
+			slice = [indexer.start, indexer.stop];
+		} else if (Array.isArray(indexer)) {
+			if (this.ds.dtype === 'S') {
+				return indexer.map((i) => this.isel(i)[0] as string);
+			}
+			return indexer.map((i) => this.isel(i)[0] as number);
+		}
 		if (this.ds.dtype === 'S') return Array.from(this.ds.slice([slice]) as string[]);
 		return Array.from(this.ds.slice([slice]) as number[]);
 	}
@@ -78,6 +100,56 @@ export class DataArray {
 	get values() {
 		if (this.ds.dtype === 'S') return this.ds.to_array() as string[];
 		return this.ds.to_array() as number[];
+	}
+
+	sel(indexer?: Record<string, string | number | string[] | number[] | Slice>) {
+		let iindexer: Record<string, number | Slice | number[]> = {};
+		if (indexer === undefined) {
+			return this.isel();
+		}
+		for (let coordName in this.coordinates) {
+			if (coordName in this.coordinates && indexer) {
+				let cindex = indexer[coordName];
+				if (cindex === undefined) {
+					// to nothing
+				} else if (typeof cindex === 'number' || typeof cindex === 'string') {
+					iindexer[coordName] = this.coordinates[coordName].indexOf(cindex);
+				} else if (cindex instanceof Slice) {
+					iindexer[coordName] = new Slice(
+						this.coordinates[coordName].indexOf(cindex.start),
+						this.coordinates[coordName].indexOf(cindex.stop)
+					);
+				} else if (Array.isArray(cindex)) {
+					// TODO slice of h5wasm does not handle list of indices
+					throw new Error('Not implemented');
+				}
+			} else {
+				throw new Error(`Coordinate ${coordName} not found in ${this.name}`);
+			}
+		}
+		return this.isel(iindexer);
+	}
+
+	isel(indexer?: Record<string, number | Slice | number[]>) {
+		let slice: number[][] = [];
+		for (let coordName in this.coordinates) {
+			if (coordName in this.coordinates && indexer) {
+				let cindex = indexer[coordName];
+				if (cindex === undefined) {
+					slice.push([]);
+				} else if (typeof cindex === 'number') {
+					slice.push([cindex, cindex + 1]);
+				} else if (cindex instanceof Slice) {
+					slice.push([cindex.start, cindex.stop]);
+				} else if (Array.isArray(cindex)) {
+					// TODO slice of h5wasm does not handle list of indices
+					throw new Error('Not implemented');
+				}
+			} else {
+				slice.push([]);
+			}
+		}
+		return this.ds.slice(slice);
 	}
 }
 

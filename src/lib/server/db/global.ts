@@ -1,5 +1,6 @@
 import { totals } from './data';
 import { totals2 } from './data';
+import { Slice } from './xarray';
 
 export const warmingChoices = totals.temperatures();
 export type Warming = (typeof warmingChoices)[number];
@@ -13,23 +14,57 @@ const negativeEmissionsValues = [0, 10, 20] as const;
 export type NegativeEmissions = (typeof negativeEmissionsChoices)[number];
 
 // console.log(totals2.coords['Temperature'].values);
-console.log(totals2.coords['Temperature'].values);
+// console.log(totals2.coords['Temperature'].values);
 // console.log(totals2.coords['Temperature'].shape);
 
 // console.log(totals2.coords['Temperature'].isel());
 // console.log(totals2.coords['Temperature'].isel(0));
-// console.log(totals2.coords['Temperature'].isel(0, 2));
+// console.log(totals2.coords['Temperature'].isel(2));
+// console.log(totals2.coords['Temperature'].isel([0, 2]));
+// console.log(totals2.coords['Temperature'].isel(new Slice(1, 3)));
+// console.log(totals2.coords['Temperature'].isel(new Slice(0, 1)));
+// console.log(totals2.coords['Temperature'].isel(new Slice(1, undefined)));
 
 // console.log(totals2.coords['Time'].isel());
 // console.log(totals2.coords['Time'].isel(0));
 // console.log(totals2.coords['Time'].isel(0, 5));
 // console.log(totals2.coords['Time'].isel(undefined, 5));
 
-console.log(totals2.coords['Time'].sel());
-console.log(totals2.coords['Time'].sel(1950));
-console.log(totals2.coords['Time'].sel(2070, 2075));
-console.log(totals2.coords['Time'].sel(undefined, 2000));
+// console.log(totals2.coords['Time'].sel());
+// console.log(totals2.coords['Time'].sel(1950));
+// console.log(totals2.coords['Time'].sel(new Slice(2070, 2075)));
+// console.log(totals2.coords['Time'].sel([2030,2100]));
+
 // console.log(totals2.coords['Time'].sel(0, 10)); // error!
+
+console.log(
+	totals2.data_vars['GDP'].sel({
+		Scenario: 'SSP2',
+		Region: 'NLD',
+		Time: 2100
+	})
+);
+
+console.log(
+	totals2.data_vars['GDP'].sel({
+		Scenario: 'SSP2',
+		Region: 'NLD',
+		Time: new Slice(2020, 2100)
+	})
+);
+/*
+TODO
+With python
+v =  ds.GDP.sel(Scenario='SSP2', Region='NLD', Time=slice(2020,2100)).values
+len(v)
+81
+JS returns 80
+*/
+
+// console.log(totals2.data_vars['GDP'].sel({
+// 	Scenario: 'SSP2',
+// 	Region: ['NLD', 'USA'],
+// }))
 
 export interface GlobalBudgetQuery {
 	warming: Warming;
