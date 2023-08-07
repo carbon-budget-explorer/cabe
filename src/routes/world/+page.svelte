@@ -100,9 +100,10 @@
 				</select>
 			</div>
 			<div>
-				<h3 class="text-xl">Totals</h3>
+				<h3 class="text-xl">Variables</h3>
 				<label class="block">
 					<div class="flex flex-col">
+						
 						{#each data.totals.variables as variable}
 							<label>
 								<input

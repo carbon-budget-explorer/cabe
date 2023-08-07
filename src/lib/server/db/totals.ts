@@ -20,7 +20,7 @@ export class Totals {
 
 	times() {
 		const ds = this.reader.get('Time') as Dataset;
-		return ds.value as number[];
+		return Array.from(ds.value as number[]);
 	}
 
 	effortSharings() {

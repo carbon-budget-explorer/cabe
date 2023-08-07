@@ -37,5 +37,6 @@ export async function load({ url }: { url: URL }) {
 	const metrics = bordersDb.addNames(
 		rawMetrics.filter((d) => !Number.isNaN(d.value) && d.value !== null && d.value !== undefined)
 	);
-	return { metrics, metricName, totals, years, year, scenarios, borders: bordersDb.geojson };
+	const data = { metrics, metricName, totals, years, year, scenarios, borders: bordersDb.geojson };
+	return data
 }
