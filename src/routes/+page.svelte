@@ -47,10 +47,6 @@
 		}
 	];
 
-	type ChangeEvent = Event & {
-		currentTarget: EventTarget & HTMLInputElement;
-	};
-
 	function changeQuery(name: string, value: string) {
 		if (browser) {
 			const params = new URLSearchParams($page.url.search);

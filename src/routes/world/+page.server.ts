@@ -1,8 +1,4 @@
-import {
-	scenarios as scenariosDb,
-	totals as totalsDb,
-	borders as bordersDb
-} from '$lib/server/db/data';
+import { totals as totalsDb, borders as bordersDb } from '$lib/server/db/data';
 import { searchParam } from '$lib/searchparam';
 import type { SpatialMetric } from '$lib/server/db/utils';
 import {
@@ -33,18 +29,6 @@ export async function load({ url }: { url: URL }) {
 
 	const rawyear = searchParam(url, 'year', '2030');
 	const year = parseInt(rawyear);
-
-	const totals = {
-		variables: totalsDb.variables(),
-		variable: searchParam(url, 'tv', '')
-	};
-
-	const scenarios = {
-		categories: scenariosDb.categories(),
-		variables: scenariosDb.variables(),
-		category: searchParam(url, 'sc', totals.variable ? '' : 'C1'),
-		variable: searchParam(url, 'sv', totals.variable ? '' : 'GF')
-	};
 
 	const effortSharingQuery = searchParam(url, 'effortSharing', 'None');
 	const regions = totalsDb.regions();

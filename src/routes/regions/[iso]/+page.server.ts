@@ -1,5 +1,4 @@
 import { borders, totals } from '$lib/server/db/data';
-import { scenarios } from '../../../lib/server/db/data';
 import type { RouteParams } from './$types';
 import { totals as totalsDb } from '$lib/server/db/data';
 import { searchParam } from '$lib/searchparam';
