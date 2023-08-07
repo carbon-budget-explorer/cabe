@@ -12,10 +12,24 @@ export const negativeEmissionsChoices = ['low', 'medium', 'high'] as const;
 const negativeEmissionsValues = [0, 10, 20] as const;
 export type NegativeEmissions = (typeof negativeEmissionsChoices)[number];
 
-// console.log(totals2.dimensions[0].quickview);
-// console.log(totals2.coordinates[0].quickview);
-// console.log(totals2.data_vars[0].quickview);
-// console.log(totals2.coordinates[0].values);
+// console.log(totals2.coords['Temperature'].values);
+console.log(totals2.coords['Temperature'].values);
+// console.log(totals2.coords['Temperature'].shape);
+
+// console.log(totals2.coords['Temperature'].isel());
+// console.log(totals2.coords['Temperature'].isel(0));
+// console.log(totals2.coords['Temperature'].isel(0, 2));
+
+// console.log(totals2.coords['Time'].isel());
+// console.log(totals2.coords['Time'].isel(0));
+// console.log(totals2.coords['Time'].isel(0, 5));
+// console.log(totals2.coords['Time'].isel(undefined, 5));
+
+console.log(totals2.coords['Time'].sel());
+console.log(totals2.coords['Time'].sel(1950));
+console.log(totals2.coords['Time'].sel(2070, 2075));
+console.log(totals2.coords['Time'].sel(undefined, 2000));
+// console.log(totals2.coords['Time'].sel(0, 10)); // error!
 
 export interface GlobalBudgetQuery {
 	warming: Warming;

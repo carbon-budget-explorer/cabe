@@ -1,4 +1,5 @@
 import { ready, File, Dataset as HDF5Dataset } from 'h5wasm';
+import { totals } from './data';
 
 export async function open_dataset(path: string) {
 	await ready;
@@ -9,7 +10,8 @@ export async function open_dataset(path: string) {
 const isDim = (dataset: HDF5Dataset) =>
 	'CLASS' in dataset.attrs && dataset.get_attribute('CLASS', true) === 'DIMENSION_SCALE';
 
-export class Dimension {
+export class Coordinate {
+	// Note: this assumes coords are 1-dimensional
 	id: number;
 	name: string;
 	shape: number[];
@@ -17,38 +19,65 @@ export class Dimension {
 
 	constructor(ds: HDF5Dataset) {
 		this.id = ds.get_attribute('_Netcdf4Dimid', true) as number;
-		this.name = ds.get_attribute('NAME', true) as string;
+		// this.name = ds.get_attribute('NAME', true) as string;
+		this.name = ds.path.replace('/', '');
 		this.shape = ds.shape;
 		this.ds = ds;
 	}
 
-	get quickview() {
-		return [this.id, this.name, this.shape];
+	get values() {
+		if (this.ds.dtype === 'S') return this.ds.to_array() as string[];
+		return this.ds.to_array() as number[];
+	}
+
+	sel(start?: number | string, stop?: number | string) {
+		// Note: this assumes coords are 1-dimensional
+		let startIndex: number = 0;
+		let stopIndex: number = -1;
+		if (this.ds.dtype === 'S') {
+			const values = this.values as string[];
+			startIndex = typeof start === 'string' ? values.indexOf(start) : 0;
+			stopIndex = typeof stop === 'string' ? values.indexOf(stop) : this.shape[0];
+		} else {
+			const values = this.values as number[];
+			startIndex = typeof start === 'number' ? values.indexOf(start) : 0;
+			stopIndex = typeof stop === 'number' ? values.indexOf(stop) : this.shape[0];
+		}
+
+		return this.isel(startIndex, stopIndex);
+	}
+
+	isel(start?: number, stop?: number) {
+		let slice: number[] = [];
+		if (start === undefined && stop === undefined) {
+			slice = [];
+		} else if (start !== undefined && stop === undefined) {
+			slice = [start, start + 1];
+		} else if (start === undefined && stop !== undefined) {
+			slice = [0, stop];
+		} else if (start !== undefined && stop !== undefined) {
+			slice = [start, stop];
+		}
+
+		if (this.ds.dtype === 'S') return Array.from(this.ds.slice([slice]) as string[]);
+		return Array.from(this.ds.slice([slice]) as number[]);
 	}
 }
 
 export class DataArray {
 	name: string;
-	dimensions: Dimension[];
+	coordinates: Record<string, Coordinate>;
 	ds: HDF5Dataset;
 
-	constructor(name: string, dimensions: Dimension[], ds: HDF5Dataset) {
+	constructor(name: string, coordinates: Record<string, Coordinate>, ds: HDF5Dataset) {
 		this.name = name;
-		this.dimensions = dimensions;
+		this.coordinates = coordinates;
 		this.ds = ds;
 	}
 
-	get quickview() {
-		return { name: this.name, dimensions: this.dimensions.map((d) => `${d.name} (${d.shape[0]})`) };
-	}
-
 	get values() {
-		// return ds
-		if (this.ds.dtype === 'S') return this.ds.value as string[];
-
-		// TODO perhaps other types are possible as well?
-		// TODO make this lazy?
-		return this.ds.value as number[];
+		if (this.ds.dtype === 'S') return this.ds.to_array() as string[];
+		return this.ds.to_array() as number[];
 	}
 }
 
@@ -56,40 +85,38 @@ export class Dataset {
 	// TODO add "dimensions", "coordinates" and "data_vars" as members during init?
 	constructor(private reader: File) {}
 
-	get dimensions(): Dimension[] {
-		const keys = this.reader.keys();
-
+	get coords() {
 		// TODO verify all keys corresponds to Datasets, i.e. no groups present
+		const keys = this.reader.keys();
 		const datasets = keys.map((k) => this.reader.get(k) as HDF5Dataset);
 
-		return datasets
-			.filter(isDim)
-			.map((d) => new Dimension(d))
-			.sort((a, b) => a.id - b.id);
-	}
-
-	get variables() {
-		// TODO cast to object {name: Variable}?
-		const keys = this.reader.keys();
-
-		// TODO verify all keys corresponds to Datasets, i.e. no groups present
-		const datasets = keys.map((k) => ({ name: k, dataset: this.reader.get(k) as HDF5Dataset }));
-
-		// TODO create class for dataset (or "dataArray" / "variable")?
-		return datasets.map((ds) => {
-			let dimIds = ds.dataset.get_attribute('_Netcdf4Coordinates', true) as number[];
-			let dims = dimIds.map((id) => this.dimensions[id]);
-			return new DataArray(ds.name, dims, ds.dataset);
-		});
-	}
-
-	get coordinates() {
-		// TODO cast to object {name: Coordinate}?
-		return this.variables.filter((v) => isDim(v.ds));
+		return Object.fromEntries(
+			datasets
+				.filter(isDim)
+				.map((d) => new Coordinate(d))
+				.map((c) => [c.name, c])
+		);
 	}
 
 	get data_vars() {
-		// TODO cast to object {name: Variable}?
-		return this.variables.filter((v) => !isDim(v.ds));
+		// TODO verify all keys corresponds to Datasets, i.e. no groups present
+		const keys = this.reader.keys();
+		const hdf5Datasets = keys.map((k) => this.reader.get(k) as HDF5Dataset);
+		const coordsByIndex = Object.fromEntries(Object.values(this.coords).map((c) => [c.id, c]));
+
+		const dataArrays = hdf5Datasets
+			.filter((ds) => !isDim(ds))
+			.map((ds) => {
+				let dimIds = ds.get_attribute('_Netcdf4Coordinates', true) as number[];
+				let coords = Object.fromEntries(
+					dimIds.map((id) => {
+						const coord = coordsByIndex[id.toString()];
+						return [coord.name, coord];
+					})
+				);
+				const name = ds.path.replace('/', '');
+				return new DataArray(name, coords, ds);
+			});
+		return Object.fromEntries(dataArrays.map((v) => [v.name, v]));
 	}
 }
