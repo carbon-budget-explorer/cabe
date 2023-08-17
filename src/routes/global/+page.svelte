@@ -1,53 +1,11 @@
 <script lang="ts">
-	import type { PageData } from '../../global/$types';
+	import type { PageData } from '../global/$types';
 
 	import GlobalBudgetForm from '$lib/GlobalBudgetForm.svelte';
 	export let data: PageData;
 </script>
 
-<div class="border-grey-4 border-grey flex flex h-full w-full flex-col items-center border-4">
-	<div class="steps py-8">
-		<ol class="w-full items-center space-y-4 sm:flex sm:space-x-8 sm:space-y-0">
-			<li class="flex items-center space-x-2.5 text-blue-600 dark:text-blue-500">
-				<span
-					class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-blue-600 dark:border-blue-500"
-				>
-					1
-				</span>
-				<span>
-					<h3 class="font-medium leading-tight">Construct your scenario</h3>
-				</span>
-			</li>
-			<li class="flex items-center space-x-2.5 text-gray-500 dark:text-gray-400">
-				<span
-					class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gray-500 dark:border-gray-400"
-				>
-					2
-				</span>
-				<span>
-					<h3 class="font-medium leading-tight">Choose your effort-sharing method</h3>
-				</span>
-			</li>
-			<li class="flex items-center space-x-2.5 text-gray-500 dark:text-gray-400">
-				<span
-					class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gray-500 dark:border-gray-400"
-				>
-					3
-				</span>
-				<span>
-					<h3 class="font-medium leading-tight">Get country details</h3>
-				</span>
-				<span
-					class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gray-500 dark:border-gray-400"
-				>
-					4
-				</span>
-				<span>
-					<h3 class="font-medium leading-tight">Compare</h3>
-				</span>
-			</li>
-		</ol>
-	</div>
+<div class="border-grey-4 border-grey flex h-full w-full flex-col items-center border-4">
 	<div class="flex h-full w-full flex-row justify-between gap-4">
 		<div class="flex flex-col gap-4">
 			<div>
@@ -59,9 +17,9 @@
 			</div>
 			<div class="border-grey-400 border-4">
 				<ul>
-					<li>Global budget: XXX GtCO2</li>
-					<li>Used since 1850-2021: XXX GtCO2</li>
-					<li>Remaining till 2050: XXX GtCO2</li>
+					<li>Global budget: {data.result.carbonTotal.total.toFixed(2)} GtCO2</li>
+					<li>Used since 1850-2021: {data.result.carbonTotal.used.toFixed(2)}  GtCO2</li>
+					<li>Remaining till 2050: {data.result.carbonTotal.remaining.toFixed(2)}  GtCO2</li>
 				</ul>
 			</div>
 		</div>

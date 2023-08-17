@@ -1,8 +1,8 @@
-import { totals } from './data';
-import { totals2 } from './data';
+
+import { ds } from './data';
 import { ExclusiveSlice, InclusiveSlice } from './xarray';
 
-export const warmingChoices = totals.temperatures();
+export const warmingChoices = ds.coords.Temperature.values as string[]
 export type Warming = (typeof warmingChoices)[number];
 export const probabilityChoices = ['50', '67'] as const;
 export type Probability = (typeof probabilityChoices)[number];
@@ -64,6 +64,9 @@ JS returns 81
 // 	Scenario: 'SSP2',
 // 	Region: ['NLD', 'USA'],
 // }))
+// const used = ds.data_vars.CO2_hist.sel({Region: 'WORLD'})
+// console.log(used)
+
 
 export interface GlobalBudgetQuery {
 	warming: Warming;
@@ -79,18 +82,24 @@ export interface CarbonTotalResult {
 }
 
 function carbonTotal(query: GlobalBudgetQuery): CarbonTotalResult {
-	const used = totals
-		.carbon(query.warming, 1990, 2021)
+	// TODO check number, now returns 1751597.23 while we expect 3500Gt
+	const used = ds.data_vars.CO2_hist.sel({ Region: 'WORLD' })
 		.filter((d) => !Number.isNaN(d))
 		.reduce((a, b) => a + b, 0);
-	const remaining = totals
-		.carbon(query.warming, 2022, 2100)
+
+	const remaining = ds.data_vars.CO2_globe.sel({
+		Temperature: '1.5 deg',
+		Risk_of_exceedance: '50%',
+		Negative_emissions: 'Medium',
+		Non_CO2_mitigation_potential: 'Medium',
+	})
 		.filter((d) => !Number.isNaN(d))
 		.reduce((a, b) => a + b, 0);
+
 	const total = used + remaining;
 
 	const result = {
-		total,
+		total: total,
 		used,
 		remaining
 	};
@@ -141,15 +150,23 @@ function arrays2TimeSeries(time: number[], values: number[], err = 5000): TimeSe
 }
 
 function carbonTimeSeries(query: GlobalBudgetQuery): TimeSeries {
-	const ts = totals.carbon(query.warming, 1850, 2100).slice(171, -1);
-	const time = totals.times().slice(171, -1);
+	const Time =  new InclusiveSlice(2021,2100);
+	const values = ds.data_vars.CO2_globe.sel({
+		Temperature: '1.5 deg',
+		Risk_of_exceedance: '50%',
+		Negative_emissions: 'Medium',
+		Non_CO2_mitigation_potential: 'Medium',
+		Time
+	})
+	const years = ds.coords.Time.sel(Time) as number[]
+
 	// TODO remove nans (what to do with them?)
 	// TODO also make time indexable (somehow)
 	// TODO if no time index provided for .carbon, return all data
 
 	return {
 		name: 'carbon emissions',
-		values: arrays2TimeSeries(time, ts)
+		values: arrays2TimeSeries(years, values)
 	};
 }
 

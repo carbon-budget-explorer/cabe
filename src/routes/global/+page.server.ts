@@ -1,5 +1,5 @@
 import { searchParam } from '$lib/searchparam';
-import type { PageServerLoad } from '../(nolayout)/global/$types';
+import type { PageServerLoad } from '../global/$types';
 import {
 	warmingChoices,
 	type GlobalBudgetQuery,
