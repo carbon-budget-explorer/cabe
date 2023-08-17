@@ -2,7 +2,45 @@
 	import type { PageData } from '../global/$types';
 
 	import GlobalBudgetForm from '$lib/GlobalBudgetForm.svelte';
+	import TimeSeries from '$lib/charts/TimeSeries.svelte';
+	import type { LineValue } from '$lib/charts/components/MultiLine';
+	import type { TimeSeriesValue } from '$lib/server/db/global';
+	import { LayerCake } from 'layercake';
+	import AxisX from '$lib/charts/components/AxisX.svelte';
+	import AxisY from '$lib/charts/components/AxisY.svelte';
+	import MultiLine from '$lib/charts/components/MultiLine.svelte';
 	export let data: PageData;
+
+	// TODO generalize to colormap component or so
+	const ipcc_fill_green = '#dbe3d2';
+	const ipcc_stroke_green = '#82a56e';
+	const ipcc_fill_red = '#f39995';
+	const ipcc_fill2_red = '#f3c6c5'; // lighter
+	const ipcc_stroke_red = '#f5331e';
+	const ipcc_fill_blue = '#c2e0e7';
+	const ipcc_stroke_blue = '#5bb0c6';
+
+	function tsDataToLine(d: TimeSeriesValue): LineValue {
+		return {
+			x: d.time,
+			y: d.mean,
+			ymin: d.min,
+			ymax: d.max
+		};
+	}
+	$: carbonTSData = [
+		{
+			name: data.result.carbonTS.name,
+			values: data.result.carbonTS.values.map(tsDataToLine),
+			fill: ipcc_fill_green,
+			stroke: ipcc_stroke_green
+		}, {
+			name: data.result.historicalCarbon.name,
+			values: data.result.historicalCarbon.values.map(tsDataToLine),
+			fill: 'black',
+			stroke: 'black',
+		}
+	];
 </script>
 
 <div class="border-grey-4 border-grey flex h-full w-full flex-col items-center border-4">
@@ -24,7 +62,18 @@
 			</div>
 		</div>
 		<div class="flex grow flex-col gap-4">
-			<div class="border-grey-400 grow border-4" id="imagecontainer" />
+			<div class="border-grey-400 grow border-4" >
+				<TimeSeries data={carbonTSData}/>
+
+				<!-- <LayerCake {xDomain} {yDomain}>
+					<AxisX/>
+					<AxisY/>
+					<AreaLine {co2remaining}/>
+					<Line {co2historical}/>
+
+				</LayerCake> -->
+					
+			</div>
 			<div class="border-grey-400 border-4">
 				<h1>Difference between your scenario and current policy</h1>
 				<ul>

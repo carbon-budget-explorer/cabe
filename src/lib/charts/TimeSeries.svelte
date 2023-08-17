@@ -7,10 +7,13 @@
 	import type { LineData } from './components/MultiLine';
 
 	export let data: LineData[];
+
+	$: yDomain = [-15_000, 45_000]
+	$: xDomain = [ 1990,2100]
 </script>
 
-<div class="chart-container">
-	<LayerCake x="x" y="y" z="group" {data} flatData={flatten(data, 'values')}>
+<div class="chart-container p-10">
+	<LayerCake x="x" y="y" z="group" {data} flatData={flatten(data, 'values')} {yDomain} {xDomain}>
 		<Svg>
 			<AxisX gridlines={true} />
 			<AxisY gridlines={true} ticks={4} textAnchor={'end'} />
@@ -27,7 +30,9 @@
     expand to fill it.
   */
 	.chart-container {
-		width: 500px;
-		height: 200px;
+		/* width: 500px;
+		height: 200px; */
+		width: 100%;
+		height: 100%;
 	}
 </style>

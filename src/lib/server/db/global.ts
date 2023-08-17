@@ -178,6 +178,7 @@ export interface GlobalGudgetResult {
 	carbonTS: TimeSeries;
 	temperatureTS: TimeSeries;
 	carbonTotal: CarbonTotalResult;
+	historicalCarbon: TimeSeries
 }
 
 export function globalBudget(query: GlobalBudgetQuery): GlobalGudgetResult {
@@ -186,6 +187,19 @@ export function globalBudget(query: GlobalBudgetQuery): GlobalGudgetResult {
 		carbonTS: carbonTimeSeries(query),
 		temperatureTS: temperatureTimeSeries(query),
 		// currentPolicyTS: temperatureTimeSeries(query),
-		carbonTotal: carbonTotal(query)
+		carbonTotal: carbonTotal(query),
+		historicalCarbon: historicalCarbon(),
+	};
+}
+function historicalCarbon(): TimeSeries {
+	const Time = new InclusiveSlice(1990,2020)
+	const values = ds.data_vars.CO2_hist.sel({
+		Region: 'WORLD',
+		Time,
+	})
+	const years = ds.coords.Time.sel(Time) as number[]
+	return {
+		name: 'historical carbon emissions',
+		values: arrays2TimeSeries(years, values)
 	};
 }
