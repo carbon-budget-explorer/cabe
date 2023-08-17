@@ -113,13 +113,13 @@ export class DataArray {
 	}
 
 	sel(indexer?: Record<string, string | number | string[] | number[] | InclusiveSlice>) {
-		let iindexer: Record<string, number | InclusiveSlice | number[]> = {};
+		const iindexer: Record<string, number | InclusiveSlice | number[]> = {};
 		if (indexer === undefined) {
 			return this.isel();
 		}
-		for (let coordName in this.coordinates) {
+		for (const coordName in this.coordinates) {
 			if (coordName in this.coordinates && indexer) {
-				let cindex = indexer[coordName];
+				const cindex = indexer[coordName];
 				if (cindex === undefined) {
 					// to nothing
 				} else if (typeof cindex === 'number' || typeof cindex === 'string') {
@@ -142,10 +142,10 @@ export class DataArray {
 	}
 
 	isel(indexer?: Record<string, number | ExclusiveSlice | number[]>) {
-		let slice: number[][] = [];
-		for (let coordName in this.coordinates) {
+		const slice: number[][] = [];
+		for (const coordName in this.coordinates) {
 			if (coordName in this.coordinates && indexer) {
-				let cindex = indexer[coordName];
+				const cindex = indexer[coordName];
 				if (cindex === undefined) {
 					slice.push([]);
 				} else if (typeof cindex === 'number') {
@@ -190,8 +190,8 @@ export class Dataset {
 		const dataArrays = hdf5Datasets
 			.filter((ds) => !isDim(ds))
 			.map((ds) => {
-				let dimIds = ds.get_attribute('_Netcdf4Coordinates', true) as number[];
-				let coords = Object.fromEntries(
+				const dimIds = ds.get_attribute('_Netcdf4Coordinates', true) as number[];
+				const coords = Object.fromEntries(
 					dimIds.map((id) => {
 						const coord = coordsByIndex[id.toString()];
 						return [coord.name, coord];
