@@ -4,5 +4,6 @@ export const principles = new Map([
 	['PCC', 'Per capita convergence'],
 	['AP', 'Ability to pay'],
 	['GDR', 'Greenhouse development rights'],
-	['ECPC', 'Equal cumulative per capita']
+	['ECPC', 'Equal cumulative per capita'],
+	['None', 'None'] // TODO use better name?
 ]);

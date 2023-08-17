@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { NamedSpatialMetric } from './server/db/utils';
 
+	export let searchParams: string;
 	export let metrics: NamedSpatialMetric[];
 	let query = '';
 	$: filteredMetrics = metrics
@@ -26,7 +27,7 @@
 	<ul>
 		{#each filteredMetrics as region}
 			<li>
-				<a class="underline" href={`/regions/${region.ISO}`}>{region.name}</a>
+				<a class="underline" href={`/regions/${region.ISO}${searchParams}`}>{region.name}</a>
 			</li>
 		{/each}
 	</ul>

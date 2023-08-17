@@ -1,78 +1,115 @@
-import { readFile } from 'fs/promises';
-
-import { NetCDFReader } from 'netcdfjs';
-
-import { getStringVariable, getVariableShape, type SpatialMetric } from './utils';
-
+import { ready, File, Dataset } from 'h5wasm';
 export const open_totals = async (path: string) => {
-	const data = await readFile(path);
-	const reader = new NetCDFReader(data);
+	await ready;
+	const reader = new File(path);
 	return new Totals(reader);
 };
 
 export class Totals {
-	constructor(private reader: NetCDFReader) {}
+	constructor(private reader: File) {}
 
-	isos() {
-		const variable = 'ISO';
-		const file = this.reader;
-		return getStringVariable(file, variable);
+	temperatures() {
+		const ds = this.reader.get('Temperature') as Dataset;
+		return ds.value as string[];
 	}
 
-	years() {
-		return this.reader.getDataVariable('Time');
+	regions() {
+		const ds = this.reader.get('Region') as Dataset;
+		return ds.value as string[];
 	}
 
-	/**
-	 * Variables with ISO and Time dimensions
-	 */
+	times() {
+		const ds = this.reader.get('Time') as Dataset;
+		return Array.from(ds.value as number[]);
+	}
+
+	effortSharings() {
+		const ds = this.reader.get('EffortSharing') as Dataset;
+		return ds.value as string[];
+	}
+
+	scenarios() {
+		const ds = this.reader.get('Scenario') as Dataset;
+		return ds.value as string[];
+	}
+
+	converganceYears() {
+		const ds = this.reader.get('Convergence_year') as Dataset;
+		return ds.value as number[];
+	}
+
+	carbon(
+		temperature: string,
+		startyear: number,
+		endyear: number,
+		region = 'WORLD',
+		effortSharing = 'None',
+		scenario = 'SSP2',
+		converganceYear = 2030
+	) {
+		const variable = 'CO2';
+		const ds = this.reader.get(variable) as Dataset;
+
+		const temperatureIndex = this.temperatures().indexOf(temperature);
+		const regionIndex = this.regions().indexOf(region);
+		const effortSharingIndex = this.effortSharings().indexOf(effortSharing);
+		const scenarioIndex = this.scenarios().indexOf(scenario);
+		const converganceYearIndex = this.converganceYears().indexOf(converganceYear);
+		const startTimeIndex = this.times().indexOf(startyear);
+		const endTimeIndex = this.times().indexOf(endyear);
+
+		const indices = [
+			[temperatureIndex, temperatureIndex + 1],
+			[startTimeIndex, endTimeIndex + 1],
+			[regionIndex, regionIndex + 1],
+			[effortSharingIndex, effortSharingIndex + 1],
+			[scenarioIndex, scenarioIndex + 1],
+			[converganceYearIndex, converganceYearIndex + 1]
+		];
+		const values = ds.slice(indices);
+		return values as Float64Array;
+	}
+
+	carbonMap(
+		temperature: string,
+		year: number,
+		effortSharing = 'None',
+		scenario = 'SSP2',
+		converganceYear = 2030
+	) {
+		const variable = 'CO2';
+		const ds = this.reader.get(variable) as Dataset;
+
+		const temperatureIndex = this.temperatures().indexOf(temperature);
+		const effortSharingIndex = this.effortSharings().indexOf(effortSharing);
+		const scenarioIndex = this.scenarios().indexOf(scenario);
+		const converganceYearIndex = this.converganceYears().indexOf(converganceYear);
+		const timeIndex = this.times().indexOf(year);
+
+		const indices = [
+			[temperatureIndex, temperatureIndex + 1],
+			[timeIndex, timeIndex + 1],
+			[], // Select all regions
+			[effortSharingIndex, effortSharingIndex + 1],
+			[scenarioIndex, scenarioIndex + 1],
+			[converganceYearIndex, converganceYearIndex + 1]
+		];
+		const values = ds.slice(indices);
+		return values as Float64Array;
+	}
+
+	region(variable: string, region: string) {
+		// TODO impmlement
+		return [];
+	}
+
 	variables() {
-		const variables = this.reader.variables;
-		// only return variables with ISO and Time dimensions
-		const dimNames = this.reader.dimensions.map((d) => d.name);
-		const dimIndexes = new Set([dimNames.indexOf('ISO'), dimNames.indexOf('Time')]);
-		// TODO add labels in variable attribute as variable might not be human friendly
-		return variables
-			.filter(
-				(v) =>
-					v.dimensions.every((d) => dimIndexes.has(d)) && v.dimensions.length === dimIndexes.size
-			)
-			.map((v) => v.name);
+		/// TODO implement
+		return [];
 	}
 
-	global(variable: string, year: number) {
-		const var_ = this.reader.getDataVariable(variable);
-		const var_dims = getVariableShape(this.reader, variable);
-		const years = this.years();
-		const year_index = years.indexOf(year);
-		const isos = this.isos();
-		const values: SpatialMetric[] = [];
-		for (let index = 0; index < isos.length; index++) {
-			const value = var_[index * var_dims[1] + year_index];
-			values.push({
-				ISO: isos[index],
-				value
-			});
-		}
-		return values;
-	}
-
-	region(variable: string, iso: string) {
-		const var_ = this.reader.getDataVariable(variable);
-		const var_size = getVariableShape(this.reader, variable);
-		const isos = this.isos();
-		const iso_index = isos.indexOf(iso);
-		const start = var_size[1] * iso_index;
-		const end = start + var_size[1];
-		const values = var_.slice(start, end);
-		const years = this.years();
-		return Array.from(values)
-			.map((value, i) => {
-				return {
-					Time: years[i],
-					value
-				};
-			})
-			.filter((v) => !Number.isNaN(v.value));
+	global(variable: 'Population' | 'GDP' | 'CO2_base' | 'CO2_hist', time: number) {
+		/// TODO implement
+		return [];
 	}
 }

@@ -21,12 +21,12 @@ describe('Totals', () => {
 		totals = await open_totals(testnc);
 	});
 
-	test('years', () => {
-		const years = totals.years();
+	test('times', () => {
+		const years = totals.times();
 		expect(years).toEqual([2019, 2020, 2021]);
 	});
-	test('isos', () => {
-		const isos = totals.isos();
+	test('regions', () => {
+		const isos = totals.regions();
 		expect(isos).toEqual(['NLD', 'USA']);
 	});
 

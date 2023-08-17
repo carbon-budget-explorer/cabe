@@ -7,6 +7,7 @@
 	import TimeSeries from '$lib/charts/TimeSeries.svelte';
 	import type { TimeSeriesValue } from '$lib/server/db/global';
 	import type { LineValue } from '$lib/charts/components/MultiLine';
+	import GlobalBudgetForm from '$lib/GlobalBudgetForm.svelte';
 
 	export let data: PageData;
 
@@ -34,7 +35,10 @@
 			values: data.result.carbonTS.values.map(tsDataToLine),
 			fill: ipcc_fill_green,
 			stroke: ipcc_stroke_green
-		},
+		}
+	];
+
+	$: temperatureTSData = [
 		{
 			name: data.result.temperatureTS.name,
 			values: data.result.temperatureTS.values.map(tsDataToLine),
@@ -43,41 +47,14 @@
 		}
 	];
 
-	type ChangeEvent = Event & {
-		currentTarget: EventTarget & HTMLInputElement;
-	};
-
-	function changeWarming(event: ChangeEvent) {
+	function changeQuery(name: string, value: string) {
 		if (browser) {
 			const params = new URLSearchParams($page.url.search);
-			params.set('warming', event.currentTarget.value);
+			params.set(name, value);
 			goto(`?${params.toString()}`);
 		}
 	}
 
-	function changeProbability(event: ChangeEvent) {
-		if (browser) {
-			const params = new URLSearchParams($page.url.search);
-			params.set('probability', event.currentTarget.value);
-			goto(`?${params.toString()}`);
-		}
-	}
-
-	function changeNonCO2Mitigation(event: ChangeEvent) {
-		if (browser) {
-			const params = new URLSearchParams($page.url.search);
-			params.set('nonCO2Mitigation', event.currentTarget.value);
-			goto(`?${params.toString()}`);
-		}
-	}
-
-	function changeNegativeEmissions(event: ChangeEvent) {
-		if (browser) {
-			const params = new URLSearchParams($page.url.search);
-			params.set('negativeEmissions', event.currentTarget.value);
-			goto(`?${params.toString()}`);
-		}
-	}
 	// TODO show loading message when server is processing
 </script>
 
@@ -85,68 +62,7 @@
 
 <div class="flex flex-row justify-around">
 	<div class="flex flex-col justify-between gap-2">
-		<div>
-			<div>
-				<p>Limit global warming to</p>
-				{#each data.choices.warming as warmingChoice}
-					<label>
-						<input
-							type="radio"
-							name="target"
-							value={warmingChoice}
-							checked={warmingChoice === data.query.warming}
-							on:change={changeWarming}
-						/>
-						{warmingChoice}°C
-					</label>
-				{/each}
-			</div>
-			<div>
-				<p>Acceptable risk of exceeding global warming limit</p>
-				{#each data.choices.probability as probabilityChoice}
-					<label>
-						<input
-							type="radio"
-							name="probability"
-							value={probabilityChoice}
-							checked={probabilityChoice === data.query.probability}
-							on:change={changeProbability}
-						/>
-						{100 - parseFloat(probabilityChoice)}%
-					</label>
-				{/each}
-			</div>
-			<div>
-				<p>Assumption of non CO2 emissions to mitigate</p>
-				{#each data.choices.nonCO2Mitigation as nonCO2MitigationChoice}
-					<label>
-						<input
-							type="radio"
-							name="nonCO2Mitigation"
-							value={nonCO2MitigationChoice}
-							checked={nonCO2MitigationChoice === data.query.nonCO2Mitigation}
-							on:change={changeNonCO2Mitigation}
-						/>
-						{nonCO2MitigationChoice}
-					</label>
-				{/each}
-			</div>
-			<div>
-				<p>Assumption amount of negative emissions in 2050 - 2100.</p>
-				{#each data.choices.negativeEmissions as negativeEmissionsChoice}
-					<label>
-						<input
-							type="radio"
-							name="negativeEmissions"
-							value={negativeEmissionsChoice}
-							checked={negativeEmissionsChoice === data.query.negativeEmissions}
-							on:change={changeNegativeEmissions}
-						/>
-						{negativeEmissionsChoice}
-					</label>
-				{/each}
-			</div>
-		</div>
+		<GlobalBudgetForm choices={data.choices} query={data.query} onChange={changeQuery} />
 		<div>
 			<a
 				class="rounded bg-slate-200 p-2 text-4xl"
@@ -168,6 +84,6 @@
 		<h1 class="text-bold text-2xl">Evolution of carbon emissions</h1>
 		<TimeSeries data={carbonTSData} />
 		<h1 class="text-bold text-2xl">Evolution of global mean temperature</h1>
-		<TimeSeries data={carbonTSData} />
+		<TimeSeries data={temperatureTSData} />
 	</div>
 </div>

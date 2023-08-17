@@ -1,4 +1,8 @@
-export const warmingChoices = ['1.5', '2'] as const;
+import { totals } from './data';
+import { totals2 } from './data';
+import { ExclusiveSlice, InclusiveSlice } from './xarray';
+
+export const warmingChoices = totals.temperatures();
 export type Warming = (typeof warmingChoices)[number];
 export const probabilityChoices = ['50', '67'] as const;
 export type Probability = (typeof probabilityChoices)[number];
@@ -8,6 +12,58 @@ export type NonCO2Mitigation = (typeof nonCO2MitigationChoices)[number];
 export const negativeEmissionsChoices = ['low', 'medium', 'high'] as const;
 const negativeEmissionsValues = [0, 10, 20] as const;
 export type NegativeEmissions = (typeof negativeEmissionsChoices)[number];
+
+// console.log(totals2.coords['Temperature'].values);
+// console.log(totals2.coords['Temperature'].values);
+// console.log(totals2.coords['Temperature'].shape);
+
+// console.log(totals2.coords['Temperature'].isel());
+// console.log(totals2.coords['Temperature'].isel(0));
+// console.log(totals2.coords['Temperature'].isel(2));
+// console.log(totals2.coords['Temperature'].isel([0, 2]));
+// console.log(totals2.coords['Temperature'].isel(new Slice(1, 3)));
+// console.log(totals2.coords['Temperature'].isel(new Slice(0, 1)));
+// console.log(totals2.coords['Temperature'].isel(new Slice(1, undefined)));
+
+// console.log(totals2.coords['Time'].isel());
+// console.log(totals2.coords['Time'].isel(0));
+// console.log(totals2.coords['Time'].isel(0, 5));
+// console.log(totals2.coords['Time'].isel(undefined, 5));
+
+// console.log(totals2.coords['Time'].sel());
+// console.log(totals2.coords['Time'].sel(1950));
+// console.log(totals2.coords['Time'].sel(new Slice(2070, 2075)));
+// console.log(totals2.coords['Time'].sel([2030,2100]));
+
+// console.log(totals2.coords['Time'].sel(0, 10)); // error!
+
+// console.log(
+// 	totals2.data_vars['GDP'].sel({
+// 		Scenario: 'SSP2',
+// 		Region: 'NLD',
+// 		Time: 2100
+// 	})
+// );
+
+// console.log(
+// 	totals2.data_vars['GDP'].sel({
+// 		Scenario: 'SSP2',
+// 		Region: 'NLD',
+// 		Time: new InclusiveSlice(2020, 2100)
+// 	})
+// );
+/*
+With python
+v =  ds.GDP.sel(Scenario='SSP2', Region='NLD', Time=slice(2020,2100)).values
+len(v)
+81
+JS returns 81
+*/
+
+// console.log(totals2.data_vars['GDP'].sel({
+// 	Scenario: 'SSP2',
+// 	Region: ['NLD', 'USA'],
+// }))
 
 export interface GlobalBudgetQuery {
 	warming: Warming;
@@ -23,14 +79,15 @@ export interface CarbonTotalResult {
 }
 
 function carbonTotal(query: GlobalBudgetQuery): CarbonTotalResult {
-	const t = parseFloat(query.warming);
-	const p = parseFloat(query.probability);
-	const non = nonCO2MitigationValues[nonCO2MitigationChoices.indexOf(query.nonCO2Mitigation)];
-	const neg = negativeEmissionsValues[negativeEmissionsChoices.indexOf(query.negativeEmissions)];
-
-	const total = 6000 * (1 + t / 10) * (p / 100) * (1 - non / 100) * (1 + neg / 100);
-	const used = 2500;
-	const remaining = total - used;
+	const used = totals
+		.carbon(query.warming, 1990, 2021)
+		.filter((d) => !Number.isNaN(d))
+		.reduce((a, b) => a + b, 0);
+	const remaining = totals
+		.carbon(query.warming, 2022, 2100)
+		.filter((d) => !Number.isNaN(d))
+		.reduce((a, b) => a + b, 0);
+	const total = used + remaining;
 
 	const result = {
 		total,
@@ -47,6 +104,7 @@ export interface TimeSeriesValue {
 	max: number;
 }
 
+// TODO transpose structure: time, mean, min and max arrays as attributes
 export interface TimeSeries {
 	name: string;
 	values: TimeSeriesValue[];
@@ -70,21 +128,28 @@ function temperatureTimeSeries(query: GlobalBudgetQuery): TimeSeries {
 	};
 }
 
+function arrays2TimeSeries(time: number[], values: number[], err = 5000): TimeSeriesValue[] {
+	//  TODO get variable errors from additional data arrays
+	const toValues = (t: number, i: number) => ({
+		time: t,
+		mean: values[i],
+		min: values[i] - err,
+		max: values[i] + err
+	});
+
+	return Array.from(time).map(toValues);
+}
+
 function carbonTimeSeries(query: GlobalBudgetQuery): TimeSeries {
+	const ts = totals.carbon(query.warming, 1850, 2100).slice(171, -1);
+	const time = totals.times().slice(171, -1);
+	// TODO remove nans (what to do with them?)
+	// TODO also make time indexable (somehow)
+	// TODO if no time index provided for .carbon, return all data
+
 	return {
 		name: 'carbon emissions',
-		values: [
-			{ time: 2000, mean: 65, min: 55, max: 68 },
-			{ time: 2005, mean: 54, min: 49, max: 58 },
-			{ time: 2011, mean: 51, min: 48, max: 56 },
-			{ time: 2016, mean: 24, min: 22, max: 29 },
-			{ time: 2022, mean: 20, min: 12, max: 27 },
-			{ time: 2027, mean: 25, min: 18, max: 30 },
-			{ time: 2033, mean: 22, min: 15, max: 26 },
-			{ time: 2038, mean: 15, min: 14, max: 18 },
-			{ time: 2044, mean: 1, min: -5, max: 8 },
-			{ time: 2050, mean: 18, min: 12, max: 22 }
-		]
+		values: arrays2TimeSeries(time, ts)
 	};
 }
 
