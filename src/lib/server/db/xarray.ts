@@ -10,7 +10,17 @@ export async function open_dataset(path: string) {
 const isDim = (dataset: HDF5Dataset) =>
 	'CLASS' in dataset.attrs && dataset.get_attribute('CLASS', true) === 'DIMENSION_SCALE';
 
-export class Slice {
+export class ExclusiveSlice {
+	start: number;
+	stop: number;
+
+	constructor(start: number, stop: number) {
+		this.start = start;
+		this.stop = stop;
+	}
+}
+
+export class InclusiveSlice {
 	start: number;
 	stop: number;
 
@@ -51,15 +61,15 @@ export class Coordinate {
 		return index;
 	}
 
-	sel(indexer?: string | number | string[] | number[] | Slice) {
+	sel(indexer?: string | number | string[] | number[] | InclusiveSlice) {
 		// Note: this assumes coords are 1-dimensional
-		let iindexer: undefined | number | Slice | number[] = undefined;
+		let iindexer: undefined | number | InclusiveSlice | number[] = undefined;
 		if (indexer === undefined) {
 			iindexer = undefined;
 		} else if (typeof indexer === 'number' || typeof indexer === 'string') {
 			iindexer = this.indexOf(indexer);
-		} else if (indexer instanceof Slice) {
-			iindexer = new Slice(this.indexOf(indexer.start), this.indexOf(indexer.stop));
+		} else if (indexer instanceof InclusiveSlice) {
+			iindexer = new ExclusiveSlice(this.indexOf(indexer.start), this.indexOf(indexer.stop) + 1);
 		} else if (Array.isArray(indexer)) {
 			iindexer = indexer.map((i) => this.indexOf(i));
 		}
@@ -67,13 +77,13 @@ export class Coordinate {
 		return this.isel(iindexer);
 	}
 
-	isel(indexer?: number | Slice | number[]): number[] | string[] {
+	isel(indexer?: number | ExclusiveSlice | number[]): number[] | string[] {
 		let slice: number[] = [];
 		if (indexer === undefined) {
 			slice = [];
 		} else if (typeof indexer === 'number') {
 			slice = [indexer, indexer + 1];
-		} else if (indexer instanceof Slice) {
+		} else if (indexer instanceof ExclusiveSlice) {
 			slice = [indexer.start, indexer.stop];
 		} else if (Array.isArray(indexer)) {
 			if (this.ds.dtype === 'S') {
@@ -102,8 +112,8 @@ export class DataArray {
 		return this.ds.to_array() as number[];
 	}
 
-	sel(indexer?: Record<string, string | number | string[] | number[] | Slice>) {
-		let iindexer: Record<string, number | Slice | number[]> = {};
+	sel(indexer?: Record<string, string | number | string[] | number[] | InclusiveSlice>) {
+		let iindexer: Record<string, number | InclusiveSlice | number[]> = {};
 		if (indexer === undefined) {
 			return this.isel();
 		}
@@ -114,10 +124,10 @@ export class DataArray {
 					// to nothing
 				} else if (typeof cindex === 'number' || typeof cindex === 'string') {
 					iindexer[coordName] = this.coordinates[coordName].indexOf(cindex);
-				} else if (cindex instanceof Slice) {
-					iindexer[coordName] = new Slice(
+				} else if (cindex instanceof InclusiveSlice) {
+					iindexer[coordName] = new ExclusiveSlice(
 						this.coordinates[coordName].indexOf(cindex.start),
-						this.coordinates[coordName].indexOf(cindex.stop)
+						this.coordinates[coordName].indexOf(cindex.stop) + 1
 					);
 				} else if (Array.isArray(cindex)) {
 					// TODO slice of h5wasm does not handle list of indices
@@ -127,10 +137,11 @@ export class DataArray {
 				throw new Error(`Coordinate ${coordName} not found in ${this.name}`);
 			}
 		}
+		// TODO return sliced coordinates together with sliced data as new dataarray
 		return this.isel(iindexer);
 	}
 
-	isel(indexer?: Record<string, number | Slice | number[]>) {
+	isel(indexer?: Record<string, number | ExclusiveSlice | number[]>) {
 		let slice: number[][] = [];
 		for (let coordName in this.coordinates) {
 			if (coordName in this.coordinates && indexer) {
@@ -139,7 +150,7 @@ export class DataArray {
 					slice.push([]);
 				} else if (typeof cindex === 'number') {
 					slice.push([cindex, cindex + 1]);
-				} else if (cindex instanceof Slice) {
+				} else if (cindex instanceof ExclusiveSlice) {
 					slice.push([cindex.start, cindex.stop]);
 				} else if (Array.isArray(cindex)) {
 					// TODO slice of h5wasm does not handle list of indices

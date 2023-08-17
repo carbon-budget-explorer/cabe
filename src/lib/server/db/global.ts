@@ -1,6 +1,6 @@
 import { totals } from './data';
 import { totals2 } from './data';
-import { Slice } from './xarray';
+import { ExclusiveSlice, InclusiveSlice } from './xarray';
 
 export const warmingChoices = totals.temperatures();
 export type Warming = (typeof warmingChoices)[number];
@@ -37,28 +37,27 @@ export type NegativeEmissions = (typeof negativeEmissionsChoices)[number];
 
 // console.log(totals2.coords['Time'].sel(0, 10)); // error!
 
-console.log(
-	totals2.data_vars['GDP'].sel({
-		Scenario: 'SSP2',
-		Region: 'NLD',
-		Time: 2100
-	})
-);
+// console.log(
+// 	totals2.data_vars['GDP'].sel({
+// 		Scenario: 'SSP2',
+// 		Region: 'NLD',
+// 		Time: 2100
+// 	})
+// );
 
-console.log(
-	totals2.data_vars['GDP'].sel({
-		Scenario: 'SSP2',
-		Region: 'NLD',
-		Time: new Slice(2020, 2100)
-	})
-);
+// console.log(
+// 	totals2.data_vars['GDP'].sel({
+// 		Scenario: 'SSP2',
+// 		Region: 'NLD',
+// 		Time: new InclusiveSlice(2020, 2100)
+// 	})
+// );
 /*
-TODO
 With python
 v =  ds.GDP.sel(Scenario='SSP2', Region='NLD', Time=slice(2020,2100)).values
 len(v)
 81
-JS returns 80
+JS returns 81
 */
 
 // console.log(totals2.data_vars['GDP'].sel({
