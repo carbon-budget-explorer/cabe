@@ -1,10 +1,10 @@
 <script lang="ts">
 	import type { PageData } from '../global/$types';
 
-	import GlobalBudgetForm from '$lib/GlobalBudgetForm.svelte';
+	import GlobalBudgetForm from '$lib/PathwayForm.svelte';
 	import TimeSeries from '$lib/charts/TimeSeries.svelte';
 	import type { LineValue } from '$lib/charts/components/MultiLine';
-	import type { TimeSeriesValue } from '$lib/server/db/global';
+	import type { TimeSeriesValue } from '$lib/server/db/models';
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
@@ -29,8 +29,8 @@
 	}
 	$: carbonTSData = [
 		{
-			name: data.result.carbonTS.name,
-			values: data.result.carbonTS.values.map(tsDataToLine),
+			name: data.result.pathwayCarbon.name,
+			values: data.result.pathwayCarbon.values.map(tsDataToLine),
 			fill: ipcc_fill_green,
 			stroke: ipcc_stroke_green
 		},
@@ -63,9 +63,9 @@
 			</div>
 			<div class="border-grey-400 border-4">
 				<ul>
-					<li>Global budget: {data.result.carbonTotal.total.toFixed(2)} GtCO2</li>
-					<li>Used since 1850-2021: {data.result.carbonTotal.used.toFixed(2)} GtCO2</li>
-					<li>Remaining till 2050: {data.result.carbonTotal.remaining.toFixed(2)} GtCO2</li>
+					<li>Global budget: {data.result.pathwayStats.total.toFixed(2)} GtCO2</li>
+					<li>Used since 1850-2021: {data.result.pathwayStats.used.toFixed(2)} GtCO2</li>
+					<li>Remaining till 2050: {data.result.pathwayStats.remaining.toFixed(2)} GtCO2</li>
 				</ul>
 			</div>
 		</div>

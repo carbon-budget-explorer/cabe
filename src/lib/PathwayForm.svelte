@@ -1,20 +1,20 @@
 <script lang="ts">
-	import type { GlobalBudgetQuery } from './server/db/global';
+	import type { PathWayQuery } from './server/db/models';
 
 	type ChangeEvent = Event & {
 		currentTarget: EventTarget & HTMLInputElement;
 	};
 
-	export let query: GlobalBudgetQuery;
-	export let choices: any;
+	export let query: PathWayQuery;
+	export let choices: Record<keyof PathWayQuery, string[]>;
 	export let onChange: (name: string, value: string) => void;
 
 	function changeWarming(event: ChangeEvent) {
-		onChange('warming', event.currentTarget.value);
+		onChange('temperature', event.currentTarget.value);
 	}
 
 	function changeProbability(event: ChangeEvent) {
-		onChange('probability', event.currentTarget.value);
+		onChange('exceedanceRisk', event.currentTarget.value);
 	}
 
 	function changeNonCO2Mitigation(event: ChangeEvent) {
@@ -29,31 +29,31 @@
 <div>
 	<div>
 		<p>Limit global warming to</p>
-		{#each choices.warming as warmingChoice}
+		{#each choices.temperature as temperatureChoice}
 			<label>
 				<input
 					type="radio"
 					name="target"
-					value={warmingChoice}
-					checked={warmingChoice === query.warming}
+					value={temperatureChoice}
+					checked={temperatureChoice === query.temperature}
 					on:change={changeWarming}
 				/>
-				{warmingChoice}C
+				{temperatureChoice}C
 			</label>
 		{/each}
 	</div>
 	<div>
 		<p>Acceptable risk of exceeding global warming limit</p>
-		{#each choices.probability as probabilityChoice}
+		{#each choices.exceedanceRisk as riskChoice}
 			<label>
 				<input
 					type="radio"
-					name="probability"
-					value={probabilityChoice}
-					checked={probabilityChoice === query.probability}
+					name="exceedanceRisk"
+					value={riskChoice}
+					checked={riskChoice === query.exceedanceRisk}
 					on:change={changeProbability}
 				/>
-				{100 - parseFloat(probabilityChoice)}%
+				{riskChoice}
 			</label>
 		{/each}
 	</div>

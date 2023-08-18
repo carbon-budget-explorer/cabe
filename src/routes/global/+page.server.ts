@@ -1,28 +1,13 @@
-import { searchParam } from '$lib/searchparam';
 import type { PageServerLoad } from '../global/$types';
 import {
-	warmingChoices,
-	type GlobalBudgetQuery,
-	nonCO2MitigationChoices as nonCO2MitigationChoices,
-	negativeEmissionsChoices,
-	probabilityChoices,
-	globalBudget
-} from '$lib/server/db/global';
+	globalBudget,
+	pathwayChoices,
+	pathwayQueryFromSearchParams
+} from '$lib/server/db/models';
 
 export const load = (async ({ url }: { url: URL }) => {
-	// TODO dedup here and at src/routes/world/+page.server.ts and src/routes/regions/[iso]/+page.server.ts
-	const query: GlobalBudgetQuery = {
-		warming: searchParam(url, 'warming', warmingChoices[0]),
-		probability: searchParam(url, 'probability', '50%'),
-		nonCO2Mitigation: searchParam(url, 'nonCO2Mitigation', 'Medium'),
-		negativeEmissions: searchParam(url, 'negativeEmissions', 'Medium')
-	};
-	const choices = {
-		warming: warmingChoices,
-		nonCO2Mitigation: nonCO2MitigationChoices,
-		probability: probabilityChoices,
-		negativeEmissions: negativeEmissionsChoices
-	};
+	const choices = pathwayChoices()
+	const query = pathwayQueryFromSearchParams(url.searchParams, choices);
 	const result = globalBudget(query);
 	return {
 		query,

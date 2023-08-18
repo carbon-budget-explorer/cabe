@@ -1,5 +1,5 @@
 import { borders } from '$lib/server/db/data';
-import { listRegions } from '$lib/server/db/global';
+import { listRegions } from '$lib/server/db/models';
 
 export async function load() {
 	const regionIsos = listRegions();

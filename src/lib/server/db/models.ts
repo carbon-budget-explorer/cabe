@@ -3,91 +3,71 @@ import { ds } from './data';
 import type { SpatialMetric, TemnporalMetric } from './utils';
 import { InclusiveSlice, type DataArraySelection } from './xarray';
 
-export const warmingChoices = ds.coords.Temperature.values as string[];
-export type Warming = (typeof warmingChoices)[number];
-export const probabilityChoices = ['50%', '67%'] as const;
-export type Probability = (typeof probabilityChoices)[number];
-export const nonCO2MitigationChoices = ['Low', 'Medium', 'High'] as const;
-export type NonCO2Mitigation = (typeof nonCO2MitigationChoices)[number];
-export const negativeEmissionsChoices = ['Low', 'Medium', 'High'] as const;
-export type NegativeEmissions = (typeof negativeEmissionsChoices)[number];
-
-// console.log(totals2.coords['Temperature'].values);
-// console.log(totals2.coords['Temperature'].values);
-// console.log(totals2.coords['Temperature'].shape);
-
-// console.log(totals2.coords['Temperature'].isel());
-// console.log(totals2.coords['Temperature'].isel(0));
-// console.log(totals2.coords['Temperature'].isel(2));
-// console.log(totals2.coords['Temperature'].isel([0, 2]));
-// console.log(totals2.coords['Temperature'].isel(new Slice(1, 3)));
-// console.log(totals2.coords['Temperature'].isel(new Slice(0, 1)));
-// console.log(totals2.coords['Temperature'].isel(new Slice(1, undefined)));
-
-// console.log(totals2.coords['Time'].isel());
-// console.log(totals2.coords['Time'].isel(0));
-// console.log(totals2.coords['Time'].isel(0, 5));
-// console.log(totals2.coords['Time'].isel(undefined, 5));
-
-// console.log(totals2.coords['Time'].sel());
-// console.log(totals2.coords['Time'].sel(1950));
-// console.log(totals2.coords['Time'].sel(new Slice(2070, 2075)));
-// console.log(totals2.coords['Time'].sel([2030,2100]));
-
-// console.log(totals2.coords['Time'].sel(0, 10)); // error!
-
-// console.log(
-// 	totals2.data_vars['GDP'].sel({
-// 		Scenario: 'SSP2',
-// 		Region: 'NLD',
-// 		Time: 2100
-// 	})
-// );
-
-// console.log(
-// 	totals2.data_vars['GDP'].sel({
-// 		Scenario: 'SSP2',
-// 		Region: 'NLD',
-// 		Time: new InclusiveSlice(2020, 2100)
-// 	})
-// );
-/*
-With python
-v =  ds.GDP.sel(Scenario='SSP2', Region='NLD', Time=slice(2020,2100)).values
-len(v)
-81
-JS returns 81
-*/
-
-// console.log(totals2.data_vars['GDP'].sel({
-// 	Scenario: 'SSP2',
-// 	Region: ['NLD', 'USA'],
-// }))
-// const used = ds.data_vars.CO2_hist.sel({Region: 'WORLD'})
-// console.log(used)
-
-export interface GlobalBudgetQuery {
-	warming: Warming;
-	probability: Probability;
-	nonCO2Mitigation: NonCO2Mitigation;
-	negativeEmissions: NegativeEmissions;
+export interface PathWayQuery {
+	temperature: string;
+	exceedanceRisk: string;
+	nonCO2Mitigation: string;
+	negativeEmissions: string;
 }
 
-export interface CarbonTotalResult {
+export interface PathwayStats {
 	total: number;
 	used: number;
 	remaining: number;
 }
 
-function carbonTotal(query: GlobalBudgetQuery): CarbonTotalResult {
+export function pathwayQueryFromSearchParams(
+	searchParams: URLSearchParams,
+	choices: Record<keyof PathWayQuery, string[]>
+): PathWayQuery {
+	// TODO check each searchParam is in respective choices array
+	const temperature = searchParams.get('temperature') ?? choices.temperature[0];
+	const exceedanceRisk = searchParams.get('exceedanceRisk') ?? choices.exceedanceRisk[0];
+	// TODO when more choices are available use Medium==1 as default
+	const nonCO2Mitigation = searchParams.get('nonCO2Mitigation') ?? choices.nonCO2Mitigation[0];
+	const negativeEmissions = searchParams.get('negativeEmissions') ?? choices.negativeEmissions[0];
+	return {
+		temperature,
+		exceedanceRisk,
+		nonCO2Mitigation,
+		negativeEmissions
+	};
+}
+
+export function pathwayChoices(): Record<keyof PathWayQuery, string[]> {
+	return {
+		temperature: Temperatures(),
+		exceedanceRisk: exceedanceRisks(),
+		nonCO2Mitigation: nonCO2Mitigations(),
+		negativeEmissions: negativeEmissions()
+	};
+}
+
+function Temperatures() {
+	return ds.coords.Temperature.values as string[];
+}
+
+function exceedanceRisks() {
+	return ds.coords.Risk_of_exceedance.values as string[];
+}
+
+function nonCO2Mitigations() {
+	return ds.coords.Non_CO2_mitigation_potential.values as string[];
+}
+
+function negativeEmissions() {
+	return ds.coords.Negative_emissions.values as string[];
+}
+
+function pathwayStats(query: PathWayQuery): PathwayStats {
 	// TODO check number, now returns 1751597.23 while we expect 3500Gt
 	const used = ds.data_vars.CO2_hist.sel({ Region: 'WORLD' })
 		.filter((d) => !Number.isNaN(d))
 		.reduce((a, b) => a + b, 0);
 
 	const remaining = ds.data_vars.CO2_globe.sel({
-		Temperature: query.warming,
-		Risk_of_exceedance: query.probability,
+		Temperature: query.temperature,
+		Risk_of_exceedance: query.exceedanceRisk,
 		Negative_emissions: query.negativeEmissions,
 		Non_CO2_mitigation_potential: query.nonCO2Mitigation
 	})
@@ -129,11 +109,11 @@ function arrays2TimeSeriesArea(time: number[], values: number[], err = 5000): Ti
 	return Array.from(time).map(toValues);
 }
 
-function carbonTimeSeries(query: GlobalBudgetQuery): TimeSeries {
+function carbonTimeSeries(query: PathWayQuery): TimeSeries {
 	const Time = new InclusiveSlice(2021, 2100);
 	const values = ds.data_vars.CO2_globe.sel({
-		Temperature: query.warming,
-		Risk_of_exceedance: query.probability,
+		Temperature: query.temperature,
+		Risk_of_exceedance: query.exceedanceRisk,
 		Negative_emissions: query.negativeEmissions,
 		Non_CO2_mitigation_potential: query.nonCO2Mitigation,
 		Time
@@ -155,22 +135,20 @@ function carbonTimeSeries(query: GlobalBudgetQuery): TimeSeries {
 // }
 
 export interface GlobalGudgetResult {
-	carbonTS: TimeSeries;
-	carbonTotal: CarbonTotalResult;
+	pathwayCarbon: TimeSeries;
+	pathwayStats: PathwayStats;
 	historicalCarbon: TimeSeries;
 }
 
-export function globalBudget(query: GlobalBudgetQuery): GlobalGudgetResult {
-	// TODO validate args
+export function globalBudget(query: PathWayQuery): GlobalGudgetResult {
 	return {
-		carbonTS: carbonTimeSeries(query),
-		// currentPolicyTS: temperatureTimeSeries(query),
-		carbonTotal: carbonTotal(query),
+		pathwayCarbon: carbonTimeSeries(query),
+		pathwayStats: pathwayStats(query),
 		historicalCarbon: historicalCarbon()
 	};
 }
 function historicalCarbon(): TimeSeries {
-	const Time = new InclusiveSlice(1990, 2020);
+	const Time = new InclusiveSlice(1990, 2021);
 	const values = ds.data_vars.CO2_hist.sel({
 		Region: 'WORLD',
 		Time
@@ -197,40 +175,40 @@ export function listEffortSharings(): string[] {
 }
 
 export function effortSharingMap(
-	budgetQuery: GlobalBudgetQuery,
+	pathwayQuery: PathWayQuery,
 	Time: number,
 	effortSharing: string,
 	Scenario = 'SSP2',
 	Convergence_year = 2030
 ): SpatialMetric[] {
 	let selection: DataArraySelection = {};
-	const budgetSelection = {
-		Temperature: budgetQuery.warming,
-		Risk_of_exceedance: budgetQuery.probability,
-		Negative_emissions: budgetQuery.negativeEmissions,
-		Non_CO2_mitigation_potential: budgetQuery.nonCO2Mitigation
+	const pathwaySelection = {
+		Temperature: pathwayQuery.temperature,
+		Risk_of_exceedance: pathwayQuery.exceedanceRisk,
+		Negative_emissions: pathwayQuery.negativeEmissions,
+		Non_CO2_mitigation_potential: pathwayQuery.nonCO2Mitigation
 	};
 	if (effortSharing === 'GF') {
 		selection = {
-			...budgetSelection,
+			...pathwaySelection,
 			Time
 		};
 	} else if (effortSharing === 'PC') {
 		selection = {
 			Scenario,
-			...budgetSelection,
+			...pathwaySelection,
 			Time
 		};
 	} else if (effortSharing === 'PCC') {
 		selection = {
-			...budgetSelection,
+			...pathwaySelection,
 			Convergence_year,
 			Scenario,
 			Time
 		};
 	} else if (effortSharing === 'AP' || effortSharing === 'GDR') {
 		selection = {
-			...budgetSelection,
+			...pathwaySelection,
 			Scenario,
 			Time
 		};
@@ -252,35 +230,35 @@ export function effortSharingMap(
 
 export function effortSharingRegion(
 	Region: string,
-	budgetQuery: GlobalBudgetQuery,
+	pathwayQuery: PathWayQuery,
 	effortSharing: string,
 	Scenario = 'SSP2',
 	Convergence_year = 2030
 ): TemnporalMetric[] {
 	const Time = new InclusiveSlice(2021, 2100);
 	let selection: DataArraySelection = {};
-	const budgetSelection = {
-		Temperature: budgetQuery.warming,
-		Risk_of_exceedance: budgetQuery.probability,
-		Negative_emissions: budgetQuery.negativeEmissions,
-		Non_CO2_mitigation_potential: budgetQuery.nonCO2Mitigation
+	const pathwaySelection = {
+		Temperature: pathwayQuery.temperature,
+		Risk_of_exceedance: pathwayQuery.exceedanceRisk,
+		Negative_emissions: pathwayQuery.negativeEmissions,
+		Non_CO2_mitigation_potential: pathwayQuery.nonCO2Mitigation
 	};
 	if (effortSharing === 'GF') {
 		selection = {
-			...budgetSelection,
+			...pathwaySelection,
 			Region,
 			Time
 		};
 	} else if (effortSharing === 'PC') {
 		selection = {
 			Scenario,
-			...budgetSelection,
+			...pathwaySelection,
 			Region,
 			Time
 		};
 	} else if (effortSharing === 'PCC') {
 		selection = {
-			...budgetSelection,
+			...pathwaySelection,
 			Convergence_year,
 			Scenario,
 			Region,
@@ -288,7 +266,7 @@ export function effortSharingRegion(
 		};
 	} else if (effortSharing === 'AP' || effortSharing === 'GDR') {
 		selection = {
-			...budgetSelection,
+			...pathwaySelection,
 			Scenario,
 			Region,
 			Time

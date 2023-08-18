@@ -2,6 +2,6 @@
 
 <div class="flex flex-row justify-around">
 	<div class="flex flex-col justify-between gap-2">
-		<a href="/global">Construct your scenario</a>
+		<a href="/global">Construct your pathway</a>
 	</div>
 </div>

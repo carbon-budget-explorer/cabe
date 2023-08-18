@@ -1,30 +1,20 @@
 import { borders as bordersDb } from '$lib/server/db/data';
 import { searchParam } from '$lib/searchparam';
 import {
-	type GlobalBudgetQuery,
-	warmingChoices,
-	nonCO2MitigationChoices,
-	probabilityChoices,
-	negativeEmissionsChoices,
 	listFutureYears,
 	listEffortSharings,
-	effortSharingMap
-} from '$lib/server/db/global';
+	effortSharingMap,
+	pathwayChoices,
+	pathwayQueryFromSearchParams
+} from '$lib/server/db/models';
 
 export async function load({ url }: { url: URL }) {
-	const globalBudgetQuery: GlobalBudgetQuery = {
-		warming: searchParam(url, 'warming', warmingChoices[0]),
-		probability: searchParam(url, 'probability', '50%'),
-		nonCO2Mitigation: searchParam(url, 'nonCO2Mitigation', 'Medium'),
-		negativeEmissions: searchParam(url, 'negativeEmissions', 'Medium')
-	};
-	const globalBudgetChoices = {
-		warming: warmingChoices,
-		nonCO2Mitigation: nonCO2MitigationChoices,
-		probability: probabilityChoices,
-		negativeEmissions: negativeEmissionsChoices
-	};
-	// TODO validate searchParam with zod.js
+	const choices = pathwayChoices()
+	const pathwayQuery = pathwayQueryFromSearchParams(url.searchParams, choices);
+	const pathway = {
+		query: pathwayQuery,
+		choices
+	}
 
 	const rawyear = searchParam(url, 'year', '2030');
 	const year = parseInt(rawyear);
@@ -33,7 +23,7 @@ export async function load({ url }: { url: URL }) {
 	const rawMetrics =
 		effortSharingQuery === 'None'
 			? []
-			: effortSharingMap(globalBudgetQuery, year, effortSharingQuery);
+			: effortSharingMap(pathwayQuery, year, effortSharingQuery);
 	const metrics = bordersDb.addNames(
 		rawMetrics.filter((d) => !Number.isNaN(d.value) && d.value !== null && d.value !== undefined)
 	);
@@ -44,7 +34,7 @@ export async function load({ url }: { url: URL }) {
 		query: effortSharingQuery
 	};
 	const data = {
-		globalBudget: { query: globalBudgetQuery, choices: globalBudgetChoices },
+		pathway,
 		effortSharing,
 		metrics,
 		years: listFutureYears(),

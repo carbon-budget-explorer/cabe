@@ -3,7 +3,7 @@
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import GlobalBudgetForm from '$lib/GlobalBudgetForm.svelte';
+	import GlobalBudgetForm from '$lib/PathwayForm.svelte';
 	import RegionFilter from '$lib/RegionFilter.svelte';
 
 	import VegaMap from '$lib/VegaMap.svelte';
@@ -50,8 +50,8 @@
 		<details>
 			<summary>Global</summary>
 			<GlobalBudgetForm
-				choices={data.globalBudget.choices}
-				query={data.globalBudget.query}
+				choices={data.pathway.choices}
+				query={data.pathway.query}
 				onChange={updateQueryParam}
 			/>
 		</details>

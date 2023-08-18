@@ -18,14 +18,16 @@
 					<a href={`/${$page.url.search}`}>Carbon Budget Explorer logo</a>
 				</li>
 				<!-- TODO add arrow between stepper items -->
+				<!-- TODO when pathway has been selected mark this step as completed -->
 				<li class={$page.url.pathname === '/global' ? activeli : passiveli}>
 					<span class={$page.url.pathname === '/global' ? activespan : passivespan}> 1 </span>
 					<span>
 						<h3 class="font-medium leading-tight">
-							<a href={`/global${$page.url.search}`}> Construct your scenario </a>
+							<a href={`/global${$page.url.search}`}> Construct your pathway </a>
 						</h3>
 					</span>
 				</li>
+				<!-- TODO when a effort sharing principle has been selected mark this step as completed -->
 				<li class={$page.url.pathname === '/world' ? activeli : passiveli}>
 					<span class={$page.url.pathname === '/world' ? activespan : passivespan}> 2 </span>
 					<span>
