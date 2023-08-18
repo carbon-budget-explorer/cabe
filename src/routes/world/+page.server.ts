@@ -9,21 +9,19 @@ import {
 } from '$lib/server/db/models';
 
 export async function load({ url }: { url: URL }) {
-	const choices = pathwayChoices()
+	const choices = pathwayChoices();
 	const pathwayQuery = pathwayQueryFromSearchParams(url.searchParams, choices);
 	const pathway = {
 		query: pathwayQuery,
 		choices
-	}
+	};
 
 	const rawyear = searchParam(url, 'year', '2030');
 	const year = parseInt(rawyear);
 
 	const effortSharingQuery = searchParam(url, 'effortSharing', 'None');
 	const rawMetrics =
-		effortSharingQuery === 'None'
-			? []
-			: effortSharingMap(pathwayQuery, year, effortSharingQuery);
+		effortSharingQuery === 'None' ? [] : effortSharingMap(pathwayQuery, year, effortSharingQuery);
 	const metrics = bordersDb.addNames(
 		rawMetrics.filter((d) => !Number.isNaN(d.value) && d.value !== null && d.value !== undefined)
 	);

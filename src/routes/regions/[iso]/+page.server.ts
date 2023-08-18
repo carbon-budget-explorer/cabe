@@ -11,12 +11,12 @@ import { principles } from '$lib/principles';
 
 export const load = async ({ params, url }: { params: RouteParams; url: URL }) => {
 	const iso = params.iso;
-	const choices = pathwayChoices()
+	const choices = pathwayChoices();
 	const pathwayQuery = pathwayQueryFromSearchParams(url.searchParams, choices);
 	const pathway = {
 		query: pathwayQuery,
 		choices
-	}
+	};
 	const effortSharingQuery = searchParam(url, 'effortSharing', 'None');
 	const effortSharingChoices = listEffortSharings();
 	const effortSharing = {
@@ -25,9 +25,7 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 	};
 
 	const effortSharingData =
-		effortSharingQuery === 'None'
-			? []
-			: effortSharingRegion(iso, pathwayQuery, effortSharingQuery);
+		effortSharingQuery === 'None' ? [] : effortSharingRegion(iso, pathwayQuery, effortSharingQuery);
 
 	const name = borders.labels.get(iso) || iso;
 	const label = principles.get(effortSharingQuery);
