@@ -109,7 +109,6 @@ function arrays2TimeSeriesArea(time: number[], values: number[], err = 5000) {
 	return Array.from(time).map(toValues);
 }
 
-
 export function pathwayCarbon(query: PathWayQuery) {
 	const Time = new InclusiveSlice(2021, 2100);
 	const values = ds.data_vars.CO2_globe.sel({
@@ -125,7 +124,7 @@ export function pathwayCarbon(query: PathWayQuery) {
 	// TODO also make time indexable (somehow)
 	// TODO if no time index provided for .carbon, return all data
 
-	return arrays2TimeSeriesArea(years, values)
+	return arrays2TimeSeriesArea(years, values);
 }
 
 export function historicalCarbon() {
@@ -268,15 +267,13 @@ export function effortSharingRegion(
 	}));
 }
 
-
-
 const policyMap = {
 	current: 'CurPol',
 	ndc: 'NDC',
 	netzero: 'NetZero'
 } as const;
 
-function policyPathway(policy: keyof typeof policyMap, Region: string,  Model='IMAGE 3.2') {
+function policyPathway(policy: keyof typeof policyMap, Region: string, Model = 'IMAGE 3.2') {
 	// TODO calculate meean, min and max over all models
 	// tricky because sel() returns a 1d array with Time and Model as coords
 	const Time = new InclusiveSlice(2021, 2100);
@@ -300,7 +297,7 @@ export function netzero(Region = 'WORLD') {
 	return policyPathway('netzero', Region);
 }
 
-export function ambitionGap(query: PathWayQuery, Time=2030) {
+export function ambitionGap(query: PathWayQuery, Time = 2030) {
 	const pathwaySelection = {
 		Temperature: query.temperature,
 		Risk_of_exceedance: query.exceedanceRisk,
@@ -315,11 +312,12 @@ export function ambitionGap(query: PathWayQuery, Time=2030) {
 		Region: 'WORLD',
 		Time
 	});
-	const averagePolicy = policy.filter(d => !Number.isNaN(d)).reduce((a, b) => a + b, 0) / policy.length;
-	return  averagePolicy - pathway[0];
+	const averagePolicy =
+		policy.filter((d) => !Number.isNaN(d)).reduce((a, b) => a + b, 0) / policy.length;
+	return averagePolicy - pathway[0];
 }
 
-export function emissionGap(query: PathWayQuery, Time=2030) {
+export function emissionGap(query: PathWayQuery, Time = 2030) {
 	const pathwaySelection = {
 		Temperature: query.temperature,
 		Risk_of_exceedance: query.exceedanceRisk,
@@ -334,6 +332,7 @@ export function emissionGap(query: PathWayQuery, Time=2030) {
 		Region: 'WORLD',
 		Time
 	});
-	const averagePolicy = policy.filter(d => !Number.isNaN(d)).reduce((a, b) => a + b, 0) / policy.length;
-	return  averagePolicy - pathway[0];
+	const averagePolicy =
+		policy.filter((d) => !Number.isNaN(d)).reduce((a, b) => a + b, 0) / policy.length;
+	return averagePolicy - pathway[0];
 }

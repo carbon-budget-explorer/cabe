@@ -9,7 +9,7 @@ import {
 	netzero,
 	pathwayChoices,
 	pathwayQueryFromSearchParams,
-	pathwayStats,
+	pathwayStats
 } from '$lib/server/db/models';
 
 export const load = (async ({ url }: { url: URL }) => {
@@ -24,7 +24,7 @@ export const load = (async ({ url }: { url: URL }) => {
 		ndc: ndc(),
 		netzero: netzero(),
 		ambitionGap: ambitionGap(query),
-		emissionGap: emissionGap(query),
+		emissionGap: emissionGap(query)
 	};
 	// TODO many rows in result have same year, so could be optimised for size
 	return {
