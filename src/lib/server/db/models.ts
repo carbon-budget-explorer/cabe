@@ -59,8 +59,8 @@ function negativeEmissions() {
 	return ds.coords.Negative_emissions.values as string[];
 }
 
-function pathwayStats(query: PathWayQuery): PathwayStats {
-	// TODO check number, now returns 1751597.23 while we expect 3500Gt
+export function pathwayStats(query: PathWayQuery): PathwayStats {
+	// TODO check number, now returns 2171597.23 while we expect 3500Gt
 	const used = ds.data_vars.CO2_hist.sel({ Region: 'WORLD' })
 		.filter((d) => !Number.isNaN(d))
 		.reduce((a, b) => a + b, 0);
@@ -97,7 +97,7 @@ export interface TimeSeries {
 	values: TimeSeriesValue[];
 }
 
-function arrays2TimeSeriesArea(time: number[], values: number[], err = 5000): TimeSeriesValue[] {
+function arrays2TimeSeriesArea(time: number[], values: number[], err = 5000) {
 	//  TODO get variable errors from additional data arrays
 	const toValues = (t: number, i: number) => ({
 		time: t,
@@ -109,7 +109,8 @@ function arrays2TimeSeriesArea(time: number[], values: number[], err = 5000): Ti
 	return Array.from(time).map(toValues);
 }
 
-function carbonTimeSeries(query: PathWayQuery): TimeSeries {
+
+export function pathwayCarbon(query: PathWayQuery) {
 	const Time = new InclusiveSlice(2021, 2100);
 	const values = ds.data_vars.CO2_globe.sel({
 		Temperature: query.temperature,
@@ -124,40 +125,20 @@ function carbonTimeSeries(query: PathWayQuery): TimeSeries {
 	// TODO also make time indexable (somehow)
 	// TODO if no time index provided for .carbon, return all data
 
-	return {
-		name: 'carbon emissions',
-		values: arrays2TimeSeriesArea(years, values)
-	};
+	return arrays2TimeSeriesArea(years, values)
 }
 
-// function currentPolicyTimeSeries(): TimeSeries {
-//
-// }
-
-export interface GlobalGudgetResult {
-	pathwayCarbon: TimeSeries;
-	pathwayStats: PathwayStats;
-	historicalCarbon: TimeSeries;
-}
-
-export function globalBudget(query: PathWayQuery): GlobalGudgetResult {
-	return {
-		pathwayCarbon: carbonTimeSeries(query),
-		pathwayStats: pathwayStats(query),
-		historicalCarbon: historicalCarbon()
-	};
-}
-function historicalCarbon(): TimeSeries {
+export function historicalCarbon() {
 	const Time = new InclusiveSlice(1990, 2021);
 	const values = ds.data_vars.CO2_hist.sel({
 		Region: 'WORLD',
 		Time
 	});
 	const years = ds.coords.Time.sel(Time) as number[];
-	return {
-		name: 'historical carbon emissions',
-		values: arrays2TimeSeriesArea(years, values)
-	};
+	return values.map((value, i) => ({
+		time: years[i],
+		value
+	}));
 }
 
 export function listFutureYears(): number[] {
@@ -285,4 +266,74 @@ export function effortSharingRegion(
 		Time: years[i],
 		value
 	}));
+}
+
+
+
+const policyMap = {
+	current: 'CurPol',
+	ndc: 'NDC',
+	netzero: 'NetZero'
+} as const;
+
+function policyPathway(policy: keyof typeof policyMap, Region: string,  Model='IMAGE 3.2') {
+	// TODO calculate meean, min and max over all models
+	// tricky because sel() returns a 1d array with Time and Model as coords
+	const Time = new InclusiveSlice(2021, 2100);
+	const values = ds.data_vars[policyMap[policy]].sel({ Model, Region, Time });
+	const years = ds.coords.Time.sel(Time) as number[];
+	return values.map((value, i) => ({
+		time: years[i],
+		value
+	}));
+}
+
+export function currentPolicy(Region = 'WORLD') {
+	return policyPathway('current', Region);
+}
+
+export function ndc(Region = 'WORLD') {
+	return policyPathway('ndc', Region);
+}
+
+export function netzero(Region = 'WORLD') {
+	return policyPathway('netzero', Region);
+}
+
+export function ambitionGap(query: PathWayQuery, Time=2030) {
+	const pathwaySelection = {
+		Temperature: query.temperature,
+		Risk_of_exceedance: query.exceedanceRisk,
+		Negative_emissions: query.negativeEmissions,
+		Non_CO2_mitigation_potential: query.nonCO2Mitigation
+	};
+	const pathway = ds.data_vars.CO2_globe.sel({
+		...pathwaySelection,
+		Time
+	});
+	const policy = ds.data_vars.CurPol.sel({
+		Region: 'WORLD',
+		Time
+	});
+	const averagePolicy = policy.filter(d => !Number.isNaN(d)).reduce((a, b) => a + b, 0) / policy.length;
+	return  averagePolicy - pathway[0];
+}
+
+export function emissionGap(query: PathWayQuery, Time=2030) {
+	const pathwaySelection = {
+		Temperature: query.temperature,
+		Risk_of_exceedance: query.exceedanceRisk,
+		Negative_emissions: query.negativeEmissions,
+		Non_CO2_mitigation_potential: query.nonCO2Mitigation
+	};
+	const pathway = ds.data_vars.CO2_globe.sel({
+		...pathwaySelection,
+		Time
+	});
+	const policy = ds.data_vars.NDC.sel({
+		Region: 'WORLD',
+		Time
+	});
+	const averagePolicy = policy.filter(d => !Number.isNaN(d)).reduce((a, b) => a + b, 0) / policy.length;
+	return  averagePolicy - pathway[0];
 }

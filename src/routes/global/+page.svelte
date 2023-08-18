@@ -1,13 +1,13 @@
 <script lang="ts">
 	import type { PageData } from '../global/$types';
 
-	import GlobalBudgetForm from '$lib/PathwayForm.svelte';
-	import TimeSeries from '$lib/charts/TimeSeries.svelte';
-	import type { LineValue } from '$lib/charts/components/MultiLine';
-	import type { TimeSeriesValue } from '$lib/server/db/models';
+	import PathwayForm from '$lib/PathwayForm.svelte';
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import Pathway from '$lib/charts/Pathway.svelte';
+	import Line from '$lib/charts/components/Line.svelte';
+	import Area from '$lib/charts/components/Area.svelte';
 	export let data: PageData;
 
 	// TODO generalize to colormap component or so
@@ -18,29 +18,7 @@
 	const ipcc_stroke_red = '#f5331e';
 	const ipcc_fill_blue = '#c2e0e7';
 	const ipcc_stroke_blue = '#5bb0c6';
-
-	function tsDataToLine(d: TimeSeriesValue): LineValue {
-		return {
-			x: d.time,
-			y: d.mean,
-			ymin: d.min,
-			ymax: d.max
-		};
-	}
-	$: carbonTSData = [
-		{
-			name: data.result.pathwayCarbon.name,
-			values: data.result.pathwayCarbon.values.map(tsDataToLine),
-			fill: ipcc_fill_green,
-			stroke: ipcc_stroke_green
-		},
-		{
-			name: data.result.historicalCarbon.name,
-			values: data.result.historicalCarbon.values.map(tsDataToLine),
-			fill: 'black',
-			stroke: 'black'
-		}
-	];
+	const ipcc_stroke_purple = '#a67ab8';
 
 	function updateQueryParam(name: string, value: string) {
 		if (browser) {
@@ -49,6 +27,12 @@
 			goto(`?${params.toString()}`);
 		}
 	}
+
+	let policyPathwayQuery = {
+		current: true,
+		ndc: false,
+		netzero: false
+	};
 </script>
 
 <div class="border-grey-4 border-grey flex h-full w-full flex-col items-center border-4">
@@ -59,7 +43,11 @@
 				<h2>(Wat wil ik?)</h2>
 			</div>
 			<div class="border-grey-400 border-4">
-				<GlobalBudgetForm choices={data.choices} query={data.query} onChange={updateQueryParam} />
+				<PathwayForm
+					choices={data.pathway.choices}
+					query={data.pathway.query}
+					onChange={updateQueryParam}
+				/>
 			</div>
 			<div class="border-grey-400 border-4">
 				<ul>
@@ -71,23 +59,41 @@
 		</div>
 		<div class="flex grow flex-col gap-4">
 			<div class="border-grey-400 grow border-4">
-				<TimeSeries data={carbonTSData} />
-
-				<!-- <GlobalBudgetChart {xDomain} {yDomain}>
-					<AreaLine {co2remaining}/>
-					<Line {co2historical}/>
-					<AreaLine {currentpolicy}/>
-					<AreaLine {ndc}/>
-					<AreaLine {netzero}/>
+				<Pathway>
+					<Line data={data.result.historicalCarbon} x={'time'} y={'value'} stroke="black" />
+					<Line data={data.result.pathwayCarbon} x={'time'} y={'mean'} stroke={ipcc_stroke_green} />
+					<Area
+						data={data.result.pathwayCarbon}
+						x={'time'}
+						y0={'min'}
+						y1={'max'}
+						fill={ipcc_fill_green}
+					/>
+					{#if policyPathwayQuery.current}
+						<Line
+							data={data.result.currentPolicy}
+							x={'time'}
+							y={'value'}
+							stroke={ipcc_stroke_red}
+						/>
+					{/if}
+					{#if policyPathwayQuery.ndc}
+						<Line data={data.result.ndc} x={'time'} y={'value'} stroke={ipcc_stroke_blue} />
+					{/if}
+					{#if policyPathwayQuery.netzero}
+						<Line data={data.result.netzero} x={'time'} y={'value'} stroke={ipcc_stroke_purple} />
+					{/if}
+					<!--
 					<Gap year={2030} name="Ambition" from={ndc.find(d => d.Time === 2030)} to={co2remaining.find(d => d.Time === 2030)}>
-					<Gap year={2030} name="Emission" from={currentpolicy.find(d => d.Time === 2030)} to={co2remaining.find(d => d.Time === 2030)}>
-				</GlobalBudgetChart> -->
+					<Gap year={2030} name="Emission" from={currentpolicy.find(d => d.Time === 2030)} to={co2remaining.find(d => d.Time === 2030)}> 
+					-->
+				</Pathway>
 			</div>
 			<div class="border-grey-400 border-4">
 				<h1>Difference between your scenario and current policy</h1>
 				<ul>
-					<li>Ambition gap: XXX GtCO2</li>
-					<li>Emission gap: XXX GtCO2</li>
+					<li>Ambition gap: {data.result.ambitionGap.toFixed(2)} GtCO2</li>
+					<li>Emission gap: {data.result.emissionGap.toFixed(2)} GtCO2</li>
 				</ul>
 			</div>
 		</div>
@@ -99,11 +105,24 @@
 			</div>
 			<div class="border-grey-400 grow border-4">
 				<ul>
-					<li><label><input type="checkbox" checked />{' '}Current policy</label></li>
 					<li>
-						<label><input type="checkbox" />{' '}Nationally determined contributions (NDCs)</label>
+						<label
+							><input type="checkbox" bind:checked={policyPathwayQuery.current} />{' '}Current
+							policy</label
+						>
 					</li>
-					<li><label><input type="checkbox" />{' '}Net zero-scenarios</label></li>
+					<li>
+						<label
+							><input type="checkbox" bind:checked={policyPathwayQuery.ndc} />{' '}Nationally
+							determined contributions (NDCs)</label
+						>
+					</li>
+					<li>
+						<label
+							><input type="checkbox" bind:checked={policyPathwayQuery.netzero} />{' '}Net
+							zero-scenarios</label
+						>
+					</li>
 				</ul>
 			</div>
 
