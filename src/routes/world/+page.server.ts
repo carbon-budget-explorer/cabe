@@ -8,7 +8,7 @@ import {
 	negativeEmissionsChoices,
 	listFutureYears,
 	listEffortSharings,
-	carbonMap
+	effortSharingMap
 } from '$lib/server/db/global';
 
 export async function load({ url }: { url: URL }) {
@@ -30,16 +30,15 @@ export async function load({ url }: { url: URL }) {
 	const year = parseInt(rawyear);
 
 	const effortSharingQuery = searchParam(url, 'effortSharing', 'None');
-	const rawMetrics = effortSharingQuery === 'None' ? [] : carbonMap(
-		globalBudgetQuery,
-		year,
-		effortSharingQuery
-	)
+	const rawMetrics =
+		effortSharingQuery === 'None'
+			? []
+			: effortSharingMap(globalBudgetQuery, year, effortSharingQuery);
 	const metrics = bordersDb.addNames(
 		rawMetrics.filter((d) => !Number.isNaN(d.value) && d.value !== null && d.value !== undefined)
 	);
 
-	const effortSharingChoices = listEffortSharings()
+	const effortSharingChoices = listEffortSharings();
 	const effortSharing = {
 		choices: effortSharingChoices,
 		query: effortSharingQuery

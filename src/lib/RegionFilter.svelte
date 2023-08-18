@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { NamedSpatialMetric } from './server/db/utils';
+	import type { NamedRegion } from './server/db/utils';
 
 	export let searchParams: string;
-	export let metrics: NamedSpatialMetric[];
+	export let regions: NamedRegion[];
 	let query = '';
-	$: filteredMetrics = metrics
+	$: filteredRegions = regions
 		.filter((a) => a.ISO !== undefined && a.ISO !== null)
 		.sort((a, b) => a.ISO.localeCompare(b.ISO))
 		.filter((d) => {
@@ -25,7 +25,7 @@
 		<button title="Clear query" disabled={query === ''} on:click={() => (query = '')}>X</button>
 	</div>
 	<ul>
-		{#each filteredMetrics as region}
+		{#each filteredRegions as region}
 			<li>
 				<a class="underline" href={`/regions/${region.ISO}${searchParams}`}>{region.name}</a>
 			</li>

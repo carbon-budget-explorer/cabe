@@ -89,6 +89,7 @@ jobs:
         run: npm ci
       - name: ⬇️  Install data deps
         run: npm run download:borders
+      # TODO generate a dummy nc file
       - name: 🛠 Setup browsers
         run: npx playwright install
       - name: 🎭 Playwright run

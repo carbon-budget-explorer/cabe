@@ -1,7 +1,5 @@
 import { readFile, stat } from 'node:fs/promises';
 
-import type { NamedSpatialMetric, SpatialMetric } from './utils';
-
 export interface BorderProperties {
 	ISO_A3_EH: string;
 	NAME: string;
@@ -31,8 +29,8 @@ export class Borders {
 		}
 	}
 
-	addNames(metrics: SpatialMetric[]): NamedSpatialMetric[] {
-		return metrics.map((m) => {
+	addNames<T extends { ISO: string }>(items: T[]): (T & { name: string })[] {
+		return items.map((m) => {
 			return {
 				...m,
 				name: this.labels.get(m.ISO) || m.ISO

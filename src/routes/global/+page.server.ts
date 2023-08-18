@@ -10,6 +10,7 @@ import {
 } from '$lib/server/db/global';
 
 export const load = (async ({ url }: { url: URL }) => {
+	// TODO dedup here and at src/routes/world/+page.server.ts and src/routes/regions/[iso]/+page.server.ts
 	const query: GlobalBudgetQuery = {
 		warming: searchParam(url, 'warming', warmingChoices[0]),
 		probability: searchParam(url, 'probability', '50%'),

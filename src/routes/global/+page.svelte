@@ -5,10 +5,9 @@
 	import TimeSeries from '$lib/charts/TimeSeries.svelte';
 	import type { LineValue } from '$lib/charts/components/MultiLine';
 	import type { TimeSeriesValue } from '$lib/server/db/global';
-	import { LayerCake } from 'layercake';
-	import AxisX from '$lib/charts/components/AxisX.svelte';
-	import AxisY from '$lib/charts/components/AxisY.svelte';
-	import MultiLine from '$lib/charts/components/MultiLine.svelte';
+	import { page } from '$app/stores';
+	import { browser } from '$app/environment';
+	import { goto } from '$app/navigation';
 	export let data: PageData;
 
 	// TODO generalize to colormap component or so
@@ -34,13 +33,22 @@
 			values: data.result.carbonTS.values.map(tsDataToLine),
 			fill: ipcc_fill_green,
 			stroke: ipcc_stroke_green
-		}, {
+		},
+		{
 			name: data.result.historicalCarbon.name,
 			values: data.result.historicalCarbon.values.map(tsDataToLine),
 			fill: 'black',
-			stroke: 'black',
+			stroke: 'black'
 		}
 	];
+
+	function updateQueryParam(name: string, value: string) {
+		if (browser) {
+			const params = new URLSearchParams($page.url.search);
+			params.set(name, value);
+			goto(`?${params.toString()}`);
+		}
+	}
 </script>
 
 <div class="border-grey-4 border-grey flex h-full w-full flex-col items-center border-4">
@@ -51,28 +59,29 @@
 				<h2>(Wat wil ik?)</h2>
 			</div>
 			<div class="border-grey-400 border-4">
-				<GlobalBudgetForm choices={data.choices} query={data.query} onChange={() => 1} />
+				<GlobalBudgetForm choices={data.choices} query={data.query} onChange={updateQueryParam} />
 			</div>
 			<div class="border-grey-400 border-4">
 				<ul>
 					<li>Global budget: {data.result.carbonTotal.total.toFixed(2)} GtCO2</li>
-					<li>Used since 1850-2021: {data.result.carbonTotal.used.toFixed(2)}  GtCO2</li>
-					<li>Remaining till 2050: {data.result.carbonTotal.remaining.toFixed(2)}  GtCO2</li>
+					<li>Used since 1850-2021: {data.result.carbonTotal.used.toFixed(2)} GtCO2</li>
+					<li>Remaining till 2050: {data.result.carbonTotal.remaining.toFixed(2)} GtCO2</li>
 				</ul>
 			</div>
 		</div>
 		<div class="flex grow flex-col gap-4">
-			<div class="border-grey-400 grow border-4" >
-				<TimeSeries data={carbonTSData}/>
+			<div class="border-grey-400 grow border-4">
+				<TimeSeries data={carbonTSData} />
 
-				<!-- <LayerCake {xDomain} {yDomain}>
-					<AxisX/>
-					<AxisY/>
+				<!-- <GlobalBudgetChart {xDomain} {yDomain}>
 					<AreaLine {co2remaining}/>
 					<Line {co2historical}/>
-
-				</LayerCake> -->
-					
+					<AreaLine {currentpolicy}/>
+					<AreaLine {ndc}/>
+					<AreaLine {netzero}/>
+					<Gap year={2030} name="Ambition" from={ndc.find(d => d.Time === 2030)} to={co2remaining.find(d => d.Time === 2030)}>
+					<Gap year={2030} name="Emission" from={currentpolicy.find(d => d.Time === 2030)} to={co2remaining.find(d => d.Time === 2030)}>
+				</GlobalBudgetChart> -->
 			</div>
 			<div class="border-grey-400 border-4">
 				<h1>Difference between your scenario and current policy</h1>
@@ -99,20 +108,13 @@
 			</div>
 
 			<div>
-				<button
-					class="mb-2 mr-2 rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-3xl font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
+				<a
+					class="mb-2 mr-2 block rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-3xl font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
+					href={`/world${$page.url.search}`}
 				>
-					Next step: allocate
-				</button>
+					Next step: Allocate
+				</a>
 			</div>
 		</div>
 	</div>
 </div>
-
-<style>
-	#imagecontainer {
-		background: url('https://private-user-images.githubusercontent.com/17080502/255811842-a72cfb8b-d325-4bcb-8161-209b7f8ae732.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTEiLCJleHAiOjE2OTE1MDI1MjgsIm5iZiI6MTY5MTUwMjIyOCwicGF0aCI6Ii8xNzA4MDUwMi8yNTU4MTE4NDItYTcyY2ZiOGItZDMyNS00YmNiLTgxNjEtMjA5YjdmOGFlNzMyLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFJV05KWUFYNENTVkVINTNBJTJGMjAyMzA4MDglMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjMwODA4VDEzNDM0OFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTI0ZDc5N2NjNmQ3NWVmZWQwYzM5M2E4YmExMzAwNDY4ZWU0OTZkMmEwY2JmZTBlMGEwNDc5MTA4ZDg1MWZiMmEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.bKX5pbRv32EvSaRbdr4_spGJq4ajD0WY9uPe22eG8Gc')
-			no-repeat;
-		background-size: contain;
-	}
-</style>
