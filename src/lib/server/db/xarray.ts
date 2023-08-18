@@ -1,4 +1,4 @@
-import { ready, File, Dataset as HDF5Dataset, type OutputData } from 'h5wasm';
+import { ready, File, Dataset as HDF5Dataset } from 'h5wasm';
 
 export async function open_dataset(path: string) {
 	await ready;
@@ -95,7 +95,10 @@ export class Coordinate {
 	}
 }
 
-export type DataArraySelection = Record<string, string | number | string[] | number[] | InclusiveSlice>
+export type DataArraySelection = Record<
+	string,
+	string | number | string[] | number[] | InclusiveSlice
+>;
 
 export class DataArray {
 	name: string;
@@ -163,7 +166,7 @@ export class DataArray {
 		}
 		// TODO dont cast but use typeguard
 		const values = this.ds.slice(slice) as number[];
-		return Array.from(values)
+		return Array.from(values);
 	}
 }
 

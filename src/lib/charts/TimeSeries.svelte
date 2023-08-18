@@ -8,8 +8,8 @@
 
 	export let data: LineData[];
 
-	$: yDomain = [-15_000, 45_000]
-	$: xDomain = [ 1990,2100]
+	$: yDomain = [-15_000, 45_000];
+	$: xDomain = [1990, 2100];
 </script>
 
 <div class="chart-container p-10">
