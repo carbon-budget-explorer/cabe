@@ -1,4 +1,4 @@
-import { borders, ds } from '$lib/server/db/data';
+import { borders } from '$lib/server/db/data';
 import type { RouteParams } from './$types';
 import { searchParam } from '$lib/searchparam';
 import {

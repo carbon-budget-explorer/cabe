@@ -86,10 +86,10 @@ function carbonTotal(query: GlobalBudgetQuery): CarbonTotalResult {
 		.reduce((a, b) => a + b, 0);
 
 	const remaining = ds.data_vars.CO2_globe.sel({
-		Temperature: '1.5 deg',
-		Risk_of_exceedance: '50%',
-		Negative_emissions: 'Medium',
-		Non_CO2_mitigation_potential: 'Medium'
+		Temperature: query.warming,
+		Risk_of_exceedance: query.probability,
+		Negative_emissions: query.negativeEmissions,
+		Non_CO2_mitigation_potential: query.nonCO2Mitigation
 	})
 		.filter((d) => !Number.isNaN(d))
 		.reduce((a, b) => a + b, 0);

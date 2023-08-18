@@ -29,6 +29,16 @@ export class InclusiveSlice {
 	}
 }
 
+export type CoordinateSelection =
+	| string
+	| number
+	| string[]
+	| number[]
+	| InclusiveSlice
+	| undefined;
+
+export type DataArraySelection = Record<string, CoordinateSelection> | undefined;
+
 export class Coordinate {
 	// Note: this assumes coords are 1-dimensional
 	id: number;
@@ -60,7 +70,7 @@ export class Coordinate {
 		return index;
 	}
 
-	sel(indexer?: string | number | string[] | number[] | InclusiveSlice) {
+	sel(indexer: CoordinateSelection) {
 		// Note: this assumes coords are 1-dimensional
 		let iindexer: undefined | number | InclusiveSlice | number[] = undefined;
 		if (indexer === undefined) {
@@ -95,11 +105,6 @@ export class Coordinate {
 	}
 }
 
-export type DataArraySelection = Record<
-	string,
-	string | number | string[] | number[] | InclusiveSlice
->;
-
 export class DataArray {
 	name: string;
 	coordinates: Record<string, Coordinate>;
@@ -116,7 +121,7 @@ export class DataArray {
 		return this.ds.to_array() as number[];
 	}
 
-	sel(indexer?: DataArraySelection) {
+	sel(indexer: DataArraySelection) {
 		const iindexer: Record<string, number | InclusiveSlice | number[]> = {};
 		if (indexer === undefined) {
 			return this.isel();

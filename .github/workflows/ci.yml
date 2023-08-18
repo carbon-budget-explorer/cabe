@@ -89,14 +89,12 @@ jobs:
         run: npm ci
       - name: ⬇️  Install data deps
         run: npm run download:borders
-      # TODO generate a dummy nc file
       - name: 🛠 Setup browsers
         run: npx playwright install
       - name: 🎭 Playwright run
         run: npm test
         env:
-          CABE_TOTALS_PATH: __tests__/totals.nc
-          CABE_SCENARIOS_PATH: __tests__/scenarios.nc
+          CABE_TOTALS_PATH: __tests__/dummy.nc
   build:
     runs-on: ubuntu-latest
     steps:
