@@ -1,16 +1,16 @@
 
+import { principles } from '$lib/principles';
 import { ds } from './data';
-import { ExclusiveSlice, InclusiveSlice } from './xarray';
+import type { SpatialMetric } from './utils';
+import { InclusiveSlice, type DataArraySelection } from './xarray';
 
 export const warmingChoices = ds.coords.Temperature.values as string[]
 export type Warming = (typeof warmingChoices)[number];
-export const probabilityChoices = ['50', '67'] as const;
+export const probabilityChoices = ['50%', '67%'] as const;
 export type Probability = (typeof probabilityChoices)[number];
-export const nonCO2MitigationChoices = ['low', 'medium', 'high'] as const;
-const nonCO2MitigationValues = [0, 10, 20] as const;
+export const nonCO2MitigationChoices = ['Low', 'Medium', 'High'] as const;
 export type NonCO2Mitigation = (typeof nonCO2MitigationChoices)[number];
-export const negativeEmissionsChoices = ['low', 'medium', 'high'] as const;
-const negativeEmissionsValues = [0, 10, 20] as const;
+export const negativeEmissionsChoices = ['Low', 'Medium', 'High'] as const;
 export type NegativeEmissions = (typeof negativeEmissionsChoices)[number];
 
 // console.log(totals2.coords['Temperature'].values);
@@ -119,25 +119,7 @@ export interface TimeSeries {
 	values: TimeSeriesValue[];
 }
 
-function temperatureTimeSeries(query: GlobalBudgetQuery): TimeSeries {
-	return {
-		name: 'temperature',
-		values: [
-			{ time: 2000, mean: 61, min: 60, max: 64 },
-			{ time: 2005, mean: 56, min: 51, max: 58 },
-			{ time: 2011, mean: 40, min: 31, max: 43 },
-			{ time: 2016, mean: 29, min: 24, max: 30 },
-			{ time: 2022, mean: 19, min: 9, max: 25 },
-			{ time: 2027, mean: 13, min: 8, max: 13 },
-			{ time: 2033, mean: 19, min: 12, max: 26 },
-			{ time: 2038, mean: 24, min: 16, max: 25 },
-			{ time: 2044, mean: 11, min: 4, max: 14 },
-			{ time: 2050, mean: -10, min: -12, max: -1 }
-		]
-	};
-}
-
-function arrays2TimeSeries(time: number[], values: number[], err = 5000): TimeSeriesValue[] {
+function arrays2TimeSeriesArea(time: number[], values: number[], err = 5000): TimeSeriesValue[] {
 	//  TODO get variable errors from additional data arrays
 	const toValues = (t: number, i: number) => ({
 		time: t,
@@ -166,7 +148,7 @@ function carbonTimeSeries(query: GlobalBudgetQuery): TimeSeries {
 
 	return {
 		name: 'carbon emissions',
-		values: arrays2TimeSeries(years, values)
+		values: arrays2TimeSeriesArea(years, values)
 	};
 }
 
@@ -176,7 +158,6 @@ function carbonTimeSeries(query: GlobalBudgetQuery): TimeSeries {
 
 export interface GlobalGudgetResult {
 	carbonTS: TimeSeries;
-	temperatureTS: TimeSeries;
 	carbonTotal: CarbonTotalResult;
 	historicalCarbon: TimeSeries
 }
@@ -185,7 +166,6 @@ export function globalBudget(query: GlobalBudgetQuery): GlobalGudgetResult {
 	// TODO validate args
 	return {
 		carbonTS: carbonTimeSeries(query),
-		temperatureTS: temperatureTimeSeries(query),
 		// currentPolicyTS: temperatureTimeSeries(query),
 		carbonTotal: carbonTotal(query),
 		historicalCarbon: historicalCarbon(),
@@ -200,6 +180,66 @@ function historicalCarbon(): TimeSeries {
 	const years = ds.coords.Time.sel(Time) as number[]
 	return {
 		name: 'historical carbon emissions',
-		values: arrays2TimeSeries(years, values)
+		values: arrays2TimeSeriesArea(years, values)
 	};
+}
+
+export function listFutureYears(): number[] {
+	return ds.coords.Time.sel(new InclusiveSlice(2021,2100)) as number[]
+}
+
+export function listRegions(): string[] {
+	return ds.coords.Region.values as string[]
+}
+
+export function listEffortSharings(): string[] {
+	// Each effort sharing princple has its own data variable in the nc file
+	// TODO get effort sharing principles from nc file instead of static lookup
+	return Array.from(principles.keys());
+}
+
+export function carbonMap(budgetQuery: GlobalBudgetQuery, year: number, effortSharing: string,
+	scenario='SSP2',
+	converganceYear = 2030): SpatialMetric[] {
+	let selection: DataArraySelection = {
+		Scenario: scenario,
+	}
+	const budgetSelection = {
+		Temperature: budgetQuery.warming,
+		Risk_of_exceedance: budgetQuery.probability,
+		Negative_emissions: budgetQuery.negativeEmissions,
+		Non_CO2_mitigation_potential: budgetQuery.nonCO2Mitigation,
+	}
+	if (effortSharing === 'GF' || effortSharing === 'PC') {
+		selection = {
+			...selection,
+			...budgetSelection,
+			Time: year,
+		}
+	} else if (effortSharing === 'PCC') {
+		selection = {
+			...selection,
+			...budgetSelection,
+			Convergence_year: converganceYear,
+			Time: year,
+		}
+	} else if (effortSharing === 'AP' || effortSharing === 'GDR') {
+		selection = {
+			...selection,
+			...budgetSelection,
+			Scenario: scenario,
+			Time: year,
+		}
+	} else if (effortSharing === 'ECPC') {
+		// No need to add extra selections
+	} else {
+		throw new Error(`Effort sharing principle ${effortSharing} not found`)
+	}
+
+	const values = ds.data_vars[effortSharing].sel(selection)
+	const regions = listRegions()
+	return Array.from(values).map((d, i) => ({
+		ISO: regions[i],
+		value: d
+	}));
 }

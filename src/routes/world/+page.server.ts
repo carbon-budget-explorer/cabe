@@ -1,20 +1,22 @@
-import { totals as totalsDb, borders as bordersDb } from '$lib/server/db/data';
+import { borders as bordersDb } from '$lib/server/db/data';
 import { searchParam } from '$lib/searchparam';
-import type { SpatialMetric } from '$lib/server/db/utils';
 import {
 	type GlobalBudgetQuery,
 	warmingChoices,
 	nonCO2MitigationChoices,
 	probabilityChoices,
-	negativeEmissionsChoices
+	negativeEmissionsChoices,
+	listFutureYears,
+	listEffortSharings,
+	carbonMap
 } from '$lib/server/db/global';
 
 export async function load({ url }: { url: URL }) {
 	const globalBudgetQuery: GlobalBudgetQuery = {
 		warming: searchParam(url, 'warming', warmingChoices[0]),
-		probability: searchParam(url, 'probability', '50'),
-		nonCO2Mitigation: searchParam(url, 'nonCO2Mitigation', 'low'),
-		negativeEmissions: searchParam(url, 'negativeEmissions', 'low')
+		probability: searchParam(url, 'probability', '50%'),
+		nonCO2Mitigation: searchParam(url, 'nonCO2Mitigation', 'Medium'),
+		negativeEmissions: searchParam(url, 'negativeEmissions', 'Medium')
 	};
 	const globalBudgetChoices = {
 		warming: warmingChoices,
@@ -24,25 +26,20 @@ export async function load({ url }: { url: URL }) {
 	};
 	// TODO validate searchParam with zod.js
 
-	// TODO are years same for totals and scenarios?
-	const years = totalsDb.times();
-
 	const rawyear = searchParam(url, 'year', '2030');
 	const year = parseInt(rawyear);
 
 	const effortSharingQuery = searchParam(url, 'effortSharing', 'None');
-	const regions = totalsDb.regions();
-	const rawMetrics: SpatialMetric[] = Array.from(
-		totalsDb.carbonMap(globalBudgetQuery.warming, year, effortSharingQuery)
-	).map((d, i) => ({
-		ISO: regions[i],
-		value: d
-	}));
+	const rawMetrics = effortSharingQuery === 'None' ? [] : carbonMap(
+		globalBudgetQuery,
+		year,
+		effortSharingQuery
+	)
 	const metrics = bordersDb.addNames(
 		rawMetrics.filter((d) => !Number.isNaN(d.value) && d.value !== null && d.value !== undefined)
 	);
 
-	const effortSharingChoices = totalsDb.effortSharings();
+	const effortSharingChoices = listEffortSharings()
 	const effortSharing = {
 		choices: effortSharingChoices,
 		query: effortSharingQuery
@@ -51,7 +48,7 @@ export async function load({ url }: { url: URL }) {
 		globalBudget: { query: globalBudgetQuery, choices: globalBudgetChoices },
 		effortSharing,
 		metrics,
-		years,
+		years: listFutureYears(),
 		year,
 		borders: bordersDb.geojson
 	};

@@ -5,5 +5,5 @@ export const principles = new Map([
 	['AP', 'Ability to pay'],
 	['GDR', 'Greenhouse development rights'],
 	['ECPC', 'Equal cumulative per capita'],
-	['None', 'None'] // TODO use better name?
+	['None', 'None'] // TODO use better name? Or remove?
 ]);

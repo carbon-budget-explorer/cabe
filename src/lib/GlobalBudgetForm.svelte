@@ -38,7 +38,7 @@
 					checked={warmingChoice === query.warming}
 					on:change={changeWarming}
 				/>
-				{warmingChoice}°C
+				{warmingChoice}C
 			</label>
 		{/each}
 	</div>

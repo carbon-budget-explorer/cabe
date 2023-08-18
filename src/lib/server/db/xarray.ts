@@ -95,6 +95,8 @@ export class Coordinate {
 	}
 }
 
+export type DataArraySelection = Record<string, string | number | string[] | number[] | InclusiveSlice>
+
 export class DataArray {
 	name: string;
 	coordinates: Record<string, Coordinate>;
@@ -111,7 +113,7 @@ export class DataArray {
 		return this.ds.to_array() as number[];
 	}
 
-	sel(indexer?: Record<string, string | number | string[] | number[] | InclusiveSlice>) {
+	sel(indexer?: DataArraySelection) {
 		const iindexer: Record<string, number | InclusiveSlice | number[]> = {};
 		if (indexer === undefined) {
 			return this.isel();

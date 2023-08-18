@@ -12,9 +12,9 @@ import {
 export const load = (async ({ url }: { url: URL }) => {
 	const query: GlobalBudgetQuery = {
 		warming: searchParam(url, 'warming', warmingChoices[0]),
-		probability: searchParam(url, 'probability', '50'),
-		nonCO2Mitigation: searchParam(url, 'nonCO2Mitigation', 'low'),
-		negativeEmissions: searchParam(url, 'negativeEmissions', 'low')
+		probability: searchParam(url, 'probability', '50%'),
+		nonCO2Mitigation: searchParam(url, 'nonCO2Mitigation', 'Medium'),
+		negativeEmissions: searchParam(url, 'negativeEmissions', 'Medium')
 	};
 	const choices = {
 		warming: warmingChoices,
