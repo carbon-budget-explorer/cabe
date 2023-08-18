@@ -22,31 +22,27 @@
 					<span class={$page.url.pathname === '/global' ? activespan : passivespan}> 1 </span>
 					<span>
 						<h3 class="font-medium leading-tight">
-								<a href="/global">
-								Construct your scenario
-							</a>
-							</h3>
-						</span>
+							<a href={`/global${$page.url.search}`}> Construct your scenario </a>
+						</h3>
+					</span>
 				</li>
 				<li class={$page.url.pathname === '/world' ? activeli : passiveli}>
 					<span class={$page.url.pathname === '/world' ? activespan : passivespan}> 2 </span>
 					<span>
 						<h3 class="font-medium leading-tight">
-							<a href="/world">
-								Choose your effort-sharing method
-							</a>
-							</h3>
-						</span>
-					</li>
-				<li class={$page.url.pathname.startsWith('/region') ? activeli : passiveli}>
-					<span class={$page.url.pathname.startsWith('/region') ? activespan : passivespan}>
+							<a href={`/world${$page.url.search}`}> Choose your effort-sharing method </a>
+						</h3>
+					</span>
+				</li>
+				<li class={$page.url.pathname.startsWith('/regions') ? activeli : passiveli}>
+					<span class={$page.url.pathname.startsWith('/regions') ? activespan : passivespan}>
 						3
 					</span>
 					<span>
-							<a href="/region">
+						<a href={`/regions${$page.url.search}`}>
 							<h3 class="font-medium leading-tight">Get country details</h3>
 						</a>
-						</span>
+					</span>
 				</li>
 				<li class={$page.url.pathname.startsWith('/compare') ? activeli : passiveli}>
 					<span class={$page.url.pathname.startsWith('/compare') ? activespan : passivespan}>
