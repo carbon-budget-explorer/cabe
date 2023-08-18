@@ -75,6 +75,7 @@
 		</div>
 		<div>
 			<div>
+				<!-- TODO disable year when ECPC is selected as it has no time dimension -->
 				<h3 class="text-xl">Year</h3>
 				<select bind:value={selectedYear} on:change={gotoYear}>
 					{#each data.years as year}
@@ -84,21 +85,6 @@
 					{/each}
 				</select>
 			</div>
-		</div>
-		<div>
-			<p>Variable</p>
-			<ul>
-				<li>
-					<label>
-						<input type="radio" name="variable" value="CO2" checked={true} />
-						CO2
-					</label>
-				</li>
-				<!-- <li>Population</li>
-				<li>Gross Domestic Product (GDP)</li>
-				<li>CO2 historical</li>
-				<li>CO2 base</li> -->
-			</ul>
 		</div>
 	</div>
 	<div>
@@ -113,11 +99,29 @@
 		</div>
 	</div>
 	<div>
-		<button on:click={() => (showCountriesPanel = !showCountriesPanel)}>🔎</button>
+		<button
+			title={showCountriesPanel ? 'Click to hide region list' : 'Click to search for region'}
+			on:click={() => (showCountriesPanel = !showCountriesPanel)}
+		>
+			<span class={showCountriesPanel ? 'countries-panel-shown' : 'countries-panel-hidden'}
+				>{showCountriesPanel ? '↦' : '↧'} Find region</span
+			>
+		</button>
 		{#if showCountriesPanel}
 			<div transition:slide={{ axis: 'x' }}>
-				<RegionFilter metrics={data.metrics} searchParams={$page.url.search} />
+				<RegionFilter regions={data.metrics} searchParams={$page.url.search} />
 			</div>
 		{/if}
 	</div>
 </main>
+
+<style>
+	.countries-panel-hidden {
+		text-orientation: sideways;
+		writing-mode: vertical-rl;
+	}
+	.countries-panel-shown {
+		text-orientation: upright;
+		writing-mode: horizontal-tb;
+	}
+</style>
