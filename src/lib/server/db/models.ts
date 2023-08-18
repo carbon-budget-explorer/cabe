@@ -311,9 +311,8 @@ export function ambitionGap(query: PathWayQuery, Time = 2030) {
 	const policy = ds.data_vars.CurPol.sel({
 		Region: 'WORLD',
 		Time
-	});
-	const averagePolicy =
-		policy.filter((d) => !Number.isNaN(d)).reduce((a, b) => a + b, 0) / policy.length;
+	}).filter((d) => !Number.isNaN(d));
+	const averagePolicy = policy.reduce((a, b) => a + b, 0) / policy.length;
 	return averagePolicy - pathway[0];
 }
 
@@ -331,8 +330,7 @@ export function emissionGap(query: PathWayQuery, Time = 2030) {
 	const policy = ds.data_vars.NDC.sel({
 		Region: 'WORLD',
 		Time
-	});
-	const averagePolicy =
-		policy.filter((d) => !Number.isNaN(d)).reduce((a, b) => a + b, 0) / policy.length;
+	}).filter((d) => !Number.isNaN(d));
+	const averagePolicy = policy.reduce((a, b) => a + b, 0) / policy.length;
 	return averagePolicy - pathway[0];
 }

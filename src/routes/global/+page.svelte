@@ -28,7 +28,7 @@
 		}
 	}
 
-	let policyPathwayQuery = {
+	let policyPathwayToggles = {
 		current: true,
 		ndc: false,
 		netzero: false
@@ -69,7 +69,7 @@
 						y1={'max'}
 						fill={ipcc_fill_green}
 					/>
-					{#if policyPathwayQuery.current}
+					{#if policyPathwayToggles.current}
 						<Line
 							data={data.result.currentPolicy}
 							x={'time'}
@@ -77,10 +77,10 @@
 							stroke={ipcc_stroke_red}
 						/>
 					{/if}
-					{#if policyPathwayQuery.ndc}
+					{#if policyPathwayToggles.ndc}
 						<Line data={data.result.ndc} x={'time'} y={'value'} stroke={ipcc_stroke_blue} />
 					{/if}
-					{#if policyPathwayQuery.netzero}
+					{#if policyPathwayToggles.netzero}
 						<Line data={data.result.netzero} x={'time'} y={'value'} stroke={ipcc_stroke_purple} />
 					{/if}
 					<!--
@@ -107,19 +107,19 @@
 				<ul>
 					<li>
 						<label
-							><input type="checkbox" bind:checked={policyPathwayQuery.current} />{' '}Current
+							><input type="checkbox" bind:checked={policyPathwayToggles.current} />{' '}Current
 							policy</label
 						>
 					</li>
 					<li>
 						<label
-							><input type="checkbox" bind:checked={policyPathwayQuery.ndc} />{' '}Nationally
+							><input type="checkbox" bind:checked={policyPathwayToggles.ndc} />{' '}Nationally
 							determined contributions (NDCs)</label
 						>
 					</li>
 					<li>
 						<label
-							><input type="checkbox" bind:checked={policyPathwayQuery.netzero} />{' '}Net
+							><input type="checkbox" bind:checked={policyPathwayToggles.netzero} />{' '}Net
 							zero-scenarios</label
 						>
 					</li>
