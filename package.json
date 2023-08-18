@@ -45,7 +45,6 @@
 		"d3-geo": "^3.1.0",
 		"h5wasm": "^0.6.1",
 		"layercake": "^7.6.1",
-		"netcdfjs": "^2.0.2",
 		"svelte-vega": "^2.0.0"
 	},
 	"overrides": {
