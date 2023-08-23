@@ -10,7 +10,7 @@
 	import { page } from '$app/stores';
 </script>
 
-<div class="h-[750px]">
+<div class="flex h-screen flex-col">
 	<nav class="flex flex-row space-x-8 bg-slate-100 p-4">
 		<div class="steps py-8">
 			<ol class="w-full items-center space-y-4 sm:flex sm:space-x-8 sm:space-y-0">
@@ -60,7 +60,7 @@
 			</ol>
 		</div>
 	</nav>
-	<div class="h-full p-2">
+	<div class="grow p-4">
 		<slot />
 	</div>
 </div>

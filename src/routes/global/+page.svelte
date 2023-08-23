@@ -35,21 +35,21 @@
 	};
 </script>
 
-<div class="border-grey-4 border-grey flex h-full w-full flex-col items-center border-4">
-	<div class="flex h-full w-full flex-row justify-between gap-4">
-		<div class="flex flex-col gap-4">
+<div class="flex h-full flex-col items-center">
+	<div class="flex w-full grow flex-row justify-between gap-4">
+		<div class="flex flex-col gap-4 p-4 shadow-lg">
 			<div>
 				<h1 class="text-xl">Choosing your pathway</h1>
 				<h2>(Wat wil ik?)</h2>
 			</div>
-			<div class="border-grey-400 border-4">
+			<div class="">
 				<PathwayForm
 					choices={data.pathway.choices}
 					query={data.pathway.query}
 					onChange={updateQueryParam}
 				/>
 			</div>
-			<div class="border-grey-400 border-4">
+			<div class="rounded-lg border-4 p-2">
 				<ul>
 					<li>Global budget: {data.result.pathwayStats.total.toFixed(2)} GtCO2</li>
 					<li>Used since 1850-2021: {data.result.pathwayStats.used.toFixed(2)} GtCO2</li>
@@ -58,7 +58,7 @@
 			</div>
 		</div>
 		<div class="flex grow flex-col gap-4">
-			<div class="border-grey-400 grow border-4">
+			<div class="grow p-4 shadow-lg">
 				<Pathway>
 					<Line data={data.result.historicalCarbon} x={'time'} y={'value'} stroke="black" />
 					<Line data={data.result.pathwayCarbon} x={'time'} y={'mean'} stroke={ipcc_stroke_green} />
@@ -85,11 +85,11 @@
 					{/if}
 					<!--
 					<Gap year={2030} name="Ambition" from={ndc.find(d => d.Time === 2030)} to={co2remaining.find(d => d.Time === 2030)}>
-					<Gap year={2030} name="Emission" from={currentpolicy.find(d => d.Time === 2030)} to={co2remaining.find(d => d.Time === 2030)}> 
+					<Gap year={2030} name="Emission" from={currentpolicy.find(d => d.Time === 2030)} to={co2remaining.find(d => d.Time === 2030)}>
 					-->
 				</Pathway>
 			</div>
-			<div class="border-grey-400 border-4">
+			<div class="p-4 shadow-lg">
 				<h1>Difference between your scenario and current policy</h1>
 				<ul>
 					<li>Ambition gap: {data.result.ambitionGap.toFixed(2)} GtCO2</li>
@@ -97,13 +97,13 @@
 				</ul>
 			</div>
 		</div>
-		<div class="flex h-full flex-col justify-between gap-4">
+		<div class="flex h-full flex-col justify-between gap-4 p-4 shadow-lg">
 			<div>
 				<h1 class="text-xl">Policy pathways</h1>
 				<!-- <h2>(Currenty policy)</h2> -->
 				<h2>(Waar kom ik nu eigenlijk?)</h2>
 			</div>
-			<div class="border-grey-400 grow border-4">
+			<div class="grow">
 				<ul>
 					<li>
 						<label
