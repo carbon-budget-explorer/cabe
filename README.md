@@ -9,8 +9,33 @@ Web application to explore carbon budgets
 Should have the following data files:
 
 1. `data/xr_total.nc` - NetCDF v3 file with totals
-2. `data/xr_budgets_scenario.nc`- NetCDF v3 file with scenarios
-3. `data/ne_110m_admin_0_countries.geojson` - can be downloaded with `npm run download:borders`
+2. `data/ne_110m_admin_0_countries.geojson` - can be downloaded with `npm run download:borders`
+
+Convert xr_total.nc to netcdf4 with
+
+```python
+import xarray as xr
+
+ds = xr.open_dataset("xr_total.nc")
+
+
+ds.to_netcdf(
+    "xr_total4.nc",
+    encoding={
+        "Region": {"dtype": "str"},
+        "Scenario": {"dtype": "str"},
+        "Model": {"dtype": "str"},
+        "Temperature": {"dtype": "str"},
+        "Negative_emissions": {"dtype": "str"},
+        "Non_CO2_mitigation_potential": {"dtype": "str"},
+        "Risk_of_exceedance": {"dtype": "str"},
+        "GF": {"zlib": True, "complevel": 9},
+        # TODO also compress other vars?
+    },
+    format="NETCDF4",
+    engine="netcdf4",
+)
+```
 
 ## Developing
 
