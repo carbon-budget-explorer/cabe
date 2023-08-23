@@ -17,7 +17,7 @@
 	export let x = 'x';
 	export let y0 = 'y0';
 	export let y1 = 'y1';
-	export let fill = '#ab00d6';
+	export let color = '#ab00d6';
 
 	$: shade = area<Record<string, number>>()
 		.x((d) => $xScale(d[x]))
@@ -27,10 +27,10 @@
 	$: path = shade(data);
 </script>
 
-<path class="path-area" d={path} {fill} />
+<path class="path-area" d={path} fill={color} />
 
 <style>
 	.path-area {
-		fill-opacity: 0.8;
+		fill-opacity: 0.5;
 	}
 </style>

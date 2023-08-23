@@ -11,14 +11,10 @@
 	export let data: PageData;
 
 	// TODO generalize to colormap component or so
-	const ipcc_fill_green = '#dbe3d2';
-	const ipcc_stroke_green = '#82a56e';
-	const ipcc_fill_red = '#f39995';
-	const ipcc_fill2_red = '#f3c6c5'; // lighter
-	const ipcc_stroke_red = '#f5331e';
-	const ipcc_fill_blue = '#c2e0e7';
-	const ipcc_stroke_blue = '#5bb0c6';
-	const ipcc_stroke_purple = '#a67ab8';
+	const ipcc_green = '#82a56e';
+	const ipcc_red = '#f5331e';
+	const ipcc_blue = '#5bb0c6';
+	const ipcc_purple = '#a67ab8';
 
 	function updateQueryParam(name: string, value: string) {
 		if (browser) {
@@ -37,10 +33,10 @@
 
 <div class="flex h-full flex-col items-center">
 	<div class="flex w-full grow flex-row justify-between gap-4">
-		<div class="flex flex-col gap-4 p-4 shadow-lg">
+		<div class="flex max-w-[25%] flex-col gap-4 p-4 shadow-lg">
 			<div>
-				<h1 class="text-xl">Choosing your pathway</h1>
-				<h2>(Wat wil ik?)</h2>
+				<h1 class="text-xl">Compose your pathway</h1>
+				<h2>Choose from the options below and see how it affects the remaining carbon budget.</h2>
 			</div>
 			<div class="">
 				<PathwayForm
@@ -52,7 +48,7 @@
 			<div class="rounded-lg border-4 p-2">
 				<ul>
 					<li>Global budget: {data.result.pathwayStats.total.toFixed(2)} GtCO2</li>
-					<li>Used since 1850-2021: {data.result.pathwayStats.used.toFixed(2)} GtCO2</li>
+					<li>Used 1850-2021: {data.result.pathwayStats.used.toFixed(2)} GtCO2</li>
 					<li>Remaining till 2050: {data.result.pathwayStats.remaining.toFixed(2)} GtCO2</li>
 				</ul>
 			</div>
@@ -60,28 +56,23 @@
 		<div class="flex grow flex-col gap-4">
 			<div class="grow p-4 shadow-lg">
 				<Pathway>
-					<Line data={data.result.historicalCarbon} x={'time'} y={'value'} stroke="black" />
-					<Line data={data.result.pathwayCarbon} x={'time'} y={'mean'} stroke={ipcc_stroke_green} />
+					<Line data={data.result.historicalCarbon} x={'time'} y={'value'} color="black" />
+					<Line data={data.result.pathwayCarbon} x={'time'} y={'mean'} color={ipcc_green} />
 					<Area
 						data={data.result.pathwayCarbon}
 						x={'time'}
 						y0={'min'}
 						y1={'max'}
-						fill={ipcc_fill_green}
+						color={ipcc_green}
 					/>
 					{#if policyPathwayToggles.current}
-						<Line
-							data={data.result.currentPolicy}
-							x={'time'}
-							y={'value'}
-							stroke={ipcc_stroke_red}
-						/>
+						<Line data={data.result.currentPolicy} x={'time'} y={'value'} color={ipcc_red} />
 					{/if}
 					{#if policyPathwayToggles.ndc}
-						<Line data={data.result.ndc} x={'time'} y={'value'} stroke={ipcc_stroke_blue} />
+						<Line data={data.result.ndc} x={'time'} y={'value'} color={ipcc_blue} />
 					{/if}
 					{#if policyPathwayToggles.netzero}
-						<Line data={data.result.netzero} x={'time'} y={'value'} stroke={ipcc_stroke_purple} />
+						<Line data={data.result.netzero} x={'time'} y={'value'} color={ipcc_purple} />
 					{/if}
 					<!--
 					<Gap year={2030} name="Ambition" from={ndc.find(d => d.Time === 2030)} to={co2remaining.find(d => d.Time === 2030)}>
@@ -97,11 +88,11 @@
 				</ul>
 			</div>
 		</div>
-		<div class="flex h-full flex-col justify-between gap-4 p-4 shadow-lg">
+		<div class="flex h-full max-w-[25%] flex-col justify-between gap-4 p-4 shadow-lg">
 			<div>
-				<h1 class="text-xl">Policy pathways</h1>
+				<h1 class="text-xl">Reference pathways</h1>
 				<!-- <h2>(Currenty policy)</h2> -->
-				<h2>(Waar kom ik nu eigenlijk?)</h2>
+				<h2>Compare your own pathway with the following references:</h2>
 			</div>
 			<div class="grow">
 				<ul>
