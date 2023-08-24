@@ -114,20 +114,23 @@
 			<div class="grow">
 				<ul>
 					<li>
-						<label
-							><input type="checkbox" bind:checked={policyPathwayToggles.current} />{' '}Current
+						<label>
+							<b style={`color: ${ipcc_red}`}>▬</b>
+							<input type="checkbox" bind:checked={policyPathwayToggles.current} />{' '}Current
 							policy</label
 						>
 					</li>
 					<li>
-						<label
-							><input type="checkbox" bind:checked={policyPathwayToggles.ndc} />{' '}Nationally
+						<label>
+							<b style={`color: ${ipcc_blue}`}>▬</b>
+							<input type="checkbox" bind:checked={policyPathwayToggles.ndc} />{' '}Nationally
 							determined contributions (NDCs)</label
 						>
 					</li>
 					<li>
-						<label
-							><input type="checkbox" bind:checked={policyPathwayToggles.netzero} />{' '}Net
+						<label>
+							<b style={`color: ${ipcc_purple}`}>▬</b>
+							<input type="checkbox" bind:checked={policyPathwayToggles.netzero} />{' '}Net
 							zero-scenarios</label
 						>
 					</li>
