@@ -10,6 +10,7 @@
 	import Area from '$lib/charts/components/Area.svelte';
 	import LineArray from '$lib/charts/components/LineArray.svelte';
 	import AreaArray from '$lib/charts/components/AreaArray.svelte';
+	import Gap from '$lib/charts/components/Gap.svelte';
 	export let data: PageData;
 
 	// TODO generalize to colormap component or so
@@ -26,11 +27,22 @@
 		}
 	}
 
+	function toggleAmbitionGap() {
+		ambitionGapHover = !ambitionGapHover;
+	}
+	function toggleEmissionGap() {
+		emissionGapHover = !emissionGapHover;
+	}
+
 	let policyPathwayToggles = {
 		current: true,
 		ndc: false,
 		netzero: false
 	};
+
+	let gapIndex = data.result.ndc.time.indexOf(2030);
+	let ambitionGapHover: boolean = false;
+	let emissionGapHover: boolean = false;
 </script>
 
 <div class="flex h-full flex-col items-center">
@@ -59,7 +71,7 @@
 			<div class="grow p-4 shadow-lg">
 				<Pathway>
 					<Line data={data.result.historicalCarbon} x={'time'} y={'value'} color="black" />
-					{#if policyPathwayToggles.current}
+					{#if policyPathwayToggles.current || ambitionGapHover}
 						<LineArray data={data.result.currentPolicy} x={'time'} y={'avg'} color={ipcc_red} />
 						<AreaArray
 							data={data.result.currentPolicy}
@@ -69,7 +81,7 @@
 							color={ipcc_red}
 						/>
 					{/if}
-					{#if policyPathwayToggles.ndc}
+					{#if policyPathwayToggles.ndc || emissionGapHover}
 						<LineArray data={data.result.ndc} x={'time'} y={'avg'} color={ipcc_blue} />
 						<AreaArray data={data.result.ndc} x={'time'} y0={'min'} y1={'max'} color={ipcc_blue} />
 					{/if}
@@ -83,10 +95,24 @@
 							color={ipcc_purple}
 						/>
 					{/if}
-					<!--
-					<Gap year={2030} name="Ambition" from={ndc.find(d => d.Time === 2030)} to={co2remaining.find(d => d.Time === 2030)}>
-					<Gap year={2030} name="Emission" from={currentpolicy.find(d => d.Time === 2030)} to={co2remaining.find(d => d.Time === 2030)}>
-					-->
+
+					{#if ambitionGapHover}
+						<Gap
+							x={2030}
+							name="Emission"
+							y0={data.result.currentPolicy.avg[gapIndex]}
+							y1={data.result.pathwayCarbon.find((d) => d.time === 2030)?.mean || 0}
+						/>
+					{/if}
+					{#if emissionGapHover}
+						<Gap
+							x={2030}
+							name="Ambition"
+							y0={data.result.ndc.avg[gapIndex]}
+							y1={data.result.pathwayCarbon.find((d) => d.time === 2030)?.mean || 0}
+						/>
+					{/if}
+
 					<Line data={data.result.pathwayCarbon} x={'time'} y={'mean'} color={ipcc_green} />
 					<Area
 						data={data.result.pathwayCarbon}
@@ -100,8 +126,16 @@
 			<div class="p-4 shadow-lg">
 				<h1>Difference between your scenario and current policy</h1>
 				<ul>
-					<li>Ambition gap: {data.result.ambitionGap.toFixed(2)} GtCO2</li>
-					<li>Emission gap: {data.result.emissionGap.toFixed(2)} GtCO2</li>
+					<li on:mouseenter={toggleAmbitionGap} on:mouseleave={toggleAmbitionGap}>
+						<span class="cursor-grab hover:bg-slate-200">
+							Ambition gap: {data.result.ambitionGap.toFixed(2)} GtCO2
+						</span>
+					</li>
+					<li on:mouseenter={toggleEmissionGap} on:mouseleave={toggleEmissionGap}>
+						<span class="cursor-grab hover:bg-slate-200">
+							Emission gap: {data.result.emissionGap.toFixed(2)} GtCO2
+						</span>
+					</li>
 				</ul>
 			</div>
 		</div>
