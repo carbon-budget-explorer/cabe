@@ -7,7 +7,7 @@
 	export let yDomain: [number, number] = [-15_000, 51_000];
 </script>
 
-<div class="h-full w-full pb-5 pl-12 pr-5 pt-1">
+<div class="h-full w-full overflow-clip pb-5 pl-12 pr-5 pt-1">
 	<LayerCake {xDomain} {yDomain}>
 		<Svg>
 			<AxisX gridlines={true} />

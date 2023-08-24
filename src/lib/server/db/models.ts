@@ -1,7 +1,7 @@
 import { principles } from '$lib/principles';
 import { ds } from './data';
 import type { SpatialMetric, TemnporalMetric } from './utils';
-import { InclusiveSlice, type DataArraySelection } from './xarray';
+import { InclusiveSlice, type DataArraySelection, reshape, describe } from './xarray';
 
 export interface PathWayQuery {
 	temperature: string;
@@ -273,16 +273,21 @@ const policyMap = {
 	netzero: 'NetZero'
 } as const;
 
-function policyPathway(policy: keyof typeof policyMap, Region: string, Model = 'IMAGE 3.2') {
+function policyPathway(policy: keyof typeof policyMap, Region: string) {
 	// TODO calculate meean, min and max over all models
 	// tricky because sel() returns a 1d array with Time and Model as coords
 	const Time = new InclusiveSlice(2021, 2100);
-	const values = ds.data_vars[policyMap[policy]].sel({ Model, Region, Time });
+	const modelValues = ds.data_vars[policyMap[policy]].sel({ Region, Time });
+
 	const years = ds.coords.Time.sel(Time) as number[];
-	return values.map((value, i) => ({
-		time: years[i],
-		value
-	}));
+	const models = ds.coords.Model.values as string[];
+	// TODO figure out which dimemsions sel returns
+	const values = reshape(modelValues, [models.length, years.length]);
+
+	return {
+		time: years,
+		...describe(values)
+	};
 }
 
 export function currentPolicy(Region = 'WORLD') {

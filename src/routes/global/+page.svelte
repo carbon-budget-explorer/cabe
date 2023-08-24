@@ -8,6 +8,8 @@
 	import Pathway from '$lib/charts/Pathway.svelte';
 	import Line from '$lib/charts/components/Line.svelte';
 	import Area from '$lib/charts/components/Area.svelte';
+	import LineArray from '$lib/charts/components/LineArray.svelte';
+	import AreaArray from '$lib/charts/components/AreaArray.svelte';
 	export let data: PageData;
 
 	// TODO generalize to colormap component or so
@@ -57,6 +59,34 @@
 			<div class="grow p-4 shadow-lg">
 				<Pathway>
 					<Line data={data.result.historicalCarbon} x={'time'} y={'value'} color="black" />
+					{#if policyPathwayToggles.current}
+						<LineArray data={data.result.currentPolicy} x={'time'} y={'avg'} color={ipcc_red} />
+						<AreaArray
+							data={data.result.currentPolicy}
+							x={'time'}
+							y0={'min'}
+							y1={'max'}
+							color={ipcc_red}
+						/>
+					{/if}
+					{#if policyPathwayToggles.ndc}
+						<LineArray data={data.result.ndc} x={'time'} y={'avg'} color={ipcc_blue} />
+						<AreaArray data={data.result.ndc} x={'time'} y0={'min'} y1={'max'} color={ipcc_blue} />
+					{/if}
+					{#if policyPathwayToggles.netzero}
+						<LineArray data={data.result.netzero} x={'time'} y={'avg'} color={ipcc_purple} />
+						<AreaArray
+							data={data.result.netzero}
+							x={'time'}
+							y0={'min'}
+							y1={'max'}
+							color={ipcc_purple}
+						/>
+					{/if}
+					<!--
+					<Gap year={2030} name="Ambition" from={ndc.find(d => d.Time === 2030)} to={co2remaining.find(d => d.Time === 2030)}>
+					<Gap year={2030} name="Emission" from={currentpolicy.find(d => d.Time === 2030)} to={co2remaining.find(d => d.Time === 2030)}>
+					-->
 					<Line data={data.result.pathwayCarbon} x={'time'} y={'mean'} color={ipcc_green} />
 					<Area
 						data={data.result.pathwayCarbon}
@@ -65,19 +95,6 @@
 						y1={'max'}
 						color={ipcc_green}
 					/>
-					{#if policyPathwayToggles.current}
-						<Line data={data.result.currentPolicy} x={'time'} y={'value'} color={ipcc_red} />
-					{/if}
-					{#if policyPathwayToggles.ndc}
-						<Line data={data.result.ndc} x={'time'} y={'value'} color={ipcc_blue} />
-					{/if}
-					{#if policyPathwayToggles.netzero}
-						<Line data={data.result.netzero} x={'time'} y={'value'} color={ipcc_purple} />
-					{/if}
-					<!--
-					<Gap year={2030} name="Ambition" from={ndc.find(d => d.Time === 2030)} to={co2remaining.find(d => d.Time === 2030)}>
-					<Gap year={2030} name="Emission" from={currentpolicy.find(d => d.Time === 2030)} to={co2remaining.find(d => d.Time === 2030)}>
-					-->
 				</Pathway>
 			</div>
 			<div class="p-4 shadow-lg">
