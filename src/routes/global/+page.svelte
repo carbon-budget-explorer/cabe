@@ -1,46 +1,23 @@
 <script lang="ts">
 	import type { PageData } from '../global/$types';
 
-	import GlobalBudgetForm from '$lib/PathwayForm.svelte';
-	import TimeSeries from '$lib/charts/TimeSeries.svelte';
-	import type { LineValue } from '$lib/charts/components/MultiLine';
-	import type { TimeSeriesValue } from '$lib/server/db/models';
+	import PathwayForm from '$lib/PathwayForm.svelte';
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import Pathway from '$lib/charts/Pathway.svelte';
+	import Line from '$lib/charts/components/Line.svelte';
+	import Area from '$lib/charts/components/Area.svelte';
+	import LineArray from '$lib/charts/components/LineArray.svelte';
+	import AreaArray from '$lib/charts/components/AreaArray.svelte';
+	import Gap from '$lib/charts/components/Gap.svelte';
 	export let data: PageData;
 
 	// TODO generalize to colormap component or so
-	const ipcc_fill_green = '#dbe3d2';
-	const ipcc_stroke_green = '#82a56e';
-	const ipcc_fill_red = '#f39995';
-	const ipcc_fill2_red = '#f3c6c5'; // lighter
-	const ipcc_stroke_red = '#f5331e';
-	const ipcc_fill_blue = '#c2e0e7';
-	const ipcc_stroke_blue = '#5bb0c6';
-
-	function tsDataToLine(d: TimeSeriesValue): LineValue {
-		return {
-			x: d.time,
-			y: d.mean,
-			ymin: d.min,
-			ymax: d.max
-		};
-	}
-	$: carbonTSData = [
-		{
-			name: data.result.pathwayCarbon.name,
-			values: data.result.pathwayCarbon.values.map(tsDataToLine),
-			fill: ipcc_fill_green,
-			stroke: ipcc_stroke_green
-		},
-		{
-			name: data.result.historicalCarbon.name,
-			values: data.result.historicalCarbon.values.map(tsDataToLine),
-			fill: 'black',
-			stroke: 'black'
-		}
-	];
+	const ipcc_green = '#82a56e';
+	const ipcc_red = '#f5331e';
+	const ipcc_blue = '#5bb0c6';
+	const ipcc_purple = '#a67ab8';
 
 	function updateQueryParam(name: string, value: string) {
 		if (browser) {
@@ -49,61 +26,148 @@
 			goto(`?${params.toString()}`);
 		}
 	}
+
+	function toggleAmbitionGap() {
+		ambitionGapHover = !ambitionGapHover;
+	}
+	function toggleEmissionGap() {
+		emissionGapHover = !emissionGapHover;
+	}
+
+	let policyPathwayToggles = {
+		current: true,
+		ndc: false,
+		netzero: false
+	};
+
+	let gapIndex = data.result.ndc.time.indexOf(2030);
+	let ambitionGapHover: boolean = false;
+	let emissionGapHover: boolean = false;
 </script>
 
-<div class="border-grey-4 border-grey flex h-full w-full flex-col items-center border-4">
-	<div class="flex h-full w-full flex-row justify-between gap-4">
-		<div class="flex flex-col gap-4">
+<div class="flex h-full flex-col items-center">
+	<div class="flex w-full grow flex-row justify-between gap-4">
+		<div class="flex max-w-[25%] flex-col gap-4 p-4 shadow-lg">
 			<div>
-				<h1 class="text-xl">Choosing your pathway</h1>
-				<h2>(Wat wil ik?)</h2>
+				<h1 class="text-xl">Compose your pathway</h1>
+				<h2>Choose from the options below and see how it affects the remaining carbon budget.</h2>
 			</div>
-			<div class="border-grey-400 border-4">
-				<GlobalBudgetForm choices={data.choices} query={data.query} onChange={updateQueryParam} />
+			<div class="">
+				<PathwayForm
+					choices={data.pathway.choices}
+					query={data.pathway.query}
+					onChange={updateQueryParam}
+				/>
 			</div>
-			<div class="border-grey-400 border-4">
+			<div class="rounded-lg border-4 p-2">
 				<ul>
 					<li>Global budget: {data.result.pathwayStats.total.toFixed(2)} GtCO2</li>
-					<li>Used since 1850-2021: {data.result.pathwayStats.used.toFixed(2)} GtCO2</li>
+					<li>Used 1850-2021: {data.result.pathwayStats.used.toFixed(2)} GtCO2</li>
 					<li>Remaining till 2050: {data.result.pathwayStats.remaining.toFixed(2)} GtCO2</li>
 				</ul>
 			</div>
 		</div>
 		<div class="flex grow flex-col gap-4">
-			<div class="border-grey-400 grow border-4">
-				<TimeSeries data={carbonTSData} />
+			<div class="grow p-4 shadow-lg">
+				<Pathway>
+					<Line data={data.result.historicalCarbon} x={'time'} y={'value'} color="black" />
+					{#if policyPathwayToggles.current || ambitionGapHover}
+						<LineArray data={data.result.currentPolicy} x={'time'} y={'avg'} color={ipcc_red} />
+						<AreaArray
+							data={data.result.currentPolicy}
+							x={'time'}
+							y0={'min'}
+							y1={'max'}
+							color={ipcc_red}
+						/>
+					{/if}
+					{#if policyPathwayToggles.ndc || emissionGapHover}
+						<LineArray data={data.result.ndc} x={'time'} y={'avg'} color={ipcc_blue} />
+						<AreaArray data={data.result.ndc} x={'time'} y0={'min'} y1={'max'} color={ipcc_blue} />
+					{/if}
+					{#if policyPathwayToggles.netzero}
+						<LineArray data={data.result.netzero} x={'time'} y={'avg'} color={ipcc_purple} />
+						<AreaArray
+							data={data.result.netzero}
+							x={'time'}
+							y0={'min'}
+							y1={'max'}
+							color={ipcc_purple}
+						/>
+					{/if}
 
-				<!-- <GlobalBudgetChart {xDomain} {yDomain}>
-					<AreaLine {co2remaining}/>
-					<Line {co2historical}/>
-					<AreaLine {currentpolicy}/>
-					<AreaLine {ndc}/>
-					<AreaLine {netzero}/>
-					<Gap year={2030} name="Ambition" from={ndc.find(d => d.Time === 2030)} to={co2remaining.find(d => d.Time === 2030)}>
-					<Gap year={2030} name="Emission" from={currentpolicy.find(d => d.Time === 2030)} to={co2remaining.find(d => d.Time === 2030)}>
-				</GlobalBudgetChart> -->
+					{#if ambitionGapHover}
+						<Gap
+							x={2030}
+							name="Emission"
+							y0={data.result.currentPolicy.avg[gapIndex]}
+							y1={data.result.pathwayCarbon.find((d) => d.time === 2030)?.mean || 0}
+						/>
+					{/if}
+					{#if emissionGapHover}
+						<Gap
+							x={2030}
+							name="Ambition"
+							y0={data.result.ndc.avg[gapIndex]}
+							y1={data.result.pathwayCarbon.find((d) => d.time === 2030)?.mean || 0}
+						/>
+					{/if}
+
+					<Line data={data.result.pathwayCarbon} x={'time'} y={'mean'} color={ipcc_green} />
+					<Area
+						data={data.result.pathwayCarbon}
+						x={'time'}
+						y0={'min'}
+						y1={'max'}
+						color={ipcc_green}
+					/>
+				</Pathway>
 			</div>
-			<div class="border-grey-400 border-4">
+			<div class="p-4 shadow-lg">
 				<h1>Difference between your scenario and current policy</h1>
 				<ul>
-					<li>Ambition gap: XXX GtCO2</li>
-					<li>Emission gap: XXX GtCO2</li>
+					<li on:mouseenter={toggleAmbitionGap} on:mouseleave={toggleAmbitionGap}>
+						<span class="cursor-grab hover:bg-slate-200">
+							Ambition gap: {data.result.ambitionGap.toFixed(2)} GtCO2
+						</span>
+					</li>
+					<li on:mouseenter={toggleEmissionGap} on:mouseleave={toggleEmissionGap}>
+						<span class="cursor-grab hover:bg-slate-200">
+							Emission gap: {data.result.emissionGap.toFixed(2)} GtCO2
+						</span>
+					</li>
 				</ul>
 			</div>
 		</div>
-		<div class="flex h-full flex-col justify-between gap-4">
+		<div class="flex h-full max-w-[25%] flex-col justify-between gap-4 p-4 shadow-lg">
 			<div>
-				<h1 class="text-xl">Policy pathways</h1>
+				<h1 class="text-xl">Reference pathways</h1>
 				<!-- <h2>(Currenty policy)</h2> -->
-				<h2>(Waar kom ik nu eigenlijk?)</h2>
+				<h2>Compare your own pathway with the following references:</h2>
 			</div>
-			<div class="border-grey-400 grow border-4">
+			<div class="grow">
 				<ul>
-					<li><label><input type="checkbox" checked />{' '}Current policy</label></li>
 					<li>
-						<label><input type="checkbox" />{' '}Nationally determined contributions (NDCs)</label>
+						<label>
+							<b style={`color: ${ipcc_red}`}>▬</b>
+							<input type="checkbox" bind:checked={policyPathwayToggles.current} />{' '}Current
+							policy</label
+						>
 					</li>
-					<li><label><input type="checkbox" />{' '}Net zero-scenarios</label></li>
+					<li>
+						<label>
+							<b style={`color: ${ipcc_blue}`}>▬</b>
+							<input type="checkbox" bind:checked={policyPathwayToggles.ndc} />{' '}Nationally
+							determined contributions (NDCs)</label
+						>
+					</li>
+					<li>
+						<label>
+							<b style={`color: ${ipcc_purple}`}>▬</b>
+							<input type="checkbox" bind:checked={policyPathwayToggles.netzero} />{' '}Net
+							zero-scenarios</label
+						>
+					</li>
 				</ul>
 			</div>
 
