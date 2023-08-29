@@ -15,7 +15,7 @@
 	export let x: number;
 	export let y0: number;
 	export let y1: number;
-	export let width: number = 20;
+	export let width = 20;
 
 	export let color = '#888888';
 </script>

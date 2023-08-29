@@ -11,6 +11,9 @@
 	import LineArray from '$lib/charts/components/LineArray.svelte';
 	import AreaArray from '$lib/charts/components/AreaArray.svelte';
 	import Gap from '$lib/charts/components/Gap.svelte';
+	import { tweened } from 'svelte/motion';
+	import { cubicOut } from 'svelte/easing';
+
 	export let data: PageData;
 
 	// TODO generalize to colormap component or so
@@ -41,8 +44,21 @@
 	};
 
 	let gapIndex = data.result.ndc.time.indexOf(2030);
-	let ambitionGapHover: boolean = false;
-	let emissionGapHover: boolean = false;
+	let ambitionGapHover = false;
+	let emissionGapHover = false;
+
+	// Transitions
+	const tweenOptions = { duration: 1000, easing: cubicOut };
+	const globalBudgetCounter = tweened(data.result.pathwayStats.total, tweenOptions);
+	$: globalBudgetCounter.set(data.result.pathwayStats.total);
+	const remainingBudgetCounter = tweened(data.result.pathwayStats.remaining, tweenOptions);
+	$: remainingBudgetCounter.set(data.result.pathwayStats.remaining);
+	const pathwayCarbonTweened = tweened(data.result.pathwayCarbon, tweenOptions);
+	$: pathwayCarbonTweened.set(data.result.pathwayCarbon);
+	const emissionGapTweened = tweened(data.result.emissionGap, tweenOptions);
+	$: emissionGapTweened.set(data.result.emissionGap);
+	const ambitionGapTweened = tweened(data.result.ambitionGap, tweenOptions);
+	$: ambitionGapTweened.set(data.result.ambitionGap);
 </script>
 
 <div class="flex h-full flex-col items-center">
@@ -61,9 +77,9 @@
 			</div>
 			<div class="rounded-lg border-4 p-2">
 				<ul>
-					<li>Global budget: {data.result.pathwayStats.total.toFixed(2)} GtCO2</li>
+					<li>Global budget: {$globalBudgetCounter.toFixed(2)} GtCO2</li>
 					<li>Used 1850-2021: {data.result.pathwayStats.used.toFixed(2)} GtCO2</li>
-					<li>Remaining till 2050: {data.result.pathwayStats.remaining.toFixed(2)} GtCO2</li>
+					<li>Remaining till 2050: {$remainingBudgetCounter.toFixed(2)} GtCO2</li>
 				</ul>
 			</div>
 		</div>
@@ -99,28 +115,20 @@
 					{#if ambitionGapHover}
 						<Gap
 							x={2030}
-							name="Emission"
 							y0={data.result.currentPolicy.avg[gapIndex]}
-							y1={data.result.pathwayCarbon.find((d) => d.time === 2030)?.mean || 0}
+							y1={$pathwayCarbonTweened.find((d) => d.time === 2030)?.mean || 0}
 						/>
 					{/if}
 					{#if emissionGapHover}
 						<Gap
 							x={2030}
-							name="Ambition"
 							y0={data.result.ndc.avg[gapIndex]}
-							y1={data.result.pathwayCarbon.find((d) => d.time === 2030)?.mean || 0}
+							y1={$pathwayCarbonTweened.find((d) => d.time === 2030)?.mean || 0}
 						/>
 					{/if}
 
-					<Line data={data.result.pathwayCarbon} x={'time'} y={'mean'} color={ipcc_green} />
-					<Area
-						data={data.result.pathwayCarbon}
-						x={'time'}
-						y0={'min'}
-						y1={'max'}
-						color={ipcc_green}
-					/>
+					<Line data={$pathwayCarbonTweened} x={'time'} y={'mean'} color={ipcc_green} />
+					<Area data={$pathwayCarbonTweened} x={'time'} y0={'min'} y1={'max'} color={ipcc_green} />
 				</Pathway>
 			</div>
 			<div class="p-4 shadow-lg">
@@ -128,12 +136,12 @@
 				<ul>
 					<li on:mouseenter={toggleAmbitionGap} on:mouseleave={toggleAmbitionGap}>
 						<span class="cursor-grab hover:bg-slate-200">
-							Ambition gap: {data.result.ambitionGap.toFixed(2)} GtCO2
+							Ambition gap: {$ambitionGapTweened.toFixed(2)} GtCO2
 						</span>
 					</li>
 					<li on:mouseenter={toggleEmissionGap} on:mouseleave={toggleEmissionGap}>
 						<span class="cursor-grab hover:bg-slate-200">
-							Emission gap: {data.result.emissionGap.toFixed(2)} GtCO2
+							Emission gap: {$emissionGapTweened.toFixed(2)} GtCO2
 						</span>
 					</li>
 				</ul>
