@@ -44,8 +44,8 @@
 	};
 
 	let gapIndex = data.result.ndc.time.indexOf(2030);
-	let ambitionGapHover: boolean = false;
-	let emissionGapHover: boolean = false;
+	let ambitionGapHover = false;
+	let emissionGapHover = false;
 
 	// Transitions
 	const tweenOptions = { duration: 1000, easing: cubicOut };
