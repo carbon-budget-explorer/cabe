@@ -214,3 +214,64 @@ export class Dataset {
 		return Object.fromEntries(dataArrays.map((v) => [v.name, v]));
 	}
 }
+
+export function reshape(values: number[], shape: number[]) {
+	const result = [];
+	// TODO handle more than 2 dimensions
+	for (let i = 0; i < shape[0]; i++) {
+		const row = [];
+		for (let j = 0; j < shape[1]; j++) {
+			row.push(values[i * shape[1] + j]);
+		}
+		result.push(row);
+	}
+	return result;
+}
+
+interface Description {
+	max: number[];
+	min: number[];
+	avg: number[];
+}
+
+/**
+ * Calculates statistics for a 2D array of numbers.
+ * @param values The 2D array of numbers to calculate statistics for.
+ * @param axis The axis to calculate statistics along. Defaults to 1.
+ * @returns An object containing the calculated statistics.
+ */
+export function describe(values: number[][], axis = 1): Description {
+	// TODO handle axis<>1
+	const otheraxis = axis ? 0 : 1;
+	// TODO handle more than 2 dimensions
+	const shape = [values.length, values[0].length];
+	const rawstats: Description & Record<'nans' | 'sum', number[]> = {
+		max: new Array(shape[axis]).fill(Number.MIN_VALUE),
+		min: new Array(shape[axis]).fill(Number.MAX_VALUE),
+		sum: new Array(shape[axis]).fill(0),
+		avg: new Array(shape[axis]).fill(0),
+		nans: new Array(shape[axis]).fill(0)
+	};
+	for (let i = 0; i < shape[otheraxis]; i++) {
+		for (let j = 0; j < shape[axis]; j++) {
+			const k = axis === 1 ? j : i;
+			const v = values[i][j];
+			if (Number.isNaN(v)) {
+				rawstats.nans[k] += 1;
+				continue;
+			}
+			if (v > rawstats.max[k]) {
+				rawstats.max[k] = v;
+			}
+			if (v < rawstats.min[k]) {
+				rawstats.min[k] = v;
+			}
+			rawstats.sum[k] += v;
+		}
+	}
+	for (let i = 0; i < shape[axis]; i++) {
+		rawstats.avg[i] = rawstats.sum[i] / (shape[otheraxis] - rawstats.nans[i]);
+	}
+	const { nans, sum, ...stats } = rawstats;
+	return stats;
+}
