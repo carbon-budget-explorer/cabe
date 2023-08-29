@@ -42,63 +42,94 @@
 	}
 
 	let showCountriesPanel = false;
+	let showSettngsPanel = false;
 </script>
 
-<h1 class="text-3xl font-bold">World explorer</h1>
-<main class="flex flex-row justify-between gap-4">
-	<div class="flex flex-col gap-4">
-		<details>
-			<summary>Global</summary>
-			<GlobalBudgetForm
+<main class="flex h-full max-h-full w-full flex-row gap-2">
+	<div class="flex grow flex-col">
+		<div class="relative h-full w-full">
+			<div class="absolute left-4 top-4">
+				<button class="text-xl" on:click={() => showSettngsPanel = !showSettngsPanel}>⚙</button>
+				{#if showSettngsPanel}
+				<div class="bg-slate-50 shadow-lg p-2">
+						<GlobalBudgetForm
 				choices={data.pathway.choices}
 				query={data.pathway.query}
 				onChange={updateQueryParam}
-			/>
-		</details>
-		<div>
-			<p>Effort-sharing principle</p>
-			<div class="flex flex-col">
-				{#each data.effortSharing.choices as choice}
-					<!-- TODO render variable without label -->
-					<label>
-						<input
-							type="radio"
-							name="effortSharing"
-							value={choice}
-							checked={data.effortSharing.query === choice}
-							on:change={() => updateQueryParam('effortSharing', choice)}
-						/>
-						{principles.get(choice)}
-					</label>
-				{/each}
+					/>
+					<div class="flex flex-col pt-4">
+						<h2>Variable</h2>
+						<label>
+							<input type="radio" name="variable" value="CO2" checked />
+							Full century CO2 budget
+						</label>
+						<label>
+							<input type="radio" name="variable" value="CO2" checked />
+							Temperature assessment
+						</label>
+					</div>
+				</div>
+				{/if}
 			</div>
-		</div>
-		<div>
-			<div>
-				<!-- TODO disable year when ECPC is selected as it has no time dimension -->
-				<h3 class="text-xl">Year</h3>
-				<select bind:value={selectedYear} on:change={gotoYear}>
-					{#each data.years as year}
-						<option value={year}>
-							{year}
-						</option>
-					{/each}
-				</select>
+			<div class="h-full w-full bg-gray-200">
+				<div class="flex items-center justify-center h-full w-full">
+					Map
+				</div>
+			</div>
+			<div class="absolute bottom-2 flex w-full flex-row justify-center gap-2">
+				<button
+					class="relative h-20 w-48 bg-orange-400 object-center text-center shadow-lg border-2 border-orange-950"
+					title="Long description"
+				>
+					<p class="text-xl">Greenhouse development rights</p>
+					<p class="text-sm">Short description or image</p>
+					<a class="absolute right-1 top-1 inline-block text-xl" href="/about#grandfathering">ⓘ</a>
+				</button>
+				<button
+					class="relative h-20 w-48 bg-orange-200 object-center text-center shadow-lg"
+					title="Long description"
+				>
+					<p class="text-xl">Greenhouse development rights</p>
+					<p class="text-sm">Short description or image</p>
+					<a class="absolute right-1 top-1 inline-block text-xl" href="/about#grandfathering">ⓘ</a>
+				</button>
+				<button
+					class="relative h-20 w-48 bg-orange-200 object-center text-center shadow-lg"
+					title="Long description"
+				>
+					<p class="text-xl">Greenhouse development rights</p>
+					<p class="text-sm">Short description or image</p>
+					<a class="absolute right-1 top-1 inline-block text-xl" href="/about#grandfathering">ⓘ</a>
+				</button>
+				<button
+					class="relative h-20 w-48 bg-orange-200 object-center text-center shadow-lg"
+					title="Long description"
+				>
+					<p class="text-xl">Greenhouse development rights</p>
+					<p class="text-sm">Short description or image</p>
+					<a class="absolute right-1 top-1 inline-block text-xl" href="/about#grandfathering">ⓘ</a>
+				</button>
+				<button
+					class="relative h-20 w-48 bg-orange-200 object-center text-center shadow-lg"
+					title="Long description"
+				>
+					<p class="text-xl">Greenhouse development rights</p>
+					<p class="text-sm">Short description or image</p>
+					<a class="absolute right-1 top-1 inline-block text-xl" href="/about#grandfathering">ⓘ</a>
+				</button>
+				<button
+					class="relative h-20 w-48 bg-orange-200 object-center text-center shadow-lg"
+					title="Long description"
+				>
+					<p class="text-xl">Greenhouse development rights</p>
+					<p class="text-sm">Short description or image</p>
+					<a class="absolute right-1 top-1 inline-block text-xl" href="/about#grandfathering">ⓘ</a>
+				</button>
 			</div>
 		</div>
 	</div>
-	<div>
-		<div>
-			<p>
-				Make a selection by double clicking on a region. Use mouse wheel to zoom and drag to pan
-				map.
-			</p>
-
-			<VegaMap borders={data.borders} metrics={data.metrics} metricName={'CO2'} bind:region />
-			<p />
-		</div>
-	</div>
-	<div>
+	<!-- TODO make region filter have own scroll bar and not move map down -->
+	<div class="overflow-y-auto max-h-screen">
 		<button
 			title={showCountriesPanel ? 'Click to hide region list' : 'Click to search for region'}
 			on:click={() => (showCountriesPanel = !showCountriesPanel)}
