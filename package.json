@@ -12,7 +12,9 @@
 		"test:unit": "vitest",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"format": "prettier --plugin-search-dir . --write .",
-		"download:borders": "mkdir -p data && curl https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson -o data/ne_110m_admin_0_countries.geojson"
+		"download:borders": "mkdir -p data && curl https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson -o data/ne_110m_admin_0_countries.geojson",
+		"install:pydeps": "node src/install_python_deps.cjs",
+		"postinstall": "npm run install:pydeps"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",

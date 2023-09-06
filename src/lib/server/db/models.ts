@@ -1,7 +1,7 @@
 import { principles } from '$lib/principles';
-import { ds } from './data';
+import { ds, pyodide } from './data';
 import type { SpatialMetric, TemnporalMetric } from './utils';
-import { InclusiveSlice, type DataArraySelection, reshape, describe } from './xarray';
+import { slice, type DataArraySelection } from './xarray';
 
 export interface PathWayQuery {
 	temperature: string;
@@ -61,18 +61,19 @@ function negativeEmissions() {
 
 export function pathwayStats(query: PathWayQuery): PathwayStats {
 	// TODO check number, now returns 2171597.23 while we expect 3500Gt
-	const used = ds.data_vars.CO2_hist.sel({ Region: 'WORLD' })
-		.filter((d) => !Number.isNaN(d))
-		.reduce((a, b) => a + b, 0);
+	// ds.CO2_hist.sel(Region='WORLD')
+	const used: number = ds.CO2_hist.sel.callKwargs({ Region: 'WORLD' }).sum().tolist().toJs()[0];
 
-	const remaining = ds.data_vars.CO2_globe.sel({
-		Temperature: query.temperature,
-		Risk_of_exceedance: query.exceedanceRisk,
-		Negative_emissions: query.negativeEmissions,
-		Non_CO2_mitigation_potential: query.nonCO2Mitigation
-	})
-		.filter((d) => !Number.isNaN(d))
-		.reduce((a, b) => a + b, 0);
+	const remaining: number = ds.CO2_globe.sel
+		.callKwargs({
+			Temperature: query.temperature,
+			Risk_of_exceedance: query.exceedanceRisk,
+			Negative_emissions: query.negativeEmissions,
+			Non_CO2_mitigation_potential: query.nonCO2Mitigation
+		})
+		.sum()
+		.tolist()
+		.toJs()[0];
 
 	const total = used + remaining;
 
@@ -110,15 +111,21 @@ function arrays2TimeSeriesArea(time: number[], values: number[], err = 5000) {
 }
 
 export function pathwayCarbon(query: PathWayQuery) {
-	const Time = new InclusiveSlice(2021, 2100);
-	const values = ds.data_vars.CO2_globe.sel({
-		Temperature: query.temperature,
-		Risk_of_exceedance: query.exceedanceRisk,
-		Negative_emissions: query.negativeEmissions,
-		Non_CO2_mitigation_potential: query.nonCO2Mitigation,
-		Time
-	});
-	const years = ds.coords.Time.sel(Time) as number[];
+	// ds.CO2_globe.sel(Temperature='1.5 deg', Negative_emissions='Medium',
+	//   Non_CO2_mitigation_potential='Medium', Risk_of_exceedance='50%', Time=slice(2021,2100)
+	//)
+	const Time = slice(pyodide, 2021, 2100);
+	const values = ds.CO2_globe.sel
+		.callKwargs({
+			Temperature: query.temperature,
+			Risk_of_exceedance: query.exceedanceRisk,
+			Negative_emissions: query.negativeEmissions,
+			Non_CO2_mitigation_potential: query.nonCO2Mitigation,
+			Time
+		})
+		.values.tolist()
+		.toJs() as number[];
+	const years = ds.Time.sel.callKwargs({ Time }).values.tolist().toJs() as number[];
 
 	// TODO remove nans (what to do with them?)
 	// TODO also make time indexable (somehow)
@@ -128,24 +135,25 @@ export function pathwayCarbon(query: PathWayQuery) {
 }
 
 export function historicalCarbon() {
-	const Time = new InclusiveSlice(1990, 2021);
-	const values = ds.data_vars.CO2_hist.sel({
-		Region: 'WORLD',
-		Time
-	});
-	const years = ds.coords.Time.sel(Time) as number[];
-	return values.map((value, i) => ({
-		time: years[i],
-		value
-	}));
+	const Time = slice(pyodide, 1990, 2021);
+	const values = ds.CO2_hist.sel
+		.callKwargs({
+			Region: 'WORLD',
+			Time
+		})
+		.to_series()
+		.to_dict()
+		.toJs() as Record<number, number>[];
+	return values;
 }
 
 export function listFutureYears(): number[] {
-	return ds.coords.Time.sel(new InclusiveSlice(2021, 2100)) as number[];
+	const Time = slice(pyodide, 2021, 2100 + 1);
+	return ds.Time.sel.callKwargs(Time).values.tolist().toJs() as number[];
 }
 
 export function listRegions(): string[] {
-	return ds.coords.Region.values as string[];
+	return ds.Region.values.tolist().toJs() as string[];
 }
 
 export function listEffortSharings(): string[] {
@@ -200,12 +208,14 @@ export function effortSharingMap(
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
 
-	const values = ds.data_vars[effortSharing].sel(selection);
-	const regions = listRegions();
-	return Array.from(values).map((d, i) => ({
-		ISO: regions[i],
-		value: d
-	}));
+	const df = ds
+		.get(effortSharing)
+		.sel.callKwargs(selection)
+		.to_pandas()
+	// Index is called Region and column is unnamed
+	df.index.rename('ISO', true)
+	df.set('value', df.get(0))
+	return df.reset_index().to_json.callKwargs({ orient: 'records' }).toJs() as {ISO: string, value: number}[];
 }
 
 export function effortSharingRegion(
@@ -215,7 +225,7 @@ export function effortSharingRegion(
 	Scenario = 'SSP2',
 	Convergence_year = 2030
 ): TemnporalMetric[] {
-	const Time = new InclusiveSlice(2021, 2100);
+	const Time = slice(pyodide, 2021, 2100);
 	let selection: DataArraySelection = {};
 	const pathwaySelection = {
 		Temperature: pathwayQuery.temperature,
@@ -259,12 +269,9 @@ export function effortSharingRegion(
 	} else {
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
-	const values = ds.data_vars[effortSharing].sel(selection);
-	const years = ds.coords.Time.sel(Time) as number[];
-	return Array.from(values).map((value, i) => ({
-		Time: years[i],
-		value
-	}));
+	const df = ds.get(effortSharing).sel.callKwargs(selection).to_pandas()
+	df.set('value', df.get(0))
+	return df.reset_index().to_json.callKwargs({ orient: 'records' }).toJs() as {Time: number, value: number}[];
 }
 
 const policyMap = {
