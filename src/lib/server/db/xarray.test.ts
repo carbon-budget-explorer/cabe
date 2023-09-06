@@ -41,7 +41,7 @@ describe('open_dataset', () => {
 			let coord: any;
 
 			beforeAll(async () => {
-				coord = ds.Temperature
+				coord = ds.Temperature;
 				console.log(coord);
 			});
 

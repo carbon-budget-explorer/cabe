@@ -7,12 +7,12 @@ async function main() {
 	await micropip.install('xarray');
 	await micropip.install('netcdf4');
 
-    const xarray = await pyodide.pyimport("xarray");
-    console.log(xarray.__version__)
+	const xarray = await pyodide.pyimport('xarray');
+	console.log(xarray.__version__);
 
-    // TODO use lock file to install deps
-    // const lock = await micropip.freeze();
-    // console.log(lock)
+	// TODO use lock file to install deps
+	// const lock = await micropip.freeze();
+	// console.log(lock)
 }
 
 main().catch(console.error);

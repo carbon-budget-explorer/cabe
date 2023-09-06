@@ -1,27 +1,11 @@
-import {dirname, basename } from 'node:path';
+import { dirname, basename } from 'node:path';
 import type { PyodideInterface } from 'pyodide';
 
 export async function open_pyodide(): Promise<PyodideInterface> {
-	// TODO replace require() with es import, 
-	// but gives following error:
-	// Error: Cannot find module '/home/verhoes/git/carbon-budget-explorer/cabe/file:/home/verhoes/git/carbon-budget-explorer/cabe/node_modules/src/js/pyodide.asm.js' imported from /home/verhoes/git/carbon-budget-explorer/cabe/node_modules/pyodide/pyodide.mjs
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const { loadPyodide } = require('pyodide');
-	
+	const { loadPyodide } = await import('pyodide/pyodide.js');
+
 	const pyodide: PyodideInterface = await loadPyodide();
 	return pyodide;
-}
-
-export function slice(pyodide: PyodideInterface, start: number, stop?: number, step?: number) {
-	console.log(pyodide.globals)
-	const slice = pyodide.globals.get('slice')
-	console.log(slice)
-	if (step !== undefined && stop !== undefined) {
-		return slice(start, stop, step)
-	} else if (stop !== undefined) {
-		return slice(start, stop)
-	}
-	return slice(start)
 }
 
 export async function open_dataset(path: string, pyodide: PyodideInterface) {
@@ -33,23 +17,31 @@ export async function open_dataset(path: string, pyodide: PyodideInterface) {
 	await micropip.install('xarray');
 	await micropip.install('netcdf4');
 
-	const xarray = pyodide.pyimport("xarray");
+	const xarray = pyodide.pyimport('xarray');
 
-	const root = dirname(path)
-	const mountDir = "/mnt";
+	const root = dirname(path);
+	const mountDir = '/mnt';
 	pyodide.FS.mkdir(mountDir);
 	pyodide.FS.mount(pyodide.FS.filesystems.NODEFS, { root }, mountDir);
-	const ds = xarray.open_dataset(`${mountDir}/${basename(path)}`)
+	const ds = xarray.open_dataset(`${mountDir}/${basename(path)}`);
 	// TODO create type for ds
 	// now copy from Python and handle convertsion with guesswork
-	return ds
+	console.log(`Opened ${path} with pyodide+xarray`);
+	return ds;
 }
 
-export type CoordinateSelection =
-	| string
-	| number
-	| string[]
-	| number[]
-	| undefined;
+export function slice(pyodide: PyodideInterface, start: number, stop?: number, step?: number) {
+	console.log(pyodide.globals);
+	const slice = pyodide.globals.get('slice');
+	console.log(slice);
+	if (step !== undefined && stop !== undefined) {
+		return slice(start, stop, step);
+	} else if (stop !== undefined) {
+		return slice(start, stop);
+	}
+	return slice(start);
+}
+
+export type CoordinateSelection = string | number | string[] | number[] | undefined;
 
 export type DataArraySelection = Record<string, CoordinateSelection> | undefined;
