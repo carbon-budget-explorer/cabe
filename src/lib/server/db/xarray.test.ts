@@ -42,7 +42,6 @@ describe('open_dataset', () => {
 
 			beforeAll(async () => {
 				coord = ds.Temperature;
-				console.log(coord);
 			});
 
 			test('values', () => {

@@ -41,8 +41,6 @@
 		netzero: false
 	};
 
-	console.log(data.result);
-
 	let gapIndex = data.result.ndc.map((d) => d.time).indexOf(2030);
 	let ambitionGapHover = false;
 	let emissionGapHover = false;

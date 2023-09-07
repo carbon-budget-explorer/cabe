@@ -96,24 +96,17 @@ export interface TimeSeries {
 	values: TimeSeriesValue[];
 }
 
-function arrays2TimeSeriesArea(time: number[], values: number[], err = 5000) {
-	//  TODO get variable errors from additional data arrays
-	const toValues = (t: number, i: number) => ({
-		time: t,
-		mean: values[i],
-		min: values[i] - err,
-		max: values[i] + err
-	});
-
-	return Array.from(time).map(toValues);
-}
+/**
+ * make pyodide toJs(toJsOpts) return a list of JS object instead of list of Map instances
+ */
+const toJsOpts = { dict_converter: Object.fromEntries };
 
 export function pathwayCarbon(query: PathWayQuery) {
 	// ds.CO2_globe.sel(Temperature='1.5 deg', Negative_emissions='Medium',
 	//   Non_CO2_mitigation_potential='Medium', Risk_of_exceedance='50%', Time=slice(2021,2100)
 	//)
 	const Time = slice(pyodide, 2021, 2100);
-	const values = ds.CO2_globe.sel
+	let df = ds.CO2_globe.sel
 		.callKwargs({
 			Temperature: query.temperature,
 			Risk_of_exceedance: query.exceedanceRisk,
@@ -121,33 +114,46 @@ export function pathwayCarbon(query: PathWayQuery) {
 			Non_CO2_mitigation_potential: query.nonCO2Mitigation,
 			Time
 		})
-		.values.tolist()
-		.toJs() as number[];
-	const years = ds.Time.sel.callKwargs({ Time }).values.tolist().toJs() as number[];
+		.to_pandas();
+	df.index.rename('time', true);
+	df = df.reset_index();
+	df.set('mean', df.pop(0));
 
+	//  TODO get variable errors from additional data arrays
+	const err = 5000;
+	// df['min'] = df['mean'] - 5000
+	df.set('min', df.get('mean').__sub__(err));
+	df.set('max', df.get('mean').__add__(err));
 	// TODO remove nans (what to do with them?)
-	// TODO also make time indexable (somehow)
-	// TODO if no time index provided for .carbon, return all data
-
-	return arrays2TimeSeriesArea(years, values);
+	return df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as {
+		time: number;
+		mean: number;
+		max: number;
+		min: number;
+	}[];
 }
 
 export function historicalCarbon() {
 	const Time = slice(pyodide, 1990, 2021);
-	const values = ds.CO2_hist.sel
+	let df = ds.CO2_hist.sel
 		.callKwargs({
 			Region: 'WORLD',
 			Time
 		})
-		.to_pandas()
-		.to_dict()
-		.toJs() as Record<number, number>[];
+		.to_pandas();
+	df.index.rename('time', true);
+	df = df.reset_index();
+	df.set('value', df.pop(0));
+	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as Record<
+		number,
+		number
+	>[];
 	return values;
 }
 
 export function listFutureYears(): number[] {
 	const Time = slice(pyodide, 2021, 2100 + 1);
-	return ds.Time.sel.callKwargs(Time).values.tolist().toJs() as number[];
+	return ds.Time.sel.callKwargs({ Time }).values.tolist().toJs() as number[];
 }
 
 export function listRegions(): string[] {
@@ -165,7 +171,7 @@ export function effortSharingMap(
 	Time: number,
 	effortSharing: string,
 	Scenario = 'SSP2',
-	Convergence_year = 2030
+	Convergence_year = 2040
 ): SpatialMetric[] {
 	let selection: DataArraySelection = {};
 	const pathwaySelection = {
@@ -206,11 +212,12 @@ export function effortSharingMap(
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
 
-	const df = ds.get(effortSharing).sel.callKwargs(selection).to_pandas();
+	let df = ds.get(effortSharing).sel.callKwargs(selection).to_pandas();
 	// Index is called Region and column is unnamed
 	df.index.rename('ISO', true);
+	df = df.reset_index();
 	df.set('value', df.get(0));
-	return df.reset_index().to_json.callKwargs({ orient: 'records' }).toJs() as {
+	return df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as {
 		ISO: string;
 		value: number;
 	}[];
@@ -221,7 +228,7 @@ export function effortSharingRegion(
 	pathwayQuery: PathWayQuery,
 	effortSharing: string,
 	Scenario = 'SSP2',
-	Convergence_year = 2030
+	Convergence_year = 2040
 ): TemnporalMetric[] {
 	const Time = slice(pyodide, 2021, 2100);
 	let selection: DataArraySelection = {};
@@ -267,9 +274,10 @@ export function effortSharingRegion(
 	} else {
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
-	const df = ds.get(effortSharing).sel.callKwargs(selection).to_pandas();
-	df.set('value', df.get(0));
-	return df.reset_index().to_dict.callKwargs({ orient: 'records' }).toJs() as {
+	let df = ds.get(effortSharing).sel.callKwargs(selection).to_pandas();
+	df = df.reset_index();
+	df.set('value', df.pop(0));
+	return df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as {
 		Time: number;
 		value: number;
 	}[];
@@ -290,6 +298,8 @@ function policyPathway(policy: keyof typeof policyMap, Region: string) {
 		.drop('Region')
 		.groupby('Time');
 	const xr = pyodide.pyimport('xarray');
+	// TODO precompute mean, min and max
+	// instead of calculating them on the fly each time
 	const df = xr
 		.merge([
 			policy_ds.mean('Model').rename('mean'),
@@ -298,7 +308,7 @@ function policyPathway(policy: keyof typeof policyMap, Region: string) {
 		])
 		.to_pandas();
 	df.index.rename('time', true);
-	return df.reset_index().to_dict.callKwargs({ orient: 'records' }).toJs() as {
+	return df.reset_index().to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as {
 		time: number;
 		mean: number;
 		min: number;

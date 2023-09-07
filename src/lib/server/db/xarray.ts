@@ -31,9 +31,7 @@ export async function open_dataset(path: string, pyodide: PyodideInterface) {
 }
 
 export function slice(pyodide: PyodideInterface, start: number, stop?: number, step?: number) {
-	console.log(pyodide.globals);
 	const slice = pyodide.globals.get('slice');
-	console.log(slice);
 	if (step !== undefined && stop !== undefined) {
 		return slice(start, stop, step);
 	} else if (stop !== undefined) {
