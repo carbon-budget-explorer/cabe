@@ -1,9 +1,27 @@
-export const principles = new Map([
-	['GF', 'Grandfathering'],
-	['PC', 'Per capita'],
-	['PCC', 'Per capita convergence'],
-	['AP', 'Ability to pay'],
-	['GDR', 'Greenhouse development rights'],
-	['ECPC', 'Equal cumulative per capita'],
-	['None', 'None'] // TODO use better name? Or remove?
-]);
+export const principles = {
+	GF: {
+		label: 'Grandfathering',
+		summary: 'Past emissions levels.'
+	},
+	PC: {
+		label: 'Per capita',
+		summary: 'Population.'
+	},
+	PCC: {
+		label: 'Per capita convergence',
+		summary: 'Population with convergence in 2040.'
+	},
+	AP: {
+		label: 'Ability to pay',
+		summary: 'A country’s ability to pay for mitigation.'
+	},
+	GDR: {
+		label: 'Greenhouse development rights',
+		summary:
+			'Equalize per capita emissions across countries.'
+	},
+	ECPC: {
+		label: 'Equal cumulative per capita',
+		summary: 'A country’s cumulative emissions per capita.'
+	}
+} as const;

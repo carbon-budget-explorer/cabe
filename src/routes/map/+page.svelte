@@ -6,7 +6,6 @@
 	import GlobalBudgetForm from '$lib/PathwayForm.svelte';
 	import RegionFilter from '$lib/RegionFilter.svelte';
 
-	import VegaMap from '$lib/VegaMap.svelte';
 	import { principles } from '$lib/principles';
 	import type { PageData } from './$types';
 
@@ -24,22 +23,32 @@
 		currentTarget: EventTarget & (HTMLSelectElement | HTMLInputElement);
 	};
 
-	let selectedYear: number = data.year;
-	function gotoYear(event: ChangeEvent) {
-		if (browser) {
-			const params = new URLSearchParams($page.url.search);
-			params.set('year', event.currentTarget.value);
-			goto(`?${params.toString()}`);
-		}
-	}
-
 	function updateQueryParam(name: string, value: string) {
 		if (browser) {
 			const params = new URLSearchParams($page.url.search);
-			params.set(name, value);
-			goto(`?${params.toString()}`);
+			// TODO get called once instead of currently being called twice
+			if (params.get(name) !== value) {
+				params.set(name, value);
+				goto(`?${params.toString()}`);
+			}
 		}
 	}
+
+	function changeVariable(value: string) {
+		updateQueryParam('variable', value);
+	}
+	$: changeVariable(data.variable);
+
+	function selectEffortSharing(value: string) {
+		data.effortSharing = value as keyof typeof principles;
+	}
+
+	function changeEffortSharing(value: keyof typeof principles | undefined) {
+		if (value !== undefined) {
+			updateQueryParam('effortSharing', value);
+		}
+	}
+	$: changeEffortSharing(data.effortSharing);
 
 	let showCountriesPanel = false;
 	let showSettngsPanel = false;
@@ -49,87 +58,57 @@
 	<div class="flex grow flex-col">
 		<div class="relative h-full w-full">
 			<div class="absolute left-4 top-4">
-				<button class="text-xl" on:click={() => showSettngsPanel = !showSettngsPanel}>⚙</button>
+				<button class="text-xl" on:click={() => (showSettngsPanel = !showSettngsPanel)}>⚙</button>
 				{#if showSettngsPanel}
-				<div class="bg-slate-50 shadow-lg p-2">
+					<div class="bg-slate-50 p-2 shadow-lg">
+						<!-- TODO if variable is temp then disable warming temp radio group -->
 						<GlobalBudgetForm
-				choices={data.pathway.choices}
-				query={data.pathway.query}
-				onChange={updateQueryParam}
-					/>
-					<div class="flex flex-col pt-4">
-						<h2>Variable</h2>
-						<label>
-							<input type="radio" name="variable" value="CO2" checked />
-							Full century CO2 budget
-						</label>
-						<label>
-							<input type="radio" name="variable" value="CO2" checked />
-							Temperature assessment
-						</label>
+							choices={data.pathway.choices}
+							query={data.pathway.query}
+							onChange={updateQueryParam}
+						/>
+						<div class="flex flex-col pt-4">
+							<h2>Variable</h2>
+							<label>
+								<input type="radio" name="variable" value="budget" bind:group={data.variable} />
+								Full century CO2 budget
+							</label>
+							<label>
+								<input type="radio" name="variable" value="temp" bind:group={data.variable} />
+								Temperature assessment
+							</label>
+						</div>
 					</div>
-				</div>
 				{/if}
 			</div>
 			<div class="h-full w-full bg-gray-200">
-				<div class="flex items-center justify-center h-full w-full">
-					Map
-				</div>
+				<div class="flex h-full w-full items-center justify-center">Map</div>
 			</div>
 			<div class="absolute bottom-2 flex w-full flex-row justify-center gap-2">
-				<button
-					class="relative h-20 w-48 bg-orange-400 object-center text-center shadow-lg border-2 border-orange-950"
-					title="Long description"
-				>
-					<p class="text-xl">Greenhouse development rights</p>
-					<p class="text-sm">Short description or image</p>
-					<a class="absolute right-1 top-1 inline-block text-xl" href="/about#grandfathering">ⓘ</a>
-				</button>
-				<button
-					class="relative h-20 w-48 bg-orange-200 object-center text-center shadow-lg"
-					title="Long description"
-				>
-					<p class="text-xl">Greenhouse development rights</p>
-					<p class="text-sm">Short description or image</p>
-					<a class="absolute right-1 top-1 inline-block text-xl" href="/about#grandfathering">ⓘ</a>
-				</button>
-				<button
-					class="relative h-20 w-48 bg-orange-200 object-center text-center shadow-lg"
-					title="Long description"
-				>
-					<p class="text-xl">Greenhouse development rights</p>
-					<p class="text-sm">Short description or image</p>
-					<a class="absolute right-1 top-1 inline-block text-xl" href="/about#grandfathering">ⓘ</a>
-				</button>
-				<button
-					class="relative h-20 w-48 bg-orange-200 object-center text-center shadow-lg"
-					title="Long description"
-				>
-					<p class="text-xl">Greenhouse development rights</p>
-					<p class="text-sm">Short description or image</p>
-					<a class="absolute right-1 top-1 inline-block text-xl" href="/about#grandfathering">ⓘ</a>
-				</button>
-				<button
-					class="relative h-20 w-48 bg-orange-200 object-center text-center shadow-lg"
-					title="Long description"
-				>
-					<p class="text-xl">Greenhouse development rights</p>
-					<p class="text-sm">Short description or image</p>
-					<a class="absolute right-1 top-1 inline-block text-xl" href="/about#grandfathering">ⓘ</a>
-				</button>
-				<button
-					class="relative h-20 w-48 bg-orange-200 object-center text-center shadow-lg"
-					title="Long description"
-				>
-					<p class="text-xl">Greenhouse development rights</p>
-					<p class="text-sm">Short description or image</p>
-					<a class="absolute right-1 top-1 inline-block text-xl" href="/about#grandfathering">ⓘ</a>
-				</button>
+				{#each Object.entries(principles) as [id, { label, summary }]}
+					<button
+						class={data.effortSharing === id
+							? 'h-38 relative w-48 border-2 border-orange-950 bg-orange-400 object-center text-center shadow-lg'
+							: 'h-38 relative w-48 border-2 bg-orange-200 object-top text-center shadow-lg'}
+						disabled={data.effortSharing === id}
+						on:click={() => selectEffortSharing(id)}
+					>
+						<p class="text-xl">{label}</p>
+						<p class="text-sm">{summary}</p>
+						<a
+							class="absolute right-1 top-1 inline-block text-xl"
+							title="More information"
+							target="_blank"
+							rel="noopener"
+							href={`/about#${id}`}>ⓘ</a
+						>
+					</button>
+				{/each}
 			</div>
 		</div>
 	</div>
 	<!-- TODO make region filter have own scroll bar and not move map down -->
-	<div class="overflow-y-auto max-h-screen">
+	<div class="max-h-screen overflow-y-auto">
 		<button
 			title={showCountriesPanel ? 'Click to hide region list' : 'Click to search for region'}
 			on:click={() => (showCountriesPanel = !showCountriesPanel)}

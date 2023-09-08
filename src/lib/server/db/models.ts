@@ -1,4 +1,4 @@
-import { principles } from '$lib/principles';
+import type { principles } from '$lib/principles';
 import { ds, pyodide } from './data';
 import type { SpatialMetric, TemnporalMetric } from './utils';
 import { slice, type DataArraySelection } from './xarray';
@@ -160,16 +160,9 @@ export function listRegions(): string[] {
 	return ds.Region.values.tolist().toJs() as string[];
 }
 
-export function listEffortSharings(): string[] {
-	// Each effort sharing princple has its own data variable in the nc file
-	// TODO get effort sharing principles from nc file instead of static lookup
-	return Array.from(principles.keys());
-}
-
-export function effortSharingMap(
+export function fullCenturyBudgetSpatial(
 	pathwayQuery: PathWayQuery,
-	Time: number,
-	effortSharing: string,
+	effortSharing: keyof typeof principles,
 	Scenario = 'SSP2',
 	Convergence_year = 2040
 ): SpatialMetric[] {
@@ -180,27 +173,22 @@ export function effortSharingMap(
 		Negative_emissions: pathwayQuery.negativeEmissions,
 		Non_CO2_mitigation_potential: pathwayQuery.nonCO2Mitigation
 	};
+	const Time = slice(pyodide, 2021, 2100);
 	if (effortSharing === 'GF') {
 		selection = {
 			...pathwaySelection,
 			Time
 		};
-	} else if (effortSharing === 'PC') {
+	} else if (effortSharing === 'PC' || effortSharing === 'AP' || effortSharing === 'GDR') {
 		selection = {
-			Scenario,
 			...pathwaySelection,
+			Scenario,
 			Time
 		};
 	} else if (effortSharing === 'PCC') {
 		selection = {
 			...pathwaySelection,
 			Convergence_year,
-			Scenario,
-			Time
-		};
-	} else if (effortSharing === 'AP' || effortSharing === 'GDR') {
-		selection = {
-			...pathwaySelection,
 			Scenario,
 			Time
 		};
@@ -212,21 +200,26 @@ export function effortSharingMap(
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
 
-	let df = ds.get(effortSharing).sel.callKwargs(selection).to_pandas();
+	let da = ds.get(effortSharing).sel.callKwargs(selection)
+	if (effortSharing !== 'ECPC') {
+		da = da.sum('Time')
+	}
+	let df = da.to_pandas();
 	// Index is called Region and column is unnamed
 	df.index.rename('ISO', true);
 	df = df.reset_index();
-	df.set('value', df.get(0));
-	return df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as {
+	df.set('value', df.pop(0));
+	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as {
 		ISO: string;
 		value: number;
 	}[];
+	return values;
 }
 
-export function effortSharingRegion(
+export function fullCenturyBudgetSingleRegion(
 	Region: string,
 	pathwayQuery: PathWayQuery,
-	effortSharing: string,
+	effortSharing: keyof typeof principles,
 	Scenario = 'SSP2',
 	Convergence_year = 2040
 ): TemnporalMetric[] {
@@ -244,10 +237,10 @@ export function effortSharingRegion(
 			Region,
 			Time
 		};
-	} else if (effortSharing === 'PC') {
+	} else if (effortSharing === 'PC' || effortSharing === 'AP' || effortSharing === 'GDR') {
 		selection = {
-			Scenario,
 			...pathwaySelection,
+			Scenario,
 			Region,
 			Time
 		};
@@ -255,13 +248,6 @@ export function effortSharingRegion(
 		selection = {
 			...pathwaySelection,
 			Convergence_year,
-			Scenario,
-			Region,
-			Time
-		};
-	} else if (effortSharing === 'AP' || effortSharing === 'GDR') {
-		selection = {
-			...pathwaySelection,
 			Scenario,
 			Region,
 			Time
@@ -281,6 +267,60 @@ export function effortSharingRegion(
 		Time: number;
 		value: number;
 	}[];
+}
+
+export function temperatureAssesment(
+	pathwayQuery: PathWayQuery,
+	effortSharing: keyof typeof principles,
+	Hot_air = 'exclude',
+	Ambition = 'high',
+	Conditionality = 'conditional',
+	Scenario = 'SSP2',
+	Convergence_year = 2040
+): SpatialMetric[] {
+	let selection: DataArraySelection = {};
+	const pathwaySelection = {
+		Risk_of_exceedance: pathwayQuery.exceedanceRisk,
+		Negative_emissions: pathwayQuery.negativeEmissions,
+		Non_CO2_mitigation_potential: pathwayQuery.nonCO2Mitigation
+	};
+	const pinnedSelection = {
+		Hot_air,
+		Ambition,
+		Conditionality,
+	}
+	if (effortSharing === 'GF') {
+		selection = {
+			...pathwaySelection,
+			...pinnedSelection,
+		}
+	} else if (effortSharing === 'PC' || effortSharing === 'AP' || effortSharing === 'GDR') {
+		selection = {
+			...pathwaySelection,
+			Scenario,
+			...pinnedSelection,
+		}
+	} else if (effortSharing === 'PCC') {
+		selection = {
+			...pathwaySelection,
+			Convergence_year,
+			Scenario,
+			...pinnedSelection,
+		}
+	} else if (effortSharing === 'ECPC') {
+		selection = {
+			Scenario,
+			...pinnedSelection,
+		}
+	} else {
+		throw new Error(`Effort sharing principle ${effortSharing} not found`);
+	}
+
+	let df = ds.get(effortSharing + '_temp').sel.callKwargs(selection).to_pandas();
+	df.index.rename('ISO', true);
+	df = df.reset_index();
+	df.set('value', df.pop(0));
+	return df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts);
 }
 
 const policyMap = {
