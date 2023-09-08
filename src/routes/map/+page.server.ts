@@ -41,11 +41,5 @@ export async function load({ url }: { url: URL }) {
 		variable: selectedVariable,
 		borders: bordersDb.geojson
 	};
-	console.log({
-		metrics,
-		pathway,
-		effortSharing: selectedEffortSharing,
-		variable: selectedVariable,
-	});	
 	return data;
 }

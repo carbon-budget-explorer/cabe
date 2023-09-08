@@ -5,6 +5,7 @@
 	import { page } from '$app/stores';
 	import GlobalBudgetForm from '$lib/PathwayForm.svelte';
 	import RegionFilter from '$lib/RegionFilter.svelte';
+	import LeafletMap from '$lib/charts/LeafletMap.svelte';
 
 	import { principles } from '$lib/principles';
 	import type { PageData } from './$types';
@@ -18,10 +19,6 @@
 		}
 	};
 	$: gotoRegion(region);
-
-	type ChangeEvent = Event & {
-		currentTarget: EventTarget & (HTMLSelectElement | HTMLInputElement);
-	};
 
 	function updateQueryParam(name: string, value: string) {
 		if (browser) {
@@ -81,8 +78,12 @@
 					</div>
 				{/if}
 			</div>
-			<div class="h-full w-full bg-gray-200">
-				<div class="flex h-full w-full items-center justify-center">Map</div>
+			<div class="h-full w-full">
+				<div class="flex h-full w-full items-center justify-center">
+					<LeafletMap borders={data.borders} metrics={data.metrics} 
+						on:goto={(e) => gotoRegion(e.detail.ISO)}
+					/>
+				</div>
 			</div>
 			<div class="absolute bottom-2 flex w-full flex-row justify-center gap-2">
 				{#each Object.entries(principles) as [id, { label, summary }]}

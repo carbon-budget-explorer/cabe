@@ -254,7 +254,8 @@ export function fullCenturyBudgetSingleRegion(
 		};
 	} else if (effortSharing === 'ECPC') {
 		selection = {
-			Scenario
+			Scenario,
+			Region
 		};
 		// TODO Handle single value instead of array over time
 	} else {
