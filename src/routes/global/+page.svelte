@@ -8,8 +8,6 @@
 	import Pathway from '$lib/charts/Pathway.svelte';
 	import Line from '$lib/charts/components/Line.svelte';
 	import Area from '$lib/charts/components/Area.svelte';
-	import LineArray from '$lib/charts/components/LineArray.svelte';
-	import AreaArray from '$lib/charts/components/AreaArray.svelte';
 	import Gap from '$lib/charts/components/Gap.svelte';
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
@@ -43,7 +41,7 @@
 		netzero: false
 	};
 
-	let gapIndex = data.result.ndc.time.indexOf(2030);
+	let gapIndex = data.result.ndc.map((d) => d.time).indexOf(2030);
 	let ambitionGapHover = false;
 	let emissionGapHover = false;
 
@@ -88,8 +86,8 @@
 				<Pathway>
 					<Line data={data.result.historicalCarbon} x={'time'} y={'value'} color="black" />
 					{#if policyPathwayToggles.current || ambitionGapHover}
-						<LineArray data={data.result.currentPolicy} x={'time'} y={'avg'} color={ipcc_red} />
-						<AreaArray
+						<Line data={data.result.currentPolicy} x={'time'} y={'mean'} color={ipcc_red} />
+						<Area
 							data={data.result.currentPolicy}
 							x={'time'}
 							y0={'min'}
@@ -98,31 +96,25 @@
 						/>
 					{/if}
 					{#if policyPathwayToggles.ndc || emissionGapHover}
-						<LineArray data={data.result.ndc} x={'time'} y={'avg'} color={ipcc_blue} />
-						<AreaArray data={data.result.ndc} x={'time'} y0={'min'} y1={'max'} color={ipcc_blue} />
+						<Line data={data.result.ndc} x={'time'} y={'mean'} color={ipcc_blue} />
+						<Area data={data.result.ndc} x={'time'} y0={'min'} y1={'max'} color={ipcc_blue} />
 					{/if}
 					{#if policyPathwayToggles.netzero}
-						<LineArray data={data.result.netzero} x={'time'} y={'avg'} color={ipcc_purple} />
-						<AreaArray
-							data={data.result.netzero}
-							x={'time'}
-							y0={'min'}
-							y1={'max'}
-							color={ipcc_purple}
-						/>
+						<Line data={data.result.netzero} x={'time'} y={'mean'} color={ipcc_purple} />
+						<Area data={data.result.netzero} x={'time'} y0={'min'} y1={'max'} color={ipcc_purple} />
 					{/if}
 
 					{#if ambitionGapHover}
 						<Gap
 							x={2030}
-							y0={data.result.currentPolicy.avg[gapIndex]}
+							y0={data.result.currentPolicy[gapIndex].mean}
 							y1={$pathwayCarbonTweened.find((d) => d.time === 2030)?.mean || 0}
 						/>
 					{/if}
 					{#if emissionGapHover}
 						<Gap
 							x={2030}
-							y0={data.result.ndc.avg[gapIndex]}
+							y0={data.result.ndc[gapIndex].mean}
 							y1={$pathwayCarbonTweened.find((d) => d.time === 2030)?.mean || 0}
 						/>
 					{/if}
