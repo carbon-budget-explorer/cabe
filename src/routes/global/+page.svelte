@@ -174,7 +174,7 @@
 			<div>
 				<a
 					class="mb-2 mr-2 block rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-3xl font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
-					href={`/world${$page.url.search}`}
+					href={`/map${$page.url.search}`}
 				>
 					Next step: Allocate
 				</a>

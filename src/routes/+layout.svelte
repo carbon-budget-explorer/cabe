@@ -28,11 +28,11 @@
 					</span>
 				</li>
 				<!-- TODO when a effort sharing principle has been selected mark this step as completed -->
-				<li class={$page.url.pathname === '/world' ? activeli : passiveli}>
-					<span class={$page.url.pathname === '/world' ? activespan : passivespan}> 2 </span>
+				<li class={$page.url.pathname === '/map' ? activeli : passiveli}>
+					<span class={$page.url.pathname === '/map' ? activespan : passivespan}> 2 </span>
 					<span>
 						<h3 class="font-medium leading-tight">
-							<a href={`/world${$page.url.search}`}> Choose your effort-sharing method </a>
+							<a href={`/map${$page.url.search}`}> Choose your effort-sharing method </a>
 						</h3>
 					</span>
 				</li>
