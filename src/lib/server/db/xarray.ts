@@ -2,8 +2,12 @@ import { dirname, basename } from 'node:path';
 import type { PyodideInterface } from 'pyodide';
 
 export async function open_pyodide(): Promise<PyodideInterface> {
-	const { loadPyodide } = await import('pyodide/pyodide.js');
-
+	// Using CommonJS import because the ES module of pyodide
+	// gives errors of `file://` in paths.
+	const pyodide_module = await import('pyodide/pyodide.js');
+	// In dev mode pyodide_module.loadPyodide is set
+	// In prod mode pyodide_module.default.loadPyodide is set
+	const loadPyodide = pyodide_module.loadPyodide || pyodide_module.default.loadPyodide;
 	const pyodide: PyodideInterface = await loadPyodide();
 	return pyodide;
 }
