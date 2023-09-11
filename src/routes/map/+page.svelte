@@ -54,7 +54,7 @@
 <main class="flex h-full max-h-full w-full flex-row gap-2">
 	<div class="flex grow flex-col">
 		<div class="relative h-full w-full">
-			<div class="absolute left-4 top-4">
+			<div class="absolute right-4 top-4  z-[500]">
 				<button class="text-xl" on:click={() => (showSettngsPanel = !showSettngsPanel)}>⚙</button>
 				{#if showSettngsPanel}
 					<div class="bg-slate-50 p-2 shadow-lg">
