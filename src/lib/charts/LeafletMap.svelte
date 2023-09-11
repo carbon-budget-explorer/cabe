@@ -13,12 +13,14 @@
 
 	const mapOptions = {
 		center: [0, 0],
-		zoom: 2
+		zoom: 2,
+		minZoom: 2,
+		// TODO when open street map is not shown render less gray background
 	};
 
 	const tileUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
     const tileLayerOptions = {
-        minZoom: 0,
+        minZoom: 5,
         maxZoom: 20,
         maxNativeZoom: 19,
         attribution: "© OpenStreetMap contributors",
@@ -62,6 +64,7 @@
 				return { ...defaultOptions, fillColor: getColor(value) };
 			}
 		},
+		// TODO add tooltip
 	};
 
 	function onClick(e: LeafletMouseEvent) {

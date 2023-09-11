@@ -54,10 +54,10 @@
 <main class="flex h-full max-h-full w-full flex-row gap-2">
 	<div class="flex grow flex-col">
 		<div class="relative h-full w-full">
-			<div class="absolute right-4 top-4  z-[500]">
-				<button class="text-xl" on:click={() => (showSettngsPanel = !showSettngsPanel)}>⚙</button>
+			<div class="absolute right-4 top-4  z-[500] bg-slate-50 p-2 shadow-lg">
+				<button class="text-3xl" on:click={() => (showSettngsPanel = !showSettngsPanel)}>⚙</button>
 				{#if showSettngsPanel}
-					<div class="bg-slate-50 p-2 shadow-lg">
+					<div>
 						<!-- TODO if variable is temp then disable warming temp radio group -->
 						<GlobalBudgetForm
 							choices={data.pathway.choices}
@@ -79,7 +79,7 @@
 				{/if}
 			</div>
 			<div class="h-full w-full">
-				<div class="flex h-full w-full items-center justify-center">
+				<div class="flex h-full w-full items-center justify-center bg-white">
 					<LeafletMap borders={data.borders} metrics={data.metrics} 
 						on:goto={(e) => gotoRegion(e.detail.ISO)}
 					/>
