@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { LeafletMap, GeoJSON } from 'svelte-leafletjs?client';
+	import { LeafletMap, GeoJSON, TileLayer } from 'svelte-leafletjs?client';
 	import type { BordersCollection } from '$lib/server/db/borders';
 	import type { NamedSpatialMetric } from '$lib/server/db/utils';
 	import 'leaflet/dist/leaflet.css';
@@ -12,8 +12,19 @@
 	export let metrics: NamedSpatialMetric[];
 
 	const mapOptions = {
+		center: [0, 0],
 		zoom: 2
 	};
+
+	const tileUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+    const tileLayerOptions = {
+        minZoom: 0,
+        maxZoom: 20,
+        maxNativeZoom: 19,
+        attribution: "© OpenStreetMap contributors",
+    };
+
+    let tileLayer;
 
     // TODO use d3 scale instead
 	function getColor(d: number) {
@@ -34,18 +45,23 @@
 			: '#FFEDA0';
 	}
 
+	function getMetric(feature: GeoJSON.Feature<GeoJSON.GeometryObject, GeoJSON.GeoJsonProperties>) {
+		return metrics.find((m) => m.ISO === feature.properties!.ISO_A3_EH);
+	}
+
 	const geoJsonOptions: GeoJSONOptions = {
 		style: function (geoJsonFeature) {
             if (geoJsonFeature === undefined) {
                 return {}
             }
-			const value = metrics.find((m) => m.ISO === geoJsonFeature.properties.ISO_A3_EH)?.value;
+			const value = getMetric(geoJsonFeature)?.value;
+			const defaultOptions = { fillColor: 'grey', color: 'darkgrey', weight: 1 }
 			if (value === undefined) {
-				return { fillColor: 'grey' };
+				return defaultOptions;
 			} else {
-				return { fillColor: getColor(value) };
+				return { ...defaultOptions, fillColor: getColor(value) };
 			}
-		}
+		},
 	};
 
 	function onClick(e: LeafletMouseEvent) {
@@ -59,6 +75,7 @@
 <div class="h-full w-full">
 	{#if browser}
 		<LeafletMap bind:this={leafletMap} options={mapOptions}>
+			<TileLayer bind:this={tileLayer} url={tileUrl} options={tileLayerOptions}/>
 			<GeoJSON data={borders} options={geoJsonOptions} events={['click']} on:click={onClick} />
 		</LeafletMap>
 	{/if}

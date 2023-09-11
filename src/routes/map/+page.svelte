@@ -85,7 +85,7 @@
 					/>
 				</div>
 			</div>
-			<div class="absolute bottom-2 flex w-full flex-row justify-center gap-2">
+			<div class="absolute bottom-2 flex w-full flex-row justify-center gap-2 z-[500]">
 				{#each Object.entries(principles) as [id, { label, summary }]}
 					<button
 						class={data.effortSharing === id
