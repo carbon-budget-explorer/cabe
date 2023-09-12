@@ -14,7 +14,8 @@
 	const mapOptions: MapOptions = {
 		center: [10, 0],
 		zoom: 2,
-		minZoom: 2
+		minZoom: 2,
+		zoomControl: false
 		// TODO when open street map is not shown render less gray background
 	};
 
@@ -50,7 +51,10 @@
 			: '#FFEDA0';
 	}
 
-	function getMetric(feature: GeoJSON.Feature<GeoJSON.GeometryObject, GeoJSON.GeoJsonProperties>) {
+	function getMetric(
+		feature: GeoJSON.Feature<GeoJSON.GeometryObject, GeoJSON.GeoJsonProperties>,
+		metrics: NamedSpatialMetric[]
+	) {
 		return metrics.find((m) => m.ISO === feature.properties!.ISO_A3_EH);
 	}
 
@@ -59,7 +63,7 @@
 			if (geoJsonFeature === undefined) {
 				return {};
 			}
-			const value = getMetric(geoJsonFeature)?.value;
+			const value = getMetric(geoJsonFeature, metrics)?.value;
 			const defaultOptions = { fillColor: 'grey', color: 'darkgrey', weight: 1 };
 			if (value === undefined) {
 				return defaultOptions;
@@ -70,11 +74,15 @@
 		// TODO add tooltip
 	};
 
+	export let selectedFeature:
+		| GeoJSON.Feature<GeoJSON.GeometryObject, GeoJSON.GeoJsonProperties>
+		| undefined;
+
 	function onClick(e: any) {
+		selectedFeature = e.detail.sourceTarget.feature;
+		// dispatch('click', e.detail.sourceTarget.feature);
 		// <GeoJSON> dts says e is a LeafletMouseEvent but it is not
 		// it is CustomEvent with e.detail being the LeafletMouseEvent
-		const ISO = e.detail.sourceTarget.feature.properties.ISO_A3_EH;
-		dispatch('goto', { ISO });
 	}
 
 	let leafletMap: LeafletMap;
@@ -92,7 +100,7 @@
 			<GeoJSON
 				{...notypecheck({ data: borders })}
 				options={geoJsonOptions}
-				events={['click']}
+				events={['click', 'mouseover', 'mouseout']}
 				on:click={onClick}
 			/>
 		</LeafletMap>

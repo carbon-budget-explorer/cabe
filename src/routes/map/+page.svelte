@@ -6,6 +6,7 @@
 	import GlobalBudgetForm from '$lib/PathwayForm.svelte';
 	import RegionFilter from '$lib/RegionFilter.svelte';
 	import LeafletMap from '$lib/charts/LeafletMap.svelte';
+	import type { GeoJSON } from 'geojson';
 
 	import { principles } from '$lib/principles';
 	import type { PageData } from './$types';
@@ -49,12 +50,19 @@
 
 	let showCountriesPanel = false;
 	let showSettngsPanel = false;
+
+	let selectedFeature:
+		| GeoJSON.Feature<GeoJSON.GeometryObject, GeoJSON.GeoJsonProperties>
+		| undefined;
+	$: selectedMetric = selectedFeature
+		? data.metrics.find((m) => m.ISO === selectedFeature!.properties!.ISO_A3_EH)
+		: undefined;
 </script>
 
 <main class="flex h-full max-h-full w-full flex-row gap-2">
 	<div class="flex grow flex-col">
 		<div class="relative h-full w-full">
-			<div class="absolute right-4 top-4 z-[500] bg-slate-50 p-2 shadow-lg">
+			<div class="absolute left-4 top-4 z-[500] bg-slate-50 p-2 shadow-lg">
 				<button class="text-3xl" on:click={() => (showSettngsPanel = !showSettngsPanel)}>⚙</button>
 				{#if showSettngsPanel}
 					<div>
@@ -78,13 +86,31 @@
 					</div>
 				{/if}
 			</div>
+			<div class="absolute inset-x-1/3 top-0 z-[500] rounded-b-md bg-white p-2 shadow-lg">
+				<h2 class="text-center text-2xl">
+					{data.effortSharing
+						? principles[data.effortSharing].label
+						: 'Select an effort sharing principle below.'}
+				</h2>
+				<h2 class="text-center text-2xl">
+					{selectedFeature && selectedFeature.properties
+						? selectedFeature.properties.NAME
+						: 'Click on a region to see more information.'}
+				</h2>
+
+				{#if selectedFeature && selectedFeature.properties && selectedMetric}
+					<!-- TODO replace with key indicators -->
+					<div class="text-center">{selectedMetric.value}</div>
+					<a
+						href={`/regions/${selectedFeature.properties.ISO_A3_EH}?${$page.url.search}`}
+						class="mb-2 mr-2 block rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-3xl font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
+						>Country details</a
+					>
+				{/if}
+			</div>
 			<div class="h-full w-full">
 				<div class="flex h-full w-full items-center justify-center bg-white">
-					<LeafletMap
-						borders={data.borders}
-						metrics={data.metrics}
-						on:goto={(e) => gotoRegion(e.detail.ISO)}
-					/>
+					<LeafletMap borders={data.borders} metrics={data.metrics} bind:selectedFeature />
 				</div>
 			</div>
 			<div class="absolute bottom-2 z-[500] flex w-full flex-row justify-center gap-2">
