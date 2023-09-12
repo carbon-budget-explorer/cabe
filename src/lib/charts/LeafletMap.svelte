@@ -4,10 +4,15 @@
 	import type { NamedSpatialMetric } from '$lib/server/db/utils';
 	import 'leaflet/dist/leaflet.css';
 	import { browser } from '$app/environment';
-	import { createEventDispatcher } from 'svelte';
 	import type { GeoJSONOptions, MapOptions } from 'leaflet';
+	import {
+		interpolateCividis,
+		interpolateRainbow,
+		interpolateTurbo,
+		min,
+		scaleSequential
+	} from 'd3';
 
-	const dispatch = createEventDispatcher();
 	export let borders: BordersCollection;
 	export let metrics: NamedSpatialMetric[];
 
@@ -32,24 +37,16 @@
 
 	let tileLayer;
 
-	// TODO use d3 scale instead
+	$: scale = scaleSequential()
+		.clamp(true)
+		.domain(metrics.map((d) => 0.8 * d.value)) // 0.8 dampens sensitivy outliers
+		.interpolator(interpolateTurbo); // TODO configurable colormap?
+
 	function getColor(d: number) {
-		return d > 10000
-			? '#800026'
-			: d > 5000
-			? '#BD0026'
-			: d > 2000
-			? '#E31A1C'
-			: d > 1000
-			? '#FC4E2A'
-			: d > 500
-			? '#FD8D3C'
-			: d > 200
-			? '#FEB24C'
-			: d > 100
-			? '#FED976'
-			: '#FFEDA0';
+		return scale(d);
 	}
+	// TODO Deal with nans?
+	// TODO add colorbar
 
 	function getMetric(
 		feature: GeoJSON.Feature<GeoJSON.GeometryObject, GeoJSON.GeoJsonProperties>,
@@ -68,10 +65,9 @@
 			if (value === undefined) {
 				return defaultOptions;
 			} else {
-				return { ...defaultOptions, fillColor: getColor(value) };
+				return { ...defaultOptions, fillColor: getColor(value), fillOpacity: 0.8 };
 			}
 		}
-		// TODO add tooltip
 	};
 
 	export let selectedFeature:
@@ -80,7 +76,6 @@
 
 	function onClick(e: any) {
 		selectedFeature = e.detail.sourceTarget.feature;
-		// dispatch('click', e.detail.sourceTarget.feature);
 		// <GeoJSON> dts says e is a LeafletMouseEvent but it is not
 		// it is CustomEvent with e.detail being the LeafletMouseEvent
 	}
