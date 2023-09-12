@@ -18,12 +18,15 @@
 		// TODO when open street map is not shown render less gray background
 	};
 
-	const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+	const tileUrl = 'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.{ext}';
 	const tileLayerOptions = {
-		minZoom: 5,
+		minZoom: 3,
 		maxZoom: 20,
 		maxNativeZoom: 19,
-		attribution: '© OpenStreetMap contributors'
+		attribution:
+			'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+		ext: 'png',
+		subdomains: 'abcd'
 	};
 
 	let tileLayer;
@@ -82,12 +85,12 @@
 	const notypecheck = (x: any) => x;
 </script>
 
-<div class="h-full w-full">
+<div class="h-full w-full" id="leaflet-wrapper">
 	{#if browser}
 		<LeafletMap bind:this={leafletMap} options={mapOptions}>
 			<TileLayer bind:this={tileLayer} url={tileUrl} options={tileLayerOptions} />
 			<GeoJSON
-				{...notypecheck({ borders })}
+				{...notypecheck({ data: borders })}
 				options={geoJsonOptions}
 				events={['click']}
 				on:click={onClick}
