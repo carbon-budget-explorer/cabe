@@ -106,3 +106,9 @@
 		</LeafletMap>
 	{/if}
 </div>
+
+<style>
+	:global(.leaflet-container) {
+		background-color: transparent;
+	}
+</style>
