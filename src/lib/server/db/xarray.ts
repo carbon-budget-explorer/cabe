@@ -1,277 +1,49 @@
-import { ready, File, Dataset as HDF5Dataset } from 'h5wasm';
+import { dirname, basename } from 'node:path';
+import type { PyodideInterface } from 'pyodide';
 
-export async function open_dataset(path: string) {
-	await ready;
-	const reader = new File(path);
-	return new Dataset(reader);
+export async function open_pyodide(): Promise<PyodideInterface> {
+	// Using CommonJS import because the ES module of pyodide
+	// gives errors of `file://` in paths.
+	const pyodide_module = await import('pyodide/pyodide.js');
+	// In dev mode pyodide_module.loadPyodide is set
+	// In prod mode pyodide_module.default.loadPyodide is set
+	const loadPyodide = pyodide_module.loadPyodide || pyodide_module.default.loadPyodide;
+	const pyodide: PyodideInterface = await loadPyodide();
+	return pyodide;
 }
 
-const isDim = (dataset: HDF5Dataset) =>
-	'CLASS' in dataset.attrs && dataset.get_attribute('CLASS', true) === 'DIMENSION_SCALE';
+export async function open_dataset(path: string, pyodide: PyodideInterface) {
+	// TODO dont install and talk to internet again
+	// but without installing then nothing is installed
+	// while the whl files are in the pyodide folder
+	await pyodide.loadPackage('micropip');
+	const micropip = pyodide.pyimport('micropip');
+	await micropip.install('xarray');
+	await micropip.install('netcdf4');
 
-export class ExclusiveSlice {
-	start: number;
-	stop: number;
+	const xarray = pyodide.pyimport('xarray');
 
-	constructor(start: number, stop: number) {
-		this.start = start;
-		this.stop = stop;
+	const root = dirname(path);
+	const mountDir = '/mnt';
+	pyodide.FS.mkdir(mountDir);
+	pyodide.FS.mount(pyodide.FS.filesystems.NODEFS, { root }, mountDir);
+	const ds = xarray.open_dataset(`${mountDir}/${basename(path)}`);
+	// TODO create type for ds
+	// now copy from Python and handle convertsion with guesswork
+	console.log(`Opened ${path} with pyodide+xarray`);
+	return ds;
+}
+
+export function slice(pyodide: PyodideInterface, start: number, stop?: number, step?: number) {
+	const slice = pyodide.globals.get('slice');
+	if (step !== undefined && stop !== undefined) {
+		return slice(start, stop, step);
+	} else if (stop !== undefined) {
+		return slice(start, stop);
 	}
+	return slice(start);
 }
 
-export class InclusiveSlice {
-	start: number;
-	stop: number;
-
-	constructor(start: number, stop: number) {
-		this.start = start;
-		this.stop = stop;
-	}
-}
-
-export type CoordinateSelection =
-	| string
-	| number
-	| string[]
-	| number[]
-	| InclusiveSlice
-	| undefined;
+export type CoordinateSelection = string | number | string[] | number[] | undefined;
 
 export type DataArraySelection = Record<string, CoordinateSelection> | undefined;
-
-export class Coordinate {
-	// Note: this assumes coords are 1-dimensional
-	id: number;
-	name: string;
-	shape: number[];
-	ds: HDF5Dataset;
-
-	constructor(ds: HDF5Dataset) {
-		this.id = ds.get_attribute('_Netcdf4Dimid', true) as number;
-		// this.name = ds.get_attribute('NAME', true) as string;
-		this.name = ds.path.replace('/', '');
-		this.shape = ds.shape;
-		this.ds = ds;
-	}
-
-	get values() {
-		if (this.ds.dtype === 'S') return this.ds.to_array() as string[];
-		return this.ds.to_array() as number[];
-	}
-
-	indexOf(value: string | number) {
-		let index = -1;
-		if (typeof value === 'string') {
-			index = (this.values as string[]).indexOf(value);
-		} else {
-			index = (this.values as number[]).indexOf(value);
-		}
-		if (index === -1) throw new Error(`Value ${value} not found in ${this.name}`);
-		return index;
-	}
-
-	sel(indexer: CoordinateSelection) {
-		// Note: this assumes coords are 1-dimensional
-		let iindexer: undefined | number | InclusiveSlice | number[] = undefined;
-		if (indexer === undefined) {
-			iindexer = undefined;
-		} else if (typeof indexer === 'number' || typeof indexer === 'string') {
-			iindexer = this.indexOf(indexer);
-		} else if (indexer instanceof InclusiveSlice) {
-			iindexer = new ExclusiveSlice(this.indexOf(indexer.start), this.indexOf(indexer.stop) + 1);
-		} else if (Array.isArray(indexer)) {
-			iindexer = indexer.map((i) => this.indexOf(i));
-		}
-
-		return this.isel(iindexer);
-	}
-
-	isel(indexer?: number | ExclusiveSlice | number[]): number[] | string[] {
-		let slice: number[] = [];
-		if (indexer === undefined) {
-			slice = [];
-		} else if (typeof indexer === 'number') {
-			slice = [indexer, indexer + 1];
-		} else if (indexer instanceof ExclusiveSlice) {
-			slice = [indexer.start, indexer.stop];
-		} else if (Array.isArray(indexer)) {
-			if (this.ds.dtype === 'S') {
-				return indexer.map((i) => this.isel(i)[0] as string);
-			}
-			return indexer.map((i) => this.isel(i)[0] as number);
-		}
-		if (this.ds.dtype === 'S') return Array.from(this.ds.slice([slice]) as string[]);
-		return Array.from(this.ds.slice([slice]) as number[]);
-	}
-}
-
-export class DataArray {
-	name: string;
-	coordinates: Record<string, Coordinate>;
-	ds: HDF5Dataset;
-
-	constructor(name: string, coordinates: Record<string, Coordinate>, ds: HDF5Dataset) {
-		this.name = name;
-		this.coordinates = coordinates;
-		this.ds = ds;
-	}
-
-	get values() {
-		if (this.ds.dtype === 'S') return this.ds.to_array() as string[];
-		return this.ds.to_array() as number[];
-	}
-
-	sel(indexer: DataArraySelection) {
-		const iindexer: Record<string, number | InclusiveSlice | number[]> = {};
-		if (indexer === undefined) {
-			return this.isel();
-		}
-		for (const coordName in this.coordinates) {
-			if (coordName in this.coordinates && indexer) {
-				const cindex = indexer[coordName];
-				if (cindex === undefined) {
-					// to nothing
-				} else if (typeof cindex === 'number' || typeof cindex === 'string') {
-					iindexer[coordName] = this.coordinates[coordName].indexOf(cindex);
-				} else if (cindex instanceof InclusiveSlice) {
-					iindexer[coordName] = new ExclusiveSlice(
-						this.coordinates[coordName].indexOf(cindex.start),
-						this.coordinates[coordName].indexOf(cindex.stop) + 1
-					);
-				} else if (Array.isArray(cindex)) {
-					// TODO slice of h5wasm does not handle list of indices
-					throw new Error('Not implemented');
-				}
-			} else {
-				throw new Error(`Coordinate ${coordName} not found in ${this.name}`);
-			}
-		}
-		// TODO return sliced coordinates together with sliced data as new dataarray
-		return this.isel(iindexer);
-	}
-
-	isel(indexer?: Record<string, number | ExclusiveSlice | number[]>) {
-		const slice: number[][] = [];
-		for (const coordName in this.coordinates) {
-			if (coordName in this.coordinates && indexer) {
-				const cindex = indexer[coordName];
-				if (cindex === undefined) {
-					slice.push([]);
-				} else if (typeof cindex === 'number') {
-					slice.push([cindex, cindex + 1]);
-				} else if (cindex instanceof ExclusiveSlice) {
-					slice.push([cindex.start, cindex.stop]);
-				} else if (Array.isArray(cindex)) {
-					// TODO slice of h5wasm does not handle list of indices
-					throw new Error('Not implemented');
-				}
-			} else {
-				slice.push([]);
-			}
-		}
-		// TODO dont cast but use typeguard
-		const values = this.ds.slice(slice) as number[];
-		return Array.from(values);
-	}
-}
-
-export class Dataset {
-	// TODO add "dimensions", "coordinates" and "data_vars" as members during init?
-	constructor(private reader: File) {}
-
-	get coords() {
-		// TODO verify all keys corresponds to Datasets, i.e. no groups present
-		const keys = this.reader.keys();
-		const datasets = keys.map((k) => this.reader.get(k) as HDF5Dataset);
-
-		return Object.fromEntries(
-			datasets
-				.filter(isDim)
-				.map((d) => new Coordinate(d))
-				.map((c) => [c.name, c])
-		);
-	}
-
-	get data_vars() {
-		// TODO verify all keys corresponds to Datasets, i.e. no groups present
-		const keys = this.reader.keys();
-		const hdf5Datasets = keys.map((k) => this.reader.get(k) as HDF5Dataset);
-		const coordsByIndex = Object.fromEntries(Object.values(this.coords).map((c) => [c.id, c]));
-
-		const dataArrays = hdf5Datasets
-			.filter((ds) => !isDim(ds))
-			.map((ds) => {
-				const dimIds = ds.get_attribute('_Netcdf4Coordinates', true) as number[];
-				const coords = Object.fromEntries(
-					dimIds.map((id) => {
-						const coord = coordsByIndex[id.toString()];
-						return [coord.name, coord];
-					})
-				);
-				const name = ds.path.replace('/', '');
-				return new DataArray(name, coords, ds);
-			});
-		return Object.fromEntries(dataArrays.map((v) => [v.name, v]));
-	}
-}
-
-export function reshape(values: number[], shape: number[]) {
-	const result = [];
-	// TODO handle more than 2 dimensions
-	for (let i = 0; i < shape[0]; i++) {
-		const row = [];
-		for (let j = 0; j < shape[1]; j++) {
-			row.push(values[i * shape[1] + j]);
-		}
-		result.push(row);
-	}
-	return result;
-}
-
-interface Description {
-	max: number[];
-	min: number[];
-	avg: number[];
-}
-
-/**
- * Calculates statistics for a 2D array of numbers.
- * @param values The 2D array of numbers to calculate statistics for.
- * @param axis The axis to calculate statistics along. Defaults to 1.
- * @returns An object containing the calculated statistics.
- */
-export function describe(values: number[][], axis = 1): Description {
-	// TODO handle axis<>1
-	const otheraxis = axis ? 0 : 1;
-	// TODO handle more than 2 dimensions
-	const shape = [values.length, values[0].length];
-	const rawstats: Description & Record<'nans' | 'sum', number[]> = {
-		max: new Array(shape[axis]).fill(Number.MIN_VALUE),
-		min: new Array(shape[axis]).fill(Number.MAX_VALUE),
-		sum: new Array(shape[axis]).fill(0),
-		avg: new Array(shape[axis]).fill(0),
-		nans: new Array(shape[axis]).fill(0)
-	};
-	for (let i = 0; i < shape[otheraxis]; i++) {
-		for (let j = 0; j < shape[axis]; j++) {
-			const k = axis === 1 ? j : i;
-			const v = values[i][j];
-			if (Number.isNaN(v)) {
-				rawstats.nans[k] += 1;
-				continue;
-			}
-			if (v > rawstats.max[k]) {
-				rawstats.max[k] = v;
-			}
-			if (v < rawstats.min[k]) {
-				rawstats.min[k] = v;
-			}
-			rawstats.sum[k] += v;
-		}
-	}
-	for (let i = 0; i < shape[axis]; i++) {
-		rawstats.avg[i] = rawstats.sum[i] / (shape[otheraxis] - rawstats.nans[i]);
-	}
-	const { nans, sum, ...stats } = rawstats;
-	return stats;
-}
