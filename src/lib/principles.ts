@@ -17,8 +17,7 @@ export const principles = {
 	},
 	GDR: {
 		label: 'Greenhouse development rights',
-		summary:
-			'Equalize per capita emissions across countries.'
+		summary: 'Equalize per capita emissions across countries.'
 	},
 	ECPC: {
 		label: 'Equal cumulative per capita',

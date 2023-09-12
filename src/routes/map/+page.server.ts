@@ -16,9 +16,13 @@ export async function load({ url }: { url: URL }) {
 		query: pathwayQuery,
 		choices
 	};
-	
+
 	const selectedVariable: string = searchParam(url, 'variable', 'budget');
-	const selectedEffortSharing = searchParam< undefined | keyof typeof principles>(url, 'effortSharing', undefined);
+	const selectedEffortSharing = searchParam<undefined | keyof typeof principles>(
+		url,
+		'effortSharing',
+		undefined
+	);
 	let rawMetrics: SpatialMetric[] = [];
 	if (selectedEffortSharing !== undefined) {
 		if (selectedVariable === 'budget') {
@@ -29,7 +33,7 @@ export async function load({ url }: { url: URL }) {
 			throw new Error(`Unknown variable: ${selectedVariable}`);
 		}
 	}
-		
+
 	const metrics = bordersDb.addNames(
 		rawMetrics.filter((d) => !Number.isNaN(d.value) && d.value !== null && d.value !== undefined)
 	);

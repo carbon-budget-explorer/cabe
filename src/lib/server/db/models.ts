@@ -200,9 +200,9 @@ export function fullCenturyBudgetSpatial(
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
 
-	let da = ds.get(effortSharing).sel.callKwargs(selection)
+	let da = ds.get(effortSharing).sel.callKwargs(selection);
 	if (effortSharing !== 'ECPC') {
-		da = da.sum('Time')
+		da = da.sum('Time');
 	}
 	let df = da.to_pandas();
 	// Index is called Region and column is unnamed
@@ -262,6 +262,7 @@ export function fullCenturyBudgetSingleRegion(
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
 	let df = ds.get(effortSharing).sel.callKwargs(selection).to_pandas();
+	console.log(effortSharing, selection);
 	df = df.reset_index();
 	df.set('value', df.pop(0));
 	return df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as {
@@ -288,36 +289,39 @@ export function temperatureAssesment(
 	const pinnedSelection = {
 		Hot_air,
 		Ambition,
-		Conditionality,
-	}
+		Conditionality
+	};
 	if (effortSharing === 'GF') {
 		selection = {
 			...pathwaySelection,
-			...pinnedSelection,
-		}
+			...pinnedSelection
+		};
 	} else if (effortSharing === 'PC' || effortSharing === 'AP' || effortSharing === 'GDR') {
 		selection = {
 			...pathwaySelection,
 			Scenario,
-			...pinnedSelection,
-		}
+			...pinnedSelection
+		};
 	} else if (effortSharing === 'PCC') {
 		selection = {
 			...pathwaySelection,
 			Convergence_year,
 			Scenario,
-			...pinnedSelection,
-		}
+			...pinnedSelection
+		};
 	} else if (effortSharing === 'ECPC') {
 		selection = {
 			Scenario,
-			...pinnedSelection,
-		}
+			...pinnedSelection
+		};
 	} else {
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
 
-	let df = ds.get(effortSharing + '_temp').sel.callKwargs(selection).to_pandas();
+	let df = ds
+		.get(effortSharing + '_temp')
+		.sel.callKwargs(selection)
+		.to_pandas();
 	df.index.rename('ISO', true);
 	df = df.reset_index();
 	df.set('value', df.pop(0));

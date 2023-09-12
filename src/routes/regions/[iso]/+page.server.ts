@@ -16,10 +16,16 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 		query: pathwayQuery,
 		choices
 	};
-	const effortSharingQuery = searchParam<undefined | keyof typeof principles>(url, 'effortSharing', undefined);
+	const effortSharingQuery = searchParam<undefined | keyof typeof principles>(
+		url,
+		'effortSharing',
+		undefined
+	);
 	const effortSharingData =
-	effortSharingQuery === undefined ? [] : fullCenturyBudgetSingleRegion(iso, pathwayQuery, effortSharingQuery);
-	
+		effortSharingQuery === undefined
+			? []
+			: fullCenturyBudgetSingleRegion(iso, pathwayQuery, effortSharingQuery);
+
 	const name = borders.labels.get(iso) || iso;
 	const label = effortSharingQuery !== undefined ? principles[effortSharingQuery].label : '';
 	const r = {

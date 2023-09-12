@@ -54,7 +54,7 @@
 <main class="flex h-full max-h-full w-full flex-row gap-2">
 	<div class="flex grow flex-col">
 		<div class="relative h-full w-full">
-			<div class="absolute right-4 top-4  z-[500] bg-slate-50 p-2 shadow-lg">
+			<div class="absolute right-4 top-4 z-[500] bg-slate-50 p-2 shadow-lg">
 				<button class="text-3xl" on:click={() => (showSettngsPanel = !showSettngsPanel)}>⚙</button>
 				{#if showSettngsPanel}
 					<div>
@@ -80,12 +80,14 @@
 			</div>
 			<div class="h-full w-full">
 				<div class="flex h-full w-full items-center justify-center bg-white">
-					<LeafletMap borders={data.borders} metrics={data.metrics} 
+					<LeafletMap
+						borders={data.borders}
+						metrics={data.metrics}
 						on:goto={(e) => gotoRegion(e.detail.ISO)}
 					/>
 				</div>
 			</div>
-			<div class="absolute bottom-2 flex w-full flex-row justify-center gap-2 z-[500]">
+			<div class="absolute bottom-2 z-[500] flex w-full flex-row justify-center gap-2">
 				{#each Object.entries(principles) as [id, { label, summary }]}
 					<button
 						class={data.effortSharing === id
