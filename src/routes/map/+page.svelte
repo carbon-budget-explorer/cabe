@@ -100,7 +100,9 @@
 
 				{#if selectedFeature && selectedFeature.properties && selectedMetric}
 					<!-- TODO replace with key indicators -->
-					<div class="text-center">{selectedMetric.value}</div>
+					<div class="text-center">{data.variable=== 'temp' ? `${selectedMetric.value.toPrecision(2)} °C` : 
+					  (selectedMetric.value > 1_000 ? `${(selectedMetric.value / 1_000).toPrecision(3)} Gt CO2` : `${(selectedMetric.value / 1_000).toPrecision(3)} Mt CO2`)}
+					</div>
 					<a
 						href={`/regions/${selectedFeature.properties.ISO_A3_EH}?${$page.url.search}`}
 						class="mb-2 mr-2 block rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-3xl font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"

@@ -7,8 +7,11 @@
 	import type { GeoJSONOptions, MapOptions } from 'leaflet';
 	import {
 		interpolateCividis,
+		interpolatePuOr,
 		interpolateRainbow,
+		interpolateRdBu,
 		interpolateTurbo,
+		interpolateViridis,
 		min,
 		scaleSequential
 	} from 'd3';
@@ -37,10 +40,13 @@
 
 	let tileLayer;
 
+
+	$: domain = Math.max(...metrics.map(d => d.value)) < 50 ? [1.5, 3] : [-50_000, 200_000];
+	$: colormap = Math.max(...metrics.map(d => d.value)) < 50 ? interpolateRdBu : interpolatePuOr
 	$: scale = scaleSequential()
 		.clamp(true)
-		.domain(metrics.map((d) => 0.8 * d.value)) // 0.8 dampens sensitivy outliers
-		.interpolator(interpolateTurbo); // TODO configurable colormap?
+		.domain(domain) // 0.8 dampens sensitivy outliers
+		.interpolator(colormap); // TODO configurable colormap?
 
 	function getColor(d: number) {
 		return scale(d);
