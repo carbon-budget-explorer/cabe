@@ -112,7 +112,7 @@
 			</div>
 			<div class="h-full w-full">
 				<div class="flex h-full w-full items-center justify-center bg-white">
-					<LeafletMap borders={data.borders} metrics={data.metrics} bind:selectedFeature />
+					<LeafletMap borders={data.borders} metrics={data.metrics} bind:selectedFeature variable={data.variable}/>
 				</div>
 			</div>
 			<div class="absolute bottom-2 z-[500] flex w-full flex-row justify-center gap-2">

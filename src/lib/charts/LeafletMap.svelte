@@ -16,6 +16,7 @@
 		scaleSequential
 	} from 'd3';
 
+	export let variable: string;
 	export let borders: BordersCollection;
 	export let metrics: NamedSpatialMetric[];
 
@@ -41,8 +42,8 @@
 	let tileLayer;
 
 
-	$: domain = Math.max(...metrics.map(d => d.value)) < 50 ? [1.5, 3] : [-50_000, 200_000];
-	$: colormap = Math.max(...metrics.map(d => d.value)) < 50 ? interpolateRdBu : interpolatePuOr
+	$: domain = variable === 'temp' ? [1.5, 3] : [-50_000, 200_000];
+	$: colormap = variable === 'temp' ? (d: number) => interpolateRdBu(1-d) : interpolatePuOr
 	$: scale = scaleSequential()
 		.clamp(true)
 		.domain(domain) // 0.8 dampens sensitivy outliers
