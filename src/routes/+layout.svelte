@@ -13,6 +13,7 @@
 	import Sharing from '$lib/icons/sharing.svelte';
 	import Details from '$lib/icons/details.svelte';
 	import Compare from '$lib/icons/compare.svelte';
+	import Arrows from '$lib/icons/arrows.svelte';
 </script>
 
 <div class="flex h-screen max-h-screen flex-col">
@@ -20,9 +21,7 @@
 		<a href={`/${$page.url.search}`}>Carbon Budget Explorer logo</a>
 		<div>
 			<ol class="w-full items-center space-y-4 sm:flex sm:space-x-8 sm:space-y-0">
-				<!-- TODO add arrow between stepper items -->
 				<!-- TODO when pathway has been selected mark this step as completed -->
-
 				<li class={$page.url.pathname === '/global' ? activeli : passiveli}>
 					<span class={$page.url.pathname === '/global' ? activespan : passivespan}><Globe /></span>
 					<span>
@@ -31,6 +30,7 @@
 						</h3>
 					</span>
 				</li>
+				<Arrows />
 				<!-- TODO when a effort sharing principle has been selected mark this step as completed -->
 				<li class={$page.url.pathname === '/map' ? activeli : passiveli}>
 					<span class={$page.url.pathname === '/map' ? activespan : passivespan}><Sharing /></span>
@@ -40,6 +40,7 @@
 						</h3>
 					</span>
 				</li>
+				<Arrows />
 				<li class={$page.url.pathname.startsWith('/regions') ? activeli : passiveli}>
 					<span class={$page.url.pathname.startsWith('/regions') ? activespan : passivespan}>
 						<Details />
@@ -50,6 +51,7 @@
 						</a>
 					</span>
 				</li>
+				<Arrows />
 				<li class={$page.url.pathname.startsWith('/compare') ? activeli : passiveli}>
 					<span class={$page.url.pathname.startsWith('/compare') ? activespan : passivespan}>
 						<Compare />
