@@ -262,7 +262,6 @@ export function fullCenturyBudgetSingleRegion(
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
 	let df = ds.get(effortSharing).sel.callKwargs(selection).to_pandas();
-	console.log(effortSharing, selection);
 	df = df.reset_index();
 	df.set('value', df.pop(0));
 	return df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as {
