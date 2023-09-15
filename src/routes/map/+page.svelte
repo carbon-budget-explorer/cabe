@@ -100,8 +100,12 @@
 
 				{#if selectedFeature && selectedFeature.properties && selectedMetric}
 					<!-- TODO replace with key indicators -->
-					<div class="text-center">{data.variable=== 'temp' ? `${selectedMetric.value.toPrecision(2)} °C` : 
-					  (selectedMetric.value > 1_000 ? `${(selectedMetric.value / 1_000).toPrecision(3)} Gt CO2` : `${(selectedMetric.value / 1_000).toPrecision(3)} Mt CO2`)}
+					<div class="text-center">
+						{data.variable === 'temp'
+							? `${selectedMetric.value.toPrecision(2)} °C`
+							: selectedMetric.value > 1_000
+							? `${(selectedMetric.value / 1_000).toPrecision(3)} Gt CO2`
+							: `${(selectedMetric.value / 1_000).toPrecision(3)} Mt CO2`}
 					</div>
 					<a
 						href={`/regions/${selectedFeature.properties.ISO_A3_EH}?${$page.url.search}`}
@@ -112,7 +116,12 @@
 			</div>
 			<div class="h-full w-full">
 				<div class="flex h-full w-full items-center justify-center bg-white">
-					<LeafletMap borders={data.borders} metrics={data.metrics} bind:selectedFeature variable={data.variable}/>
+					<LeafletMap
+						borders={data.borders}
+						metrics={data.metrics}
+						bind:selectedFeature
+						variable={data.variable}
+					/>
 				</div>
 			</div>
 			<div class="absolute bottom-2 z-[500] flex w-full flex-row justify-center gap-2">

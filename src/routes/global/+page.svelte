@@ -78,26 +78,26 @@
 				<ul>
 					<li on:mouseenter={toggleAmbitionGap} on:mouseleave={toggleAmbitionGap}>
 						<span class="cursor-grab hover:bg-slate-200">
-							Ambition gap: {($ambitionGapTweened /1_000).toFixed(2)} GtCO2
+							Ambition gap: {($ambitionGapTweened / 1_000).toFixed(2)} GtCO2
 						</span>
 					</li>
 					<li on:mouseenter={toggleEmissionGap} on:mouseleave={toggleEmissionGap}>
 						<span class="cursor-grab hover:bg-slate-200">
-							Emission gap: {($emissionGapTweened /1_000).toFixed(2)} GtCO2
+							Emission gap: {($emissionGapTweened / 1_000).toFixed(2)} GtCO2
 						</span>
 					</li>
 				</ul>
 			</div>
 		</div>
-		
+
 		<div class="flex grow flex-col gap-4">
 			<div class="rounded-lg border-4 p-2">
 				<ul>
-					<li>Global budget: {($globalBudgetCounter /1_000).toFixed(2)} Gt CO2</li>
-					<li>Used 1850-2021: {(data.result.pathwayStats.used /1_000).toFixed(2)} Gt CO2</li>
-					<li>Remaining till 2050: {($remainingBudgetCounter /1_000).toFixed(2)} Gt CO2</li>
+					<li>Global budget: {($globalBudgetCounter / 1_000).toFixed(2)} Gt CO2</li>
+					<li>Used 1850-2021: {(data.result.pathwayStats.used / 1_000).toFixed(2)} Gt CO2</li>
+					<li>Remaining till 2050: {($remainingBudgetCounter / 1_000).toFixed(2)} Gt CO2</li>
 				</ul>
-			</div>		
+			</div>
 			<div class="grow p-4 shadow-lg">
 				<Pathway>
 					<Line data={data.result.historicalCarbon} x={'time'} y={'value'} color="black" />
@@ -139,7 +139,6 @@
 					<Area data={$pathwayCarbonTweened} x={'time'} y0={'min'} y1={'max'} color={ipcc_green} />
 				</Pathway>
 			</div>
-			
 		</div>
 		<div class="flex h-full max-w-[25%] flex-col justify-between gap-4 p-4 shadow-lg">
 			<div>
