@@ -1,24 +1,30 @@
 <script lang="ts">
-	const activeli = 'flex items-center space-x-2.5 text-blue-600 dark:text-blue-500';
+	const activeli =
+		'flex items-center space-x-2.5 text-blue-600 underline underline-offset-4 decoration-4 dark:text-blue-500';
 	const passiveli = 'flex items-center space-x-2.5 text-gray-500 dark:text-gray-400';
 	const activespan =
-		'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-blue-600 dark:border-blue-500';
+		'flex h-8 w-8 shrink-0 items-center justify-center rounded-full dark:border-blue-500';
 	const passivespan =
-		'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gray-500 dark:border-gray-400';
+		'flex h-8 w-8 shrink-0 items-center justify-center rounded-full dark:border-gray-400';
 
 	import '../app.css';
 	import { page } from '$app/stores';
+	import Globe from '$lib/icons/globe.svelte';
+	import Sharing from '$lib/icons/sharing.svelte';
+	import Details from '$lib/icons/details.svelte';
+	import Compare from '$lib/icons/compare.svelte';
 </script>
 
 <div class="flex h-screen max-h-screen flex-col">
 	<nav class="flex flex-row items-center justify-between space-x-8 bg-slate-100 p-4">
 		<a href={`/${$page.url.search}`}>Carbon Budget Explorer logo</a>
-		<div class="steps py-2">
+		<div>
 			<ol class="w-full items-center space-y-4 sm:flex sm:space-x-8 sm:space-y-0">
 				<!-- TODO add arrow between stepper items -->
 				<!-- TODO when pathway has been selected mark this step as completed -->
+
 				<li class={$page.url.pathname === '/global' ? activeli : passiveli}>
-					<span class={$page.url.pathname === '/global' ? activespan : passivespan}> 1 </span>
+					<span class={$page.url.pathname === '/global' ? activespan : passivespan}><Globe /></span>
 					<span>
 						<h3 class="font-medium leading-tight">
 							<a href={`/global${$page.url.search}`}>Construct global pathway</a>
@@ -27,7 +33,7 @@
 				</li>
 				<!-- TODO when a effort sharing principle has been selected mark this step as completed -->
 				<li class={$page.url.pathname === '/map' ? activeli : passiveli}>
-					<span class={$page.url.pathname === '/map' ? activespan : passivespan}> 2 </span>
+					<span class={$page.url.pathname === '/map' ? activespan : passivespan}><Sharing /></span>
 					<span>
 						<h3 class="font-medium leading-tight">
 							<a href={`/map${$page.url.search}`}>Choose effort-sharing method</a>
@@ -36,7 +42,7 @@
 				</li>
 				<li class={$page.url.pathname.startsWith('/regions') ? activeli : passiveli}>
 					<span class={$page.url.pathname.startsWith('/regions') ? activespan : passivespan}>
-						3
+						<Details />
 					</span>
 					<span>
 						<a href={`/regions${$page.url.search}`}>
@@ -46,7 +52,7 @@
 				</li>
 				<li class={$page.url.pathname.startsWith('/compare') ? activeli : passiveli}>
 					<span class={$page.url.pathname.startsWith('/compare') ? activespan : passivespan}>
-						4
+						<Compare />
 					</span>
 					<span>
 						<h3 class="font-medium leading-tight">Compare</h3>
