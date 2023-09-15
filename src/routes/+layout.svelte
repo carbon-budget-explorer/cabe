@@ -1,6 +1,5 @@
 <script lang="ts">
-	const activeli =
-		'flex items-center space-x-2.5 text-blue-600 underline underline-offset-4 decoration-4 dark:text-blue-500';
+	const activeli = 'flex items-center space-x-2.5 text-blue-600 dark:text-blue-500';
 	const passiveli = 'flex items-center space-x-2.5 text-gray-500 dark:text-gray-400';
 	const activespan =
 		'flex h-8 w-8 shrink-0 items-center justify-center rounded-full dark:border-blue-500';
@@ -14,54 +13,94 @@
 	import Details from '$lib/icons/details.svelte';
 	import Compare from '$lib/icons/compare.svelte';
 	import Arrows from '$lib/icons/arrows.svelte';
+	import Temperature from '$lib/icons/temperature.svelte';
+	import Risk from '$lib/icons/risk.svelte';
+	import Nonco2 from '$lib/icons/nonco2.svelte';
+	import Negemiss from '$lib/icons/negemiss.svelte';
+	import Negemiss2 from '$lib/icons/negemiss2.svelte';
 </script>
 
 <div class="flex h-screen max-h-screen flex-col">
-	<nav class="flex flex-row items-center justify-between space-x-8 bg-slate-100 p-4">
+	<nav class="flex flex-row items-center justify-between space-x-8 bg-slate-100 p-2">
 		<a href={`/${$page.url.search}`}>Carbon Budget Explorer logo</a>
-		<div>
-			<ol class="w-full items-center space-y-4 sm:flex sm:space-x-8 sm:space-y-0">
-				<!-- TODO when pathway has been selected mark this step as completed -->
-				<li class={$page.url.pathname === '/global' ? activeli : passiveli}>
-					<span class={$page.url.pathname === '/global' ? activespan : passivespan}><Globe /></span>
-					<span>
-						<h3 class="font-medium leading-tight">
-							<a href={`/global${$page.url.search}`}>Construct global pathway</a>
-						</h3>
+		<ol class="grow items-center justify-center space-y-4 sm:flex sm:space-x-8 sm:space-y-0">
+			<!-- TODO when pathway has been selected mark this step as completed -->
+			<li class="flex items-center gap-4">
+				<span class="flex h-12 w-12 items-center">
+					<Globe />
+				</span>
+				<span class="flex flex-col items-center">
+					<span class="flex h-8 items-center">
+						<span class="">Global carbon</span>
 					</span>
-				</li>
-				<Arrows />
-				<!-- TODO when a effort sharing principle has been selected mark this step as completed -->
-				<li class={$page.url.pathname === '/map' ? activeli : passiveli}>
-					<span class={$page.url.pathname === '/map' ? activespan : passivespan}><Sharing /></span>
-					<span>
-						<h3 class="font-medium leading-tight">
-							<a href={`/map${$page.url.search}`}>Choose effort-sharing method</a>
-						</h3>
+					<span class="h-1 w-full bg-slate-300" />
+					<span class="flex h-8 w-full items-center gap-2">
+						<span class="flex">
+							<span class="flex h-6 w-6 items-center">
+								<Temperature />
+							</span>1.5
+						</span>
+						<span class="flex">
+							<span class="flex h-6 w-6 items-center">
+								<Risk />
+							</span>Low
+						</span>
+						<span class="flex">
+							<span class="flex h-6 w-6 items-center">
+								<Nonco2 />
+							</span>0.2
+						</span>
+						<span class="flex">
+							<span class="flex h-6 w-6 items-center">
+								<Negemiss />
+							</span>high
+						</span>
 					</span>
-				</li>
-				<Arrows />
-				<li class={$page.url.pathname.startsWith('/regions') ? activeli : passiveli}>
-					<span class={$page.url.pathname.startsWith('/regions') ? activespan : passivespan}>
-						<Details />
+				</span>
+			</li>
+			<Arrows />
+
+			<li class="flex items-center gap-4">
+				<span class="flex h-6 w-6 items-center">
+					<Sharing />
+				</span>
+				<span class="flex flex-col items-center">
+					<span class="flex items-center">
+						<span class="">Effort sharing</span>
 					</span>
-					<span>
-						<a href={`/regions${$page.url.search}`}>
-							<h3 class="font-medium leading-tight">Get country details</h3>
-						</a>
+					<span class="flex h-8 w-full">
+						<span class="flex h-6 w-6 items-center">
+							<Temperature />
+						</span>PCC
+						<span class="flex h-6 w-6 items-center">
+							<Temperature />
+						</span>NL
 					</span>
-				</li>
-				<Arrows />
-				<li class={$page.url.pathname.startsWith('/compare') ? activeli : passiveli}>
-					<span class={$page.url.pathname.startsWith('/compare') ? activespan : passivespan}>
-						<Compare />
-					</span>
-					<span>
-						<h3 class="font-medium leading-tight">Compare</h3>
-					</span>
-				</li>
-			</ol>
-		</div>
+				</span>
+			</li>
+
+			<!-- TODO when a effort sharing principle has been selected mark this step as completed -->
+			<Arrows />
+			<li class={$page.url.pathname.startsWith('/regions') ? activeli : passiveli}>
+				<span class={$page.url.pathname.startsWith('/regions') ? activespan : passivespan}>
+					<Details />
+				</span>
+				<span>
+					<a href={`/regions${$page.url.search}`}>
+						<h3 class="font-medium leading-tight">Country details</h3>
+					</a>
+				</span>
+			</li>
+			<Arrows />
+			<li class={$page.url.pathname.startsWith('/compare') ? activeli : passiveli}>
+				<span class={$page.url.pathname.startsWith('/compare') ? activespan : passivespan}>
+					<Compare />
+				</span>
+				<span>
+					<h3 class="font-medium leading-tight">Compare</h3>
+				</span>
+			</li>
+		</ol>
 		<a href="/about" title="About" class:font-bold={$page.url.pathname === '/about'}>
 			<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"
 				><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path
