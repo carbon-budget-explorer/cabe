@@ -18,6 +18,7 @@
 	import Nonco2 from '$lib/icons/nonco2.svelte';
 	import Negemiss from '$lib/icons/negemiss.svelte';
 	import Negemiss2 from '$lib/icons/negemiss2.svelte';
+	import Quicksetting from '$lib/nav/quicksetting.svelte';
 </script>
 
 <div class="flex h-screen max-h-screen flex-col">
@@ -35,26 +36,18 @@
 					</span>
 					<span class="h-1 w-full bg-slate-300" />
 					<span class="flex h-8 w-full items-center gap-2">
-						<span class="flex">
-							<span class="flex h-6 w-6 items-center">
-								<Temperature />
-							</span>1.5
-						</span>
-						<span class="flex">
-							<span class="flex h-6 w-6 items-center">
-								<Risk />
-							</span>Low
-						</span>
-						<span class="flex">
-							<span class="flex h-6 w-6 items-center">
-								<Nonco2 />
-							</span>0.2
-						</span>
-						<span class="flex">
-							<span class="flex h-6 w-6 items-center">
-								<Negemiss />
-							</span>high
-						</span>
+						<Quicksetting value="1.5">
+							<Temperature />
+						</Quicksetting>
+						<Quicksetting value="Low">
+							<Risk />
+						</Quicksetting>
+						<Quicksetting value="0.2">
+							<Nonco2 />
+						</Quicksetting>
+						<Quicksetting value="high">
+							<Negemiss />
+						</Quicksetting>
 					</span>
 				</span>
 			</li>
