@@ -48,15 +48,15 @@ function Temperatures() {
 }
 
 function exceedanceRisks() {
-	return ds.Risk_of_exceedance.values.tolist().toJs() as string[];
+	return ds.Risk.values.tolist().toJs() as string[];
 }
 
 function nonCO2Mitigations() {
-	return ds.Non_CO2_mitigation_potential.values.tolist().toJs() as string[];
+	return ds.NonCO2.values.tolist().toJs() as string[];
 }
 
 function negativeEmissions() {
-	return ds.Negative_emissions.values.tolist().toJs() as string[];
+	return ds.NegEmis.values.tolist().toJs() as string[];
 }
 
 export function pathwayStats(query: PathWayQuery): PathwayStats {
@@ -67,9 +67,9 @@ export function pathwayStats(query: PathWayQuery): PathwayStats {
 	const remaining: number = ds.CO2_globe.sel
 		.callKwargs({
 			Temperature: query.temperature,
-			Risk_of_exceedance: query.exceedanceRisk,
-			Negative_emissions: query.negativeEmissions,
-			Non_CO2_mitigation_potential: query.nonCO2Mitigation
+			Risk: query.exceedanceRisk,
+			NegEmis: query.negativeEmissions,
+			NonCO2: query.nonCO2Mitigation
 		})
 		.sum()
 		.values.tolist();
@@ -102,30 +102,26 @@ export interface TimeSeries {
 const toJsOpts = { dict_converter: Object.fromEntries };
 
 export function pathwayCarbon(query: PathWayQuery) {
-	// ds.CO2_globe.sel(Temperature='1.5 deg', Negative_emissions='Medium',
-	//   Non_CO2_mitigation_potential='Medium', Risk_of_exceedance='50%', Time=slice(2021,2100)
-	//)
+	// ds.CO2_globe.sel(
+	// 	Temperature=1.5, Risk=0.2, NegEmis=0.4, NonCO2=0.35, Time=slice(2021, 2100)
+	// 	).to_pandas()
 	const Time = slice(pyodide, 2021, 2100);
 	let df = ds.CO2_globe.sel
 		.callKwargs({
 			Temperature: query.temperature,
-			Risk_of_exceedance: query.exceedanceRisk,
-			Negative_emissions: query.negativeEmissions,
-			Non_CO2_mitigation_potential: query.nonCO2Mitigation,
+			Risk: query.exceedanceRisk,
+			NegEmis: query.negativeEmissions,
+			NonCO2: query.nonCO2Mitigation,
 			Time
 		})
+		.rename.callKwargs({ Time: 'time' })
 		.to_pandas();
-	df.index.rename('time', true);
-	df = df.reset_index();
-	df.set('mean', df.pop(0));
-
-	//  TODO get variable errors from additional data arrays
-	const err = 5000;
-	// df['min'] = df['mean'] - 5000
-	df.set('min', df.get('mean').__sub__(err));
-	df.set('max', df.get('mean').__add__(err));
-	// TODO remove nans (what to do with them?)
-	return df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as {
+	return df.agg
+		.callKwargs({ func: ['min', 'mean', 'max'] })
+		.transpose()
+		.reset_index()
+		.to_dict.callKwargs({ orient: 'records' })
+		.toJs(toJsOpts) as {
 		time: number;
 		mean: number;
 		max: number;
@@ -334,10 +330,11 @@ const policyMap = {
 } as const;
 
 function policyPathway(policy: keyof typeof policyMap, Region: string) {
-	// calculate meean, min and max over all models
+	// Calculate mean, min and max over all models
 	const Time = slice(pyodide, 2021, 2100 + 1);
 	const policy_ds = ds
-		.get(policyMap[policy])
+		// .get(policyMap[policy])
+		.get('CO2_ndc') // TODO this is a temporary hack since curpol and netzero are gone
 		.sel.callKwargs({ Region, Time })
 		.drop('Region')
 		.groupby('Time');
@@ -346,9 +343,9 @@ function policyPathway(policy: keyof typeof policyMap, Region: string) {
 	// instead of calculating them on the fly each time
 	const df = xr
 		.merge([
-			policy_ds.mean('Model').rename('mean'),
-			policy_ds.min('Model').rename('min'),
-			policy_ds.max('Model').rename('max')
+			policy_ds.mean(['Conditionality', 'Hot_air', 'Ambition']).rename('mean'),
+			policy_ds.min(['Conditionality', 'Hot_air', 'Ambition']).rename('min'),
+			policy_ds.max(['Conditionality', 'Hot_air', 'Ambition']).rename('max')
 		])
 		.to_pandas();
 	df.index.rename('time', true);
@@ -375,9 +372,9 @@ export function netzero(Region = 'WORLD') {
 export function ambitionGap(query: PathWayQuery, Time = 2030) {
 	const pathwaySelection = {
 		Temperature: query.temperature,
-		Risk_of_exceedance: query.exceedanceRisk,
-		Negative_emissions: query.negativeEmissions,
-		Non_CO2_mitigation_potential: query.nonCO2Mitigation
+		Risk: query.exceedanceRisk,
+		NegEmis: query.negativeEmissions,
+		NonCO2: query.nonCO2Mitigation
 	};
 	const pathway = ds.CO2_globe.sel
 		.callKwargs({
@@ -385,7 +382,7 @@ export function ambitionGap(query: PathWayQuery, Time = 2030) {
 			Time
 		})
 		.values.tolist() as number;
-	const averagePolicy = ds.CurPol.sel
+	const averagePolicy = ds.CO2_ndc.sel // TODO revert to CurPol
 		.callKwargs({
 			Region: 'WORLD',
 			Time
@@ -398,9 +395,9 @@ export function ambitionGap(query: PathWayQuery, Time = 2030) {
 export function emissionGap(query: PathWayQuery, Time = 2030) {
 	const pathwaySelection = {
 		Temperature: query.temperature,
-		Risk_of_exceedance: query.exceedanceRisk,
-		Negative_emissions: query.negativeEmissions,
-		Non_CO2_mitigation_potential: query.nonCO2Mitigation
+		Risk: query.exceedanceRisk,
+		NegEmis: query.negativeEmissions,
+		NonCO2: query.nonCO2Mitigation
 	};
 	const pathway = ds.CO2_globe.sel
 		.callKwargs({
@@ -408,7 +405,7 @@ export function emissionGap(query: PathWayQuery, Time = 2030) {
 			Time
 		})
 		.values.tolist() as number;
-	const averagePolicy = ds.NDC.sel
+	const averagePolicy = ds.CO2_ndc.sel // TODO is this correct?
 		.callKwargs({
 			Region: 'WORLD',
 			Time

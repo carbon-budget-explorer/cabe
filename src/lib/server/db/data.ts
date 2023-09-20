@@ -4,7 +4,7 @@ import { open_dataset, open_pyodide } from './xarray';
 
 export const pyodide: PyodideInterface = await open_pyodide();
 
-const defaultTotalsPath = 'data/xr_total4.nc';
+const defaultTotalsPath = 'data/xr_dataread.nc';
 const totalsPath = process.env.CABE_TOTALS_PATH || defaultTotalsPath;
 export const ds = await open_dataset(totalsPath, pyodide);
 

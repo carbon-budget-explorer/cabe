@@ -38,7 +38,6 @@
 					checked={temperatureChoice === query.temperature}
 					on:change={changeWarming}
 				/>
-				{temperatureChoice.replace('deg', '°')}C
 			</label>
 		{/each}
 	</div>
