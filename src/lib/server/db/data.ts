@@ -4,7 +4,7 @@ import { mount_data, open_dataset, open_pyodide } from './xarray';
 
 export const pyodide: PyodideInterface = await open_pyodide();
 
-const dataDir = process.env.CABE_DATA_DIR || 'data';
+export const dataDir = process.env.CABE_DATA_DIR || 'data';
 mount_data(dataDir, pyodide);
 
 const globalPath = dataDir + '/xr_dataread.nc';

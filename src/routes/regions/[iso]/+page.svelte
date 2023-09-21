@@ -8,6 +8,9 @@
 	import VegaTimeSeries from '$lib/VegaTimeSeries.svelte';
 	import { fly, slide } from 'svelte/transition';
 	import type { PageData } from './$types';
+	import Pathway from '$lib/charts/Pathway.svelte';
+	import Line from '$lib/charts/components/Line.svelte';
+	import Area from '$lib/charts/components/Area.svelte';
 	export let data: PageData;
 
 	function updateQueryParam(name: string, value: string) {
@@ -17,7 +20,9 @@
 			goto(`?${params.toString()}`);
 		}
 	}
-
+	const ipcc_green = '#82a56e';
+	const ipcc_red = '#f5331e';
+	const ipcc_purple = '#a67ab8';
 	let showSettngsPanel = false;
 </script>
 
@@ -107,7 +112,14 @@
 					</div>
 				{/if}
 
-				<div class="grow bg-blue-300">figure</div>
+				<Pathway yDomain={[-50, 220]}>
+					<Line data={data.historicalCarbon} x={'time'} y={'value'} color="black" />
+					<Line data={data.timeseries.data} x={'time'} y={'mean'} color={ipcc_green} />
+					<Area data={data.timeseries.data} x={'time'} y0={'min'} y1={'max'} color={ipcc_green} />
+
+					<Line data={data.currentPolicy} x={'time'} y={'mean'} color={ipcc_red} />
+					<Area data={data.currentPolicy} x={'time'} y0={'min'} y1={'max'} color={ipcc_red} />
+				</Pathway>
 				<div>
 					<h1 class="pt-4">Reference pathways</h1>
 					<div>
