@@ -1,8 +1,7 @@
 <script lang="ts">
 	// See https://observablehq.com/@d3/color-legend
+	// and https://observablehq.com/@slowkow/vertical-color-legend
 	import type { ScaleSequential } from 'd3-scale';
-	import { LayerCake, Svg } from 'layercake';
-	import AxisY from './AxisY.svelte';
 	import { format, interpolateRound, quantile, range } from 'd3';
 
 	export let title: string;
@@ -21,13 +20,13 @@
 	}
 
 	const tickSize = 6;
-	const width = 44 + tickSize;
+	const width = 36 + tickSize;
 	const height = 320;
-	const marginTop = 0;
-	const marginRight = 18;
-	const marginBottom = 0;
-	const marginLeft = 16 + tickSize;
-	const ticks = 4;
+	const marginTop = 20;
+	const marginRight = 10 + tickSize;
+	const marginBottom = 20;
+	const marginLeft = 5;
+	const ticks = height / 64;
 
 	$: y = Object.assign(
 		scale.copy().interpolator(interpolateRound(marginBottom, height - marginTop)),
@@ -41,28 +40,32 @@
 	$: tickFormat = format(',r');
 </script>
 
-<div class="absolute right-4 top-4 h-48 w-24">
-	<LayerCake yScale={scale}>
-		<Svg>
-			<image
-				width={width - marginRight - marginLeft}
-				height={height - marginTop - marginBottom}
-				x={marginLeft - 24}
-				y={marginTop}
-				preserveAspectRatio="none"
-				xlink:href={ramp(scale.interpolator()).toDataURL()}
-			/>
-			<g>
-				{#each tickValues as tick (tick)}
-					<g class="tick" transform={`translate(0, ${height - y(tick || 0)})`}>
-						<line stroke="currentColor" x2={tickSize} />
-						<text fill="currentColor" x={tickSize + 3} dy=".32em">
-							{tickFormat(tick || 0)}
-						</text>
-					</g>
-				{/each}
-			</g>
-			<text transform={`translate(0, ${height + 24})`}>{title}</text>
-		</Svg>
-	</LayerCake>
+<div class="absolute bottom-4 right-14">
+	<svg {width} {height} viewBox={`0 0 ${width} ${height}`} overflow="visible" display="block">
+		>
+		<image
+			width={width - marginRight - marginLeft}
+			height={height - marginTop - marginBottom}
+			x={marginLeft}
+			y={marginTop}
+			preserveAspectRatio="none"
+			xlink:href={ramp(scale.interpolator()).toDataURL()}
+		/>
+		<g transform={`translate(26,0)`}>
+			{#each tickValues as tick (tick)}
+				<g class="tick" transform={`translate(0, ${height - y(tick || 0) + 0.5})`}>
+					<text fill="currentColor" x={tickSize + 3} dy=".32em">
+						{tickFormat(tick || 0)}
+					</text>
+				</g>
+			{/each}
+			<text
+				fill="currentColor"
+				x={marginLeft - width + marginRight}
+				y={0}
+				text-anchor="start"
+				font-weight="bold">{title}</text
+			>
+		</g>
+	</svg>
 </div>
