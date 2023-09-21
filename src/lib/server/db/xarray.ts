@@ -1,5 +1,10 @@
-import { dirname, basename } from 'node:path';
 import type { PyodideInterface } from 'pyodide';
+
+export function mount_data(root: string, pyodide: PyodideInterface) {
+	console.log('Mounting ', root, ' as ', root);
+	pyodide.FS.mkdir(root);
+	pyodide.FS.mount(pyodide.FS.filesystems.NODEFS, { root }, root);
+}
 
 export async function open_pyodide(): Promise<PyodideInterface> {
 	// Using CommonJS import because the ES module of pyodide
@@ -22,12 +27,7 @@ export async function open_dataset(path: string, pyodide: PyodideInterface) {
 	await micropip.install('netcdf4');
 
 	const xarray = pyodide.pyimport('xarray');
-
-	const root = dirname(path);
-	const mountDir = '/mnt';
-	pyodide.FS.mkdir(mountDir);
-	pyodide.FS.mount(pyodide.FS.filesystems.NODEFS, { root }, mountDir);
-	const ds = xarray.open_dataset(`${mountDir}/${basename(path)}`);
+	const ds = xarray.open_dataset(path);
 	// TODO create type for ds
 	// now copy from Python and handle convertsion with guesswork
 	console.log(`Opened ${path} with pyodide+xarray`);

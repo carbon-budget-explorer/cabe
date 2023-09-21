@@ -1,5 +1,5 @@
 import type { principles } from '$lib/principles';
-import { ds, pyodide } from './data';
+import { dsGlobal, dsMap, pyodide } from './data';
 import type { SpatialMetric, TemnporalMetric } from './utils';
 import { slice, type DataArraySelection } from './xarray';
 
@@ -44,27 +44,27 @@ export function pathwayChoices(): Record<keyof PathWayQuery, string[]> {
 }
 
 function Temperatures() {
-	return ds.Temperature.values.tolist().toJs() as string[];
+	return dsGlobal.Temperature.values.tolist().toJs() as string[];
 }
 
 function exceedanceRisks() {
-	return ds.Risk.values.tolist().toJs() as string[];
+	return dsGlobal.Risk.values.tolist().toJs() as string[];
 }
 
 function nonCO2Mitigations() {
-	return ds.NonCO2.values.tolist().toJs() as string[];
+	return dsGlobal.NonCO2.values.tolist().toJs() as string[];
 }
 
 function negativeEmissions() {
-	return ds.NegEmis.values.tolist().toJs() as string[];
+	return dsGlobal.NegEmis.values.tolist().toJs() as string[];
 }
 
 export function pathwayStats(query: PathWayQuery): PathwayStats {
 	// TODO check number, now returns 2171597.23 while we expect 3500Gt
 	// ds.CO2_hist.sel(Region='WORLD')
-	const used: number = ds.CO2_hist.sel.callKwargs({ Region: 'WORLD' }).sum().values.tolist();
+	const used: number = dsGlobal.CO2_hist.sel.callKwargs({ Region: 'WORLD' }).sum().values.tolist();
 
-	const remaining: number = ds.CO2_globe.sel
+	const remaining: number = dsGlobal.CO2_globe.sel
 		.callKwargs({
 			Temperature: query.temperature,
 			Risk: query.exceedanceRisk,
@@ -106,7 +106,7 @@ export function pathwayCarbon(query: PathWayQuery) {
 	// 	Temperature=1.5, Risk=0.2, NegEmis=0.4, NonCO2=0.35, Time=slice(2021, 2100)
 	// 	).to_pandas()
 	const Time = slice(pyodide, 2021, 2100);
-	let df = ds.CO2_globe.sel
+	let df = dsGlobal.CO2_globe.sel
 		.callKwargs({
 			Temperature: query.temperature,
 			Risk: query.exceedanceRisk,
@@ -131,7 +131,7 @@ export function pathwayCarbon(query: PathWayQuery) {
 
 export function historicalCarbon() {
 	const Time = slice(pyodide, 1990, 2021);
-	let df = ds.CO2_hist.sel
+	let df = dsGlobal.CO2_hist.sel
 		.callKwargs({
 			Region: 'WORLD',
 			Time
@@ -149,11 +149,11 @@ export function historicalCarbon() {
 
 export function listFutureYears(): number[] {
 	const Time = slice(pyodide, 2021, 2100 + 1);
-	return ds.Time.sel.callKwargs({ Time }).values.tolist().toJs() as number[];
+	return dsGlobal.Time.sel.callKwargs({ Time }).values.tolist().toJs() as number[];
 }
 
 export function listRegions(): string[] {
-	return ds.Region.values.tolist().toJs() as string[];
+	return dsGlobal.Region.values.tolist().toJs() as string[];
 }
 
 export function fullCenturyBudgetSpatial(
@@ -196,7 +196,7 @@ export function fullCenturyBudgetSpatial(
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
 
-	let da = ds.get(effortSharing).sel.callKwargs(selection);
+	let da = dsMap.get(effortSharing).sel.callKwargs(selection);
 	if (effortSharing !== 'ECPC') {
 		da = da.sum('Time');
 	}
@@ -257,7 +257,7 @@ export function fullCenturyBudgetSingleRegion(
 	} else {
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
-	let df = ds.get(effortSharing).sel.callKwargs(selection).to_pandas();
+	let df = dsGlobal.get(effortSharing).sel.callKwargs(selection).to_pandas();
 	df = df.reset_index();
 	df.set('value', df.pop(0));
 	return df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as {
@@ -313,7 +313,7 @@ export function temperatureAssesment(
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
 
-	let df = ds
+	let df = dsGlobal
 		.get(effortSharing + '_temp')
 		.sel.callKwargs(selection)
 		.to_pandas();
@@ -332,7 +332,7 @@ const policyMap = {
 function policyPathway(policy: keyof typeof policyMap, Region: string) {
 	// Calculate mean, min and max over all models
 	const Time = slice(pyodide, 2021, 2100 + 1);
-	const policy_ds = ds
+	const policy_ds = dsGlobal
 		// .get(policyMap[policy])
 		.get('CO2_ndc') // TODO this is a temporary hack since curpol and netzero are gone
 		.sel.callKwargs({ Region, Time })
@@ -376,13 +376,13 @@ export function ambitionGap(query: PathWayQuery, Time = 2030) {
 		NegEmis: query.negativeEmissions,
 		NonCO2: query.nonCO2Mitigation
 	};
-	const pathway = ds.CO2_globe.sel
+	const pathway = dsGlobal.CO2_globe.sel
 		.callKwargs({
 			...pathwaySelection,
 			Time
 		})
 		.values.tolist() as number;
-	const averagePolicy = ds.CO2_ndc.sel // TODO revert to CurPol
+	const averagePolicy = dsGlobal.CO2_ndc.sel // TODO revert to CurPol
 		.callKwargs({
 			Region: 'WORLD',
 			Time
@@ -399,13 +399,13 @@ export function emissionGap(query: PathWayQuery, Time = 2030) {
 		NegEmis: query.negativeEmissions,
 		NonCO2: query.nonCO2Mitigation
 	};
-	const pathway = ds.CO2_globe.sel
+	const pathway = dsGlobal.CO2_globe.sel
 		.callKwargs({
 			...pathwaySelection,
 			Time
 		})
 		.values.tolist() as number;
-	const averagePolicy = ds.CO2_ndc.sel // TODO is this correct?
+	const averagePolicy = dsGlobal.CO2_ndc.sel // TODO is this correct?
 		.callKwargs({
 			Region: 'WORLD',
 			Time
