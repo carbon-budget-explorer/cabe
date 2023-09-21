@@ -73,15 +73,31 @@
 					onChange={updateQueryParam}
 				/>
 			</div>
-			<div class="rounded-lg border-4 p-2">
+			<div class="p-4 shadow-lg">
+				<h1>Difference between your scenario and current policy</h1>
 				<ul>
-					<li>Global budget: {$globalBudgetCounter.toFixed(2)} GtCO2</li>
-					<li>Used 1850-2021: {data.result.pathwayStats.used.toFixed(2)} GtCO2</li>
-					<li>Remaining till 2050: {$remainingBudgetCounter.toFixed(2)} GtCO2</li>
+					<li on:mouseenter={toggleAmbitionGap} on:mouseleave={toggleAmbitionGap}>
+						<span class="cursor-grab hover:bg-slate-200">
+							Ambition gap: {($ambitionGapTweened / 1_000).toFixed(2)} GtCO2
+						</span>
+					</li>
+					<li on:mouseenter={toggleEmissionGap} on:mouseleave={toggleEmissionGap}>
+						<span class="cursor-grab hover:bg-slate-200">
+							Emission gap: {($emissionGapTweened / 1_000).toFixed(2)} GtCO2
+						</span>
+					</li>
 				</ul>
 			</div>
 		</div>
+
 		<div class="flex grow flex-col gap-4">
+			<div class="rounded-lg border-4 p-2">
+				<ul>
+					<li>Global budget: {($globalBudgetCounter / 1_000).toFixed(2)} Gt CO2</li>
+					<li>Used 1850-2021: {(data.result.pathwayStats.used / 1_000).toFixed(2)} Gt CO2</li>
+					<li>Remaining till 2050: {($remainingBudgetCounter / 1_000).toFixed(2)} Gt CO2</li>
+				</ul>
+			</div>
 			<div class="grow p-4 shadow-lg">
 				<Pathway>
 					<Line data={data.result.historicalCarbon} x={'time'} y={'value'} color="black" />
@@ -123,21 +139,6 @@
 					<Area data={$pathwayCarbonTweened} x={'time'} y0={'min'} y1={'max'} color={ipcc_green} />
 				</Pathway>
 			</div>
-			<div class="p-4 shadow-lg">
-				<h1>Difference between your scenario and current policy</h1>
-				<ul>
-					<li on:mouseenter={toggleAmbitionGap} on:mouseleave={toggleAmbitionGap}>
-						<span class="cursor-grab hover:bg-slate-200">
-							Ambition gap: {$ambitionGapTweened.toFixed(2)} GtCO2
-						</span>
-					</li>
-					<li on:mouseenter={toggleEmissionGap} on:mouseleave={toggleEmissionGap}>
-						<span class="cursor-grab hover:bg-slate-200">
-							Emission gap: {$emissionGapTweened.toFixed(2)} GtCO2
-						</span>
-					</li>
-				</ul>
-			</div>
 		</div>
 		<div class="flex h-full max-w-[25%] flex-col justify-between gap-4 p-4 shadow-lg">
 			<div>
@@ -174,7 +175,7 @@
 			<div>
 				<a
 					class="mb-2 mr-2 block rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-3xl font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
-					href={`/world${$page.url.search}`}
+					href={`/map${$page.url.search}`}
 				>
 					Next step: Allocate
 				</a>

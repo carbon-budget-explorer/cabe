@@ -14,7 +14,7 @@
 		onRegionClick: (_, value: unknown) => {
 			if (value === null) {
 				// Clicked on ocean
-				document.location.href = `/world`;
+				document.location.href = `/map`;
 				return;
 			}
 
@@ -25,7 +25,6 @@
 
 	// TODO scale translate so all regions are visible
 	// TODO highlight region of page
-	// TODO color by metric like GDP, similar to /world
 	// TODO pick how to color
 	// TODO add enlarge button to pick region on bigger map in a dialog
 	const spec: VisualizationSpec = {

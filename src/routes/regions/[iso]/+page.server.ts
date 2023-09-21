@@ -2,8 +2,7 @@ import { borders } from '$lib/server/db/data';
 import type { RouteParams } from './$types';
 import { searchParam } from '$lib/searchparam';
 import {
-	listEffortSharings,
-	effortSharingRegion,
+	fullCenturyBudgetSingleRegion,
 	pathwayChoices,
 	pathwayQueryFromSearchParams
 } from '$lib/server/db/models';
@@ -17,18 +16,18 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 		query: pathwayQuery,
 		choices
 	};
-	const effortSharingQuery = searchParam(url, 'effortSharing', 'None');
-	const effortSharingChoices = listEffortSharings();
-	const effortSharing = {
-		choices: effortSharingChoices,
-		query: effortSharingQuery
-	};
-
+	const effortSharingQuery = searchParam<undefined | keyof typeof principles>(
+		url,
+		'effortSharing',
+		undefined
+	);
 	const effortSharingData =
-		effortSharingQuery === 'None' ? [] : effortSharingRegion(iso, pathwayQuery, effortSharingQuery);
+		effortSharingQuery === undefined
+			? []
+			: fullCenturyBudgetSingleRegion(iso, pathwayQuery, effortSharingQuery);
 
 	const name = borders.labels.get(iso) || iso;
-	const label = principles.get(effortSharingQuery);
+	const label = effortSharingQuery !== undefined ? principles[effortSharingQuery].label : '';
 	const r = {
 		borders: borders.geojson,
 		iso,
@@ -38,7 +37,7 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 			data: effortSharingData
 		},
 		pathway,
-		effortSharing
+		effortSharing: effortSharingQuery
 	};
 	return r;
 };
