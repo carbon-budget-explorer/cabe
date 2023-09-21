@@ -1,6 +1,6 @@
 <script lang="ts">
 	export let value: string;
-	export let options: string[];
+	export let options: number[];
 	export let name: string;
 
 	type ChangeEvent = Event & {
@@ -8,12 +8,11 @@
 	};
 
 	function updateValue(event: ChangeEvent) {
-		value = options[event.currentTarget.valueAsNumber];
+		value = options[event.currentTarget.valueAsNumber].toString();
 	}
 
 	$: len = options.length;
-	$: valIndex = options.indexOf(value);
-	$: console.log(value, valIndex, options[valIndex]);
+	$: valIndex = options.indexOf(parseFloat(value));
 </script>
 
 <label>
