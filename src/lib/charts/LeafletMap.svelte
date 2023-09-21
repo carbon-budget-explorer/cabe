@@ -107,7 +107,7 @@
 			/>
 		</LeafletMap>
 		<ColorLegend
-			title={variable === 'temp' ? '(°C)' : '(GtCO2)'}
+			title={variable === 'temp' ? '°C' : 'Gt CO₂'}
 			{...notypecheck({ scale: scale })}
 			{scale}
 		/>
