@@ -24,20 +24,20 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 		query: pathwayQuery,
 		choices
 	};
-	const effortSharingQuery = searchParam<undefined | keyof typeof principles>(
+	const initialEffortScharingName = searchParam<keyof typeof principles>(
 		url,
 		'effortSharing',
-		undefined
+		'PC' // When no effort sharing is selected on prev page, use per capita as default
 	);
-	const effortSharingData =
-		effortSharingQuery === undefined ? [] : db.effortSharing(effortSharingQuery, pathwayQuery);
+
+	const effortSharingData = db.effortSharings(pathwayQuery);
 	const hist = historicalCarbon(iso);
 	const curPol: any[] = [];
 
 	const name = borders.labels.get(iso) || iso;
-	const label = effortSharingQuery !== undefined ? principles[effortSharingQuery].label : '';
+	const label =
+		initialEffortScharingName !== undefined ? principles[initialEffortScharingName].label : '';
 	const r = {
-		borders: borders.geojson,
 		iso,
 		name,
 		timeseries: {
@@ -47,7 +47,10 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 		pathway,
 		currentPolicy: curPol,
 		historicalCarbon: hist,
-		effortSharing: effortSharingQuery
+		effortSharing: {
+			initial: initialEffortScharingName,
+			data: effortSharingData
+		}
 	};
 	return r;
 };

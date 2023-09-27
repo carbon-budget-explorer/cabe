@@ -4,14 +4,13 @@
 	import { page } from '$app/stores';
 	import GlobalBudgetForm from '$lib/PathwayForm.svelte';
 
-	// import MiniMap from '$lib/MiniMap.svelte';
-	import VegaTimeSeries from '$lib/VegaTimeSeries.svelte';
-	import { fly, slide } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 	import type { PageData } from './$types';
 	import Pathway from '$lib/charts/Pathway.svelte';
 	import Line from '$lib/charts/components/Line.svelte';
 	import Area from '$lib/charts/components/Area.svelte';
 	import { principles } from '$lib/principles';
+	import Gap from '$lib/charts/components/Gap.svelte';
 	export let data: PageData;
 
 	function updateQueryParam(name: string, value: string) {
@@ -21,12 +20,13 @@
 			goto(`?${params.toString()}`);
 		}
 	}
-	const ipcc_green = '#82a56e';
-	const ipcc_red = '#f5331e';
-	const ipcc_purple = '#a67ab8';
+	// Bottom colors from https://colorbrewer2.org/#type=qualitative&scheme=Pastel1&n=9
+	const ipcc_red = '#e5d8bd';
+	const ipcc_blue = '#fddaec';
+	const ipcc_purple = '#f2f2f2';
 	let showSettngsPanel = false;
 
-	$: updateQueryParam('effortSharing', data.effortSharing || '');
+	let activeEffortSharings = [data.effortSharing.initial];
 </script>
 
 <div class="flex h-full flex-row">
@@ -117,29 +117,64 @@
 
 				<Pathway yDomain={[-50, 220]}>
 					<Line data={data.historicalCarbon} x={'time'} y={'value'} color="black" />
-					<Line data={data.timeseries.data} x={'time'} y={'mean'} color={ipcc_green} />
-					<Area data={data.timeseries.data} x={'time'} y0={'min'} y1={'max'} color={ipcc_green} />
+					{#each activeEffortSharings as activeEffortSharing}
+						<g name={activeEffortSharing}>
+							{#if activeEffortSharing === 'ECPC'}
+								<!-- TODO show ECPC as error bar on chart -->
+								<Gap
+									x={data.effortSharing.data[activeEffortSharing][0].time}
+									y0={data.effortSharing.data[activeEffortSharing][0].min}
+									y1={data.effortSharing.data[activeEffortSharing][0].max}
+								/>
+							{:else}
+								<Line
+									data={data.effortSharing.data[activeEffortSharing]}
+									x={'time'}
+									y={'mean'}
+									color={principles[activeEffortSharing].color}
+								/>
+								<Area
+									data={data.effortSharing.data[activeEffortSharing]}
+									x={'time'}
+									y0={'min'}
+									y1={'max'}
+									color={principles[activeEffortSharing].color}
+								/>
+							{/if}
+						</g>
+					{/each}
 
-					<Line data={data.currentPolicy} x={'time'} y={'mean'} color={ipcc_red} />
-					<Area data={data.currentPolicy} x={'time'} y0={'min'} y1={'max'} color={ipcc_red} />
+					<g name="currentPolicy">
+						<Line data={data.currentPolicy} x={'time'} y={'mean'} color={ipcc_red} />
+						<Area data={data.currentPolicy} x={'time'} y0={'min'} y1={'max'} color={ipcc_red} />
+					</g>
 				</Pathway>
 				<div>
 					<h1 class="pt-4">Reference pathways</h1>
 					<div>
-						<label class="block"><input type="checkbox" />Current policy</label>
-						<label class="block"><input type="checkbox" />NDCs</label>
-						<label class="block"><input type="checkbox" />NetZero</label>
+						<!-- TODO this checkbox group is also used in /global page, deduplicate -->
+						<label class="block">
+							<b style={`color: ${ipcc_red}`}>▬</b>
+							<input class="mr-1" type="checkbox" />
+							Current policy</label
+						>
+						<label class="block">
+							<b style={`color: ${ipcc_blue}`}>▬</b>
+							<input class="mr-1" type="checkbox" />
+							Nationally determined contributions (NDCs)
+						</label>
+						<label class="block">
+							<b style={`color: ${ipcc_purple}`}>▬</b>
+							<input class="mr-1" type="checkbox" />
+							zero-scenarios
+						</label>
 					</div>
 					<h1 class="pt-4">Effort sharing</h1>
 					<div>
-						{#each Object.entries(principles) as [id, { label }]}
+						{#each Object.entries(principles) as [id, { label, color }]}
 							<label class="block">
-								<input
-									type="radio"
-									class="mr-2"
-									value={id}
-									bind:group={data.effortSharing}									
-								/>
+								<b style={`color: ${color}`}>▬</b>
+								<input type="checkbox" class="mr-1" value={id} bind:group={activeEffortSharings} />
 								{label}
 							</label>
 						{/each}

@@ -100,7 +100,7 @@ export interface TimeSeries {
  * make pyodide toJs(toJsOpts) return a list of JS object instead of list of Map instances
  */
 export const toJsOpts = { dict_converter: Object.fromEntries };
-export interface UncertainTime {
+export type UncertainTime = {
 	time: number;
 	mean: number;
 	max: number;
