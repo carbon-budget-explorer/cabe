@@ -11,6 +11,7 @@
 	import Pathway from '$lib/charts/Pathway.svelte';
 	import Line from '$lib/charts/components/Line.svelte';
 	import Area from '$lib/charts/components/Area.svelte';
+	import { principles } from '$lib/principles';
 	export let data: PageData;
 
 	function updateQueryParam(name: string, value: string) {
@@ -24,6 +25,8 @@
 	const ipcc_red = '#f5331e';
 	const ipcc_purple = '#a67ab8';
 	let showSettngsPanel = false;
+
+	$: updateQueryParam('effortSharing', data.effortSharing || '');
 </script>
 
 <div class="flex h-full flex-row">
@@ -123,18 +126,23 @@
 				<div>
 					<h1 class="pt-4">Reference pathways</h1>
 					<div>
-						<label class="block"><input type="checkbox" checked />Current policy</label>
+						<label class="block"><input type="checkbox" />Current policy</label>
 						<label class="block"><input type="checkbox" />NDCs</label>
 						<label class="block"><input type="checkbox" />NetZero</label>
 					</div>
-					<h1 class="pt-4">Effort sharing choices</h1>
+					<h1 class="pt-4">Effort sharing</h1>
 					<div>
-						<label class="block"><input type="checkbox" class="mr-2" checked />GF</label>
-						<label class="block"><input type="checkbox" class="mr-2" />PC</label>
-						<label class="block"><input type="checkbox" class="mr-2" />PCC</label>
-						<label class="block"><input type="checkbox" class="mr-2" />GF</label>
-						<label class="block"><input type="checkbox" class="mr-2" />GF</label>
-						<label class="block"><input type="checkbox" class="mr-2" />GF</label>
+						{#each Object.entries(principles) as [id, { label }]}
+							<label class="block">
+								<input
+									type="radio"
+									class="mr-2"
+									value={id}
+									bind:group={data.effortSharing}									
+								/>
+								{label}
+							</label>
+						{/each}
 					</div>
 				</div>
 			</div>
