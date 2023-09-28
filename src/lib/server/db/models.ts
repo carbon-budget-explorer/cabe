@@ -105,14 +105,14 @@ export type UncertainTime = {
 	mean: number;
 	max: number;
 	min: number;
-}
+};
 
 export function pathwayCarbon(query: PathWayQuery, ds = dsGlobal) {
 	// ds.CO2_globe.sel(
 	// 	Temperature=1.5, Risk=0.2, NegEmis=0.4, NonCO2=0.35, Time=slice(2021, 2100)
 	// 	).to_pandas()
 	const Time = slice(pyodide, 2021, 2100);
-	let df = ds.CO2_globe.sel
+	const df = ds.CO2_globe.sel
 		.callKwargs({
 			Temperature: query.temperature,
 			Risk: query.exceedanceRisk,

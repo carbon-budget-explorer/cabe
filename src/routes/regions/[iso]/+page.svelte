@@ -27,6 +27,7 @@
 	let showSettngsPanel = false;
 
 	let activeEffortSharings = [data.effortSharing.initial];
+	let activeReference: string[] = [];
 </script>
 
 <div class="flex h-full flex-row">
@@ -144,10 +145,36 @@
 						</g>
 					{/each}
 
-					<g name="currentPolicy">
-						<Line data={data.currentPolicy} x={'time'} y={'mean'} color={ipcc_red} />
-						<Area data={data.currentPolicy} x={'time'} y0={'min'} y1={'max'} color={ipcc_red} />
-					</g>
+					{#if activeReference.includes('currentPolicy')}
+						<g name="currentPolicy">
+							<Line data={data.reference.currentPolicy} x={'time'} y={'mean'} color={ipcc_red} />
+							<Area
+								data={data.reference.currentPolicy}
+								x={'time'}
+								y0={'min'}
+								y1={'max'}
+								color={ipcc_red}
+							/>
+						</g>
+					{/if}
+					{#if activeReference.includes('ndc')}
+						<g name="ndc">
+							<Line data={data.reference.ndc} x={'time'} y={'mean'} color={ipcc_blue} />
+							<Area data={data.reference.ndc} x={'time'} y0={'min'} y1={'max'} color={ipcc_blue} />
+						</g>
+					{/if}
+					{#if activeReference.includes('netzero')}
+						<g name="netzero">
+							<Line data={data.reference.netzero} x={'time'} y={'mean'} color={ipcc_purple} />
+							<Area
+								data={data.reference.netzero}
+								x={'time'}
+								y0={'min'}
+								y1={'max'}
+								color={ipcc_purple}
+							/>
+						</g>
+					{/if}
 				</Pathway>
 				<div>
 					<h1 class="pt-4">Reference pathways</h1>
@@ -155,18 +182,23 @@
 						<!-- TODO this checkbox group is also used in /global page, deduplicate -->
 						<label class="block">
 							<b style={`color: ${ipcc_red}`}>▬</b>
-							<input class="mr-1" type="checkbox" />
+							<input
+								class="mr-1"
+								type="checkbox"
+								value="currentPolicy"
+								bind:group={activeReference}
+							/>
 							Current policy</label
 						>
 						<label class="block">
 							<b style={`color: ${ipcc_blue}`}>▬</b>
-							<input class="mr-1" type="checkbox" />
+							<input class="mr-1" type="checkbox" value="ndc" bind:group={activeReference} />
 							Nationally determined contributions (NDCs)
 						</label>
 						<label class="block">
 							<b style={`color: ${ipcc_purple}`}>▬</b>
-							<input class="mr-1" type="checkbox" />
-							zero-scenarios
+							<input class="mr-1" type="checkbox" value="netzero" bind:group={activeReference} />
+							Net zero-scenarios
 						</label>
 					</div>
 					<h1 class="pt-4">Effort sharing</h1>

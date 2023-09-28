@@ -3,6 +3,23 @@ import { open_dataset, type DataArraySelection } from './xarray';
 import { principles } from '$lib/principles';
 import { toJsOpts, type PathWayQuery, type UncertainTime } from './models';
 
+export class CountriesDatabase {
+	cache = new Map<string, CountryDatabase>();
+
+	constructor(public pyodide: PyodideInterface, public dataDir: string) {}
+
+	async get(iso: string) {
+		let db = this.cache.get(iso);
+		if (db === undefined) {
+			const ncPath = this.dataDir + `/xr_alloc_${iso}.nc`;
+			db = new CountryDatabase(iso, ncPath);
+			await db.open(this.pyodide);
+			this.cache.set(iso, db);
+		}
+		return db;
+	}
+}
+
 export class CountryDatabase {
 	ds: any;
 	constructor(public iso: string, public ncPath: string) {}
@@ -11,7 +28,7 @@ export class CountryDatabase {
 		this.ds = await open_dataset(this.ncPath, pyodide);
 	}
 
-	effortSharings(pathwayQuery: PathWayQuery, Scenario = 'SSP2', Convergence_year = 2040){
+	effortSharings(pathwayQuery: PathWayQuery, Scenario = 'SSP2', Convergence_year = 2040) {
 		// TODO dont get data for all principles, only the ones that are selected
 		return Object.fromEntries(
 			Object.keys(principles).map((principle) => {
@@ -67,7 +84,7 @@ export class CountryDatabase {
 		} else {
 			throw new Error(`Effort sharing principle ${principle} not found`);
 		}
-		let ds = this.ds.get(principle).sel.callKwargs(selection);
+		const ds = this.ds.get(principle).sel.callKwargs(selection);
 		if (principle === 'ECPC') {
 			// ECPC does not have time dimension, now plotting at 2100
 			const uncertainty = ds
@@ -85,15 +102,18 @@ export class CountryDatabase {
 		}
 		let df = ds.rename.callKwargs({ Time: 'time' }).to_pandas();
 		if (['GF', 'PC'].includes(principle)) {
-			df = df.agg(['mean', 'min', 'max']).transpose();
-		} else {
-			df = df.agg.callKwargs({ func: ['mean', 'min', 'max'], axis: 1 });
+			// These effort sharing principles have Time dimension after TrajUnc dimension
+			// While all other principles have TrajUnc dimension after Time dimension
+			// Causing columns to be Time and TrajUnc to be rows in dataframe
+			// We want the opposite
+			// TODO order dimensions for each principle in same way, so this is not needed anymore
+			df = df.transpose();
 		}
-		const r = df
+		const r = df.agg
+			.callKwargs({ func: ['mean', 'min', 'max'], axis: 1 })
 			.reset_index()
 			.to_dict.callKwargs({ orient: 'records' })
 			.toJs(toJsOpts) as UncertainTime[];
-
 		return r;
 	}
 }
