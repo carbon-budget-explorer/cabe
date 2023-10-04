@@ -45,6 +45,7 @@
 	let ambitionGapHover = false;
 	let emissionGapHover = false;
 
+	// $: console.log(data.result.currentPolicy); // only nans in input data...
 	// Transitions
 	const tweenOptions = { duration: 1000, easing: cubicOut };
 	const globalBudgetCounter = tweened(data.result.pathwayStats.total, tweenOptions);

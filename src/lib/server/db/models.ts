@@ -1,5 +1,5 @@
 import type { principles } from '$lib/principles';
-import { ds, pyodide } from './data';
+import { dsGlobal, dsMap, dsRef, pyodide } from './data';
 import type { SpatialMetric, TemnporalMetric } from './utils';
 import { slice, type DataArraySelection } from './xarray';
 
@@ -44,32 +44,32 @@ export function pathwayChoices(): Record<keyof PathWayQuery, string[]> {
 }
 
 function Temperatures() {
-	return ds.Temperature.values.tolist().toJs() as string[];
+	return dsGlobal.Temperature.values.tolist().toJs() as string[];
 }
 
 function exceedanceRisks() {
-	return ds.Risk_of_exceedance.values.tolist().toJs() as string[];
+	return dsGlobal.Risk.values.tolist().toJs() as string[];
 }
 
 function nonCO2Mitigations() {
-	return ds.Non_CO2_mitigation_potential.values.tolist().toJs() as string[];
+	return dsGlobal.NonCO2.values.tolist().toJs() as string[];
 }
 
 function negativeEmissions() {
-	return ds.Negative_emissions.values.tolist().toJs() as string[];
+	return dsGlobal.NegEmis.values.tolist().toJs() as string[];
 }
 
 export function pathwayStats(query: PathWayQuery): PathwayStats {
 	// TODO check number, now returns 2171597.23 while we expect 3500Gt
 	// ds.CO2_hist.sel(Region='WORLD')
-	const used: number = ds.CO2_hist.sel.callKwargs({ Region: 'WORLD' }).sum().values.tolist();
+	const used: number = dsGlobal.CO2_hist.sel.callKwargs({ Region: 'WORLD' }).sum().values.tolist();
 
-	const remaining: number = ds.CO2_globe.sel
+	const remaining: number = dsGlobal.CO2_globe.sel
 		.callKwargs({
 			Temperature: query.temperature,
-			Risk_of_exceedance: query.exceedanceRisk,
-			Negative_emissions: query.negativeEmissions,
-			Non_CO2_mitigation_potential: query.nonCO2Mitigation
+			Risk: query.exceedanceRisk,
+			NegEmis: query.negativeEmissions,
+			NonCO2: query.nonCO2Mitigation
 		})
 		.sum()
 		.values.tolist();
@@ -99,65 +99,95 @@ export interface TimeSeries {
 /**
  * make pyodide toJs(toJsOpts) return a list of JS object instead of list of Map instances
  */
-const toJsOpts = { dict_converter: Object.fromEntries };
+export const toJsOpts = { dict_converter: Object.fromEntries };
+export type UncertainTime = {
+	time: number;
+	mean: number;
+	max: number;
+	min: number;
+};
+export type CertainTime = {
+	time: number;
+	value: number;
+};
 
-export function pathwayCarbon(query: PathWayQuery) {
-	// ds.CO2_globe.sel(Temperature='1.5 deg', Negative_emissions='Medium',
-	//   Non_CO2_mitigation_potential='Medium', Risk_of_exceedance='50%', Time=slice(2021,2100)
-	//)
+export function pathwayCarbon(query: PathWayQuery, ds = dsGlobal) {
+	// ds.CO2_globe.sel(
+	// 	Temperature=1.5, Risk=0.2, NegEmis=0.4, NonCO2=0.35, Time=slice(2021, 2100)
+	// 	).to_pandas()
 	const Time = slice(pyodide, 2021, 2100);
-	let df = ds.CO2_globe.sel
+	const df = ds.CO2_globe.sel
 		.callKwargs({
 			Temperature: query.temperature,
-			Risk_of_exceedance: query.exceedanceRisk,
-			Negative_emissions: query.negativeEmissions,
-			Non_CO2_mitigation_potential: query.nonCO2Mitigation,
+			Risk: query.exceedanceRisk,
+			NegEmis: query.negativeEmissions,
+			NonCO2: query.nonCO2Mitigation,
 			Time
 		})
+		.rename.callKwargs({ Time: 'time' })
 		.to_pandas();
-	df.index.rename('time', true);
-	df = df.reset_index();
-	df.set('mean', df.pop(0));
-
-	//  TODO get variable errors from additional data arrays
-	const err = 5000;
-	// df['min'] = df['mean'] - 5000
-	df.set('min', df.get('mean').__sub__(err));
-	df.set('max', df.get('mean').__add__(err));
-	// TODO remove nans (what to do with them?)
-	return df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as {
-		time: number;
-		mean: number;
-		max: number;
-		min: number;
-	}[];
+	return df.agg
+		.callKwargs({ func: ['min', 'mean', 'max'] })
+		.transpose()
+		.reset_index()
+		.to_dict.callKwargs({ orient: 'records' })
+		.toJs(toJsOpts) as UncertainTime[];
 }
 
-export function historicalCarbon() {
-	const Time = slice(pyodide, 1990, 2021);
-	let df = ds.CO2_hist.sel
+export function historicalCarbon(region = 'WORLD', start = 1990, end = 2021) {
+	const Time = slice(pyodide, start, end);
+	let df = dsGlobal.CO2_hist.sel
 		.callKwargs({
-			Region: 'WORLD',
+			Region: region,
 			Time
 		})
 		.to_pandas();
 	df.index.rename('time', true);
 	df = df.reset_index();
 	df.set('value', df.pop(0));
-	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as Record<
-		number,
-		number
-	>[];
+	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as CertainTime[];
+	return values;
+}
+
+export function populationOverTime(region: string, start = 1850, stop = 2100, Scenario = 'SSP2') {
+	const Time = slice(pyodide, start, stop);
+	let df = dsGlobal.Population.sel
+		.callKwargs({
+			Scenario,
+			Region: region,
+			Time
+		})
+		.to_pandas();
+	df.index.rename('time', true);
+	df = df.dropna().reset_index();
+	df.set('value', df.pop(0));
+	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as CertainTime[];
+	return values;
+}
+
+export function gdpOverTime(region: string, start = 1850, stop = 2100, Scenario = 'SSP2') {
+	const Time = slice(pyodide, start, stop);
+	let df = dsGlobal.GDP.sel
+		.callKwargs({
+			Scenario,
+			Region: region,
+			Time
+		})
+		.to_pandas();
+	df.index.rename('time', true);
+	df = df.dropna().reset_index();
+	df.set('value', df.pop(0));
+	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as CertainTime[];
 	return values;
 }
 
 export function listFutureYears(): number[] {
 	const Time = slice(pyodide, 2021, 2100 + 1);
-	return ds.Time.sel.callKwargs({ Time }).values.tolist().toJs() as number[];
+	return dsGlobal.Time.sel.callKwargs({ Time }).values.tolist().toJs() as number[];
 }
 
 export function listRegions(): string[] {
-	return ds.Region.values.tolist().toJs() as string[];
+	return dsGlobal.Region.values.tolist().toJs() as string[];
 }
 
 export function fullCenturyBudgetSpatial(
@@ -169,42 +199,37 @@ export function fullCenturyBudgetSpatial(
 	let selection: DataArraySelection = {};
 	const pathwaySelection = {
 		Temperature: pathwayQuery.temperature,
-		Risk_of_exceedance: pathwayQuery.exceedanceRisk,
-		Negative_emissions: pathwayQuery.negativeEmissions,
-		Non_CO2_mitigation_potential: pathwayQuery.nonCO2Mitigation
+		Risk: pathwayQuery.exceedanceRisk,
+		NegEmis: pathwayQuery.negativeEmissions,
+		NonCO2: pathwayQuery.nonCO2Mitigation
 	};
-	const Time = slice(pyodide, 2021, 2100);
 	if (effortSharing === 'GF') {
 		selection = {
-			...pathwaySelection,
-			Time
+			...pathwaySelection
 		};
-	} else if (effortSharing === 'PC' || effortSharing === 'AP' || effortSharing === 'GDR') {
+	} else if (
+		effortSharing === 'PC' ||
+		effortSharing === 'AP' ||
+		effortSharing === 'GDR' ||
+		effortSharing === 'ECPC'
+	) {
 		selection = {
 			...pathwaySelection,
-			Scenario,
-			Time
+			Scenario
 		};
 	} else if (effortSharing === 'PCC') {
 		selection = {
 			...pathwaySelection,
 			Convergence_year,
-			Scenario,
-			Time
-		};
-	} else if (effortSharing === 'ECPC') {
-		selection = {
 			Scenario
 		};
 	} else {
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
-
-	let da = ds.get(effortSharing).sel.callKwargs(selection);
-	if (effortSharing !== 'ECPC') {
-		da = da.sum('Time');
-	}
-	let df = da.to_pandas();
+	let df = dsMap.get(effortSharing).sel.callKwargs(selection).to_pandas();
+	// Taking mean over TrajUnc dimension
+	// TODO should we pin TrajUnc to a specific value? Or take max or min?
+	df = df.agg.callKwargs({ func: 'mean', axis: 1 });
 	// Index is called Region and column is unnamed
 	df.index.rename('ISO', true);
 	df = df.reset_index();
@@ -261,7 +286,7 @@ export function fullCenturyBudgetSingleRegion(
 	} else {
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
-	let df = ds.get(effortSharing).sel.callKwargs(selection).to_pandas();
+	let df = dsGlobal.get(effortSharing).sel.callKwargs(selection).to_pandas();
 	df = df.reset_index();
 	df.set('value', df.pop(0));
 	return df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as {
@@ -317,10 +342,9 @@ export function temperatureAssesment(
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
 
-	let df = ds
-		.get(effortSharing + '_temp')
-		.sel.callKwargs(selection)
-		.to_pandas();
+	const variable = effortSharing + '_temp';
+	// TODO get from file that has variable
+	let df = dsGlobal.get(variable).sel.callKwargs(selection).to_pandas();
 	df.index.rename('ISO', true);
 	df = df.reset_index();
 	df.set('value', df.pop(0));
@@ -334,9 +358,9 @@ const policyMap = {
 } as const;
 
 function policyPathway(policy: keyof typeof policyMap, Region: string) {
-	// calculate meean, min and max over all models
+	// Calculate mean, min and max over all models
 	const Time = slice(pyodide, 2021, 2100 + 1);
-	const policy_ds = ds
+	const policy_ds = dsRef
 		.get(policyMap[policy])
 		.sel.callKwargs({ Region, Time })
 		.drop('Region')
@@ -346,9 +370,9 @@ function policyPathway(policy: keyof typeof policyMap, Region: string) {
 	// instead of calculating them on the fly each time
 	const df = xr
 		.merge([
-			policy_ds.mean('Model').rename('mean'),
-			policy_ds.min('Model').rename('min'),
-			policy_ds.max('Model').rename('max')
+			policy_ds.mean(['Model']).rename('mean'),
+			policy_ds.min(['Model']).rename('min'),
+			policy_ds.max(['Model']).rename('max')
 		])
 		.to_pandas();
 	df.index.rename('time', true);
@@ -375,17 +399,17 @@ export function netzero(Region = 'WORLD') {
 export function ambitionGap(query: PathWayQuery, Time = 2030) {
 	const pathwaySelection = {
 		Temperature: query.temperature,
-		Risk_of_exceedance: query.exceedanceRisk,
-		Negative_emissions: query.negativeEmissions,
-		Non_CO2_mitigation_potential: query.nonCO2Mitigation
+		Risk: query.exceedanceRisk,
+		NegEmis: query.negativeEmissions,
+		NonCO2: query.nonCO2Mitigation
 	};
-	const pathway = ds.CO2_globe.sel
+	const pathway = dsGlobal.CO2_globe.sel
 		.callKwargs({
 			...pathwaySelection,
 			Time
 		})
 		.values.tolist() as number;
-	const averagePolicy = ds.CurPol.sel
+	const averagePolicy = dsGlobal.CO2_ndc.sel // TODO revert to CurPol
 		.callKwargs({
 			Region: 'WORLD',
 			Time
@@ -398,17 +422,17 @@ export function ambitionGap(query: PathWayQuery, Time = 2030) {
 export function emissionGap(query: PathWayQuery, Time = 2030) {
 	const pathwaySelection = {
 		Temperature: query.temperature,
-		Risk_of_exceedance: query.exceedanceRisk,
-		Negative_emissions: query.negativeEmissions,
-		Non_CO2_mitigation_potential: query.nonCO2Mitigation
+		Risk: query.exceedanceRisk,
+		NegEmis: query.negativeEmissions,
+		NonCO2: query.nonCO2Mitigation
 	};
-	const pathway = ds.CO2_globe.sel
+	const pathway = dsGlobal.CO2_globe.sel
 		.callKwargs({
 			...pathwaySelection,
 			Time
 		})
 		.values.tolist() as number;
-	const averagePolicy = ds.NDC.sel
+	const averagePolicy = dsGlobal.CO2_ndc.sel // TODO is this correct?
 		.callKwargs({
 			Region: 'WORLD',
 			Time

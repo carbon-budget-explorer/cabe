@@ -5,16 +5,7 @@
 	import 'leaflet/dist/leaflet.css';
 	import { browser } from '$app/environment';
 	import type { GeoJSONOptions, MapOptions } from 'leaflet';
-	import {
-		interpolateCividis,
-		interpolatePuOr,
-		interpolateRainbow,
-		interpolateRdBu,
-		interpolateTurbo,
-		interpolateViridis,
-		min,
-		scaleSequential
-	} from 'd3';
+	import { interpolatePuOr, interpolateRdBu, scaleSequential } from 'd3';
 	import ColorLegend from './components/ColorLegend.svelte';
 
 	export let variable: string;
@@ -42,7 +33,7 @@
 
 	let tileLayer;
 
-	$: domain = variable === 'temp' ? [1.5, 3] : [-50_000, 200_000];
+	$: domain = variable === 'temp' ? [1.5, 3] : [0, 5_000];
 	$: colormap = variable === 'temp' ? (d: number) => interpolateRdBu(1 - d) : interpolatePuOr;
 	$: scale = scaleSequential()
 		.clamp(true)
