@@ -1,5 +1,5 @@
 import type { principles } from '$lib/principles';
-import { dsGlobal, dsMap, pyodide } from './data';
+import { dsGlobal, dsMap, dsRef, pyodide } from './data';
 import type { SpatialMetric, TemnporalMetric } from './utils';
 import { slice, type DataArraySelection } from './xarray';
 
@@ -342,10 +342,9 @@ export function temperatureAssesment(
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
 
-	let df = dsGlobal
-		.get(effortSharing + '_temp')
-		.sel.callKwargs(selection)
-		.to_pandas();
+	const variable = effortSharing + '_temp';
+	// TODO get from file that has variable
+	let df = dsGlobal.get(variable).sel.callKwargs(selection).to_pandas();
 	df.index.rename('ISO', true);
 	df = df.reset_index();
 	df.set('value', df.pop(0));
@@ -361,7 +360,7 @@ const policyMap = {
 function policyPathway(policy: keyof typeof policyMap, Region: string) {
 	// Calculate mean, min and max over all models
 	const Time = slice(pyodide, 2021, 2100 + 1);
-	const policy_ds = dsMap
+	const policy_ds = dsRef
 		.get(policyMap[policy])
 		.sel.callKwargs({ Region, Time })
 		.drop('Region')

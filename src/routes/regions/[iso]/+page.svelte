@@ -23,9 +23,11 @@
 		}
 	}
 	// Bottom colors from https://colorbrewer2.org/#type=qualitative&scheme=Pastel1&n=9
-	const ipcc_red = '#e5d8bd';
-	const ipcc_blue = '#fddaec';
-	const ipcc_purple = '#f2f2f2';
+	const referenceColors = {
+		currentPolicy: '#e5d8bd',
+		ndc: '#fddaec',
+		netzero: '#f2f2f2' // TODO find better color, now almost same as background
+	};
 	let showSettngsPanel = false;
 
 	let activeEffortSharings = [data.effortSharing.initial];
@@ -33,7 +35,7 @@
 
 	// Transitions
 	const tweenOptions = { duration: 1000, easing: cubicOut };
-	const tweenedEffortSharing = tweened(data.effortSharing.data, tweenOptions)
+	const tweenedEffortSharing = tweened(data.effortSharing.data, tweenOptions);
 	$: tweenedEffortSharing.set(data.effortSharing.data);
 </script>
 
@@ -109,9 +111,10 @@
 			</div>
 		{/if}
 
-		<Pathway yDomain={[-50, 220]}>
+		<!-- TODO compute smarter extent -->
+		<Pathway yDomain={[-50, data.historicalCarbon.extent[1]]}>
 			<Line
-				data={data.historicalCarbon.filter((d) => d.time >= 1990)}
+				data={data.historicalCarbon.data.filter((d) => d.time >= 1990)}
 				x={'time'}
 				y={'value'}
 				color="black"
@@ -145,31 +148,47 @@
 
 			{#if activeReference.includes('currentPolicy')}
 				<g name="currentPolicy">
-					<Line data={data.reference.currentPolicy} x={'time'} y={'mean'} color={ipcc_red} />
+					<Line
+						data={data.reference.currentPolicy}
+						x={'time'}
+						y={'mean'}
+						color={referenceColors.currentPolicy}
+					/>
 					<Area
 						data={data.reference.currentPolicy}
 						x={'time'}
 						y0={'min'}
 						y1={'max'}
-						color={ipcc_red}
+						color={referenceColors.currentPolicy}
 					/>
 				</g>
 			{/if}
 			{#if activeReference.includes('ndc')}
 				<g name="ndc">
-					<Line data={data.reference.ndc} x={'time'} y={'mean'} color={ipcc_blue} />
-					<Area data={data.reference.ndc} x={'time'} y0={'min'} y1={'max'} color={ipcc_blue} />
+					<Line data={data.reference.ndc} x={'time'} y={'mean'} color={referenceColors.ndc} />
+					<Area
+						data={data.reference.ndc}
+						x={'time'}
+						y0={'min'}
+						y1={'max'}
+						color={referenceColors.ndc}
+					/>
 				</g>
 			{/if}
 			{#if activeReference.includes('netzero')}
 				<g name="netzero">
-					<Line data={data.reference.netzero} x={'time'} y={'mean'} color={ipcc_purple} />
+					<Line
+						data={data.reference.netzero}
+						x={'time'}
+						y={'mean'}
+						color={referenceColors.netzero}
+					/>
 					<Area
 						data={data.reference.netzero}
 						x={'time'}
 						y0={'min'}
 						y1={'max'}
-						color={ipcc_purple}
+						color={referenceColors.netzero}
 					/>
 				</g>
 			{/if}
@@ -179,17 +198,17 @@
 			<div>
 				<!-- TODO this checkbox group is also used in /global page, deduplicate -->
 				<label class="block">
-					<b style={`color: ${ipcc_red}`}>▬</b>
+					<b style={`color: ${referenceColors.currentPolicy}`}>▬</b>
 					<input class="mr-1" type="checkbox" value="currentPolicy" bind:group={activeReference} />
 					Current policy</label
 				>
 				<label class="block">
-					<b style={`color: ${ipcc_blue}`}>▬</b>
+					<b style={`color: ${referenceColors.ndc}`}>▬</b>
 					<input class="mr-1" type="checkbox" value="ndc" bind:group={activeReference} />
 					Nationally determined contributions (NDCs)
 				</label>
 				<label class="block">
-					<b style={`color: ${ipcc_purple}`}>▬</b>
+					<b style={`color: ${referenceColors.netzero}`}>▬</b>
 					<input class="mr-1" type="checkbox" value="netzero" bind:group={activeReference} />
 					Net zero-scenarios
 				</label>
@@ -232,8 +251,8 @@
 		<div>
 			<h2 class="text-xl" id="hist-emis">Historical emissions</h2>
 			<div class="h-64">
-				<Pathway yDomain={[-50, 220]} xDomain={[1850, 2021]}>
-					<Line data={data.historicalCarbon} x={'time'} y={'value'} color="black" />
+				<Pathway yDomain={data.historicalCarbon.extent} xDomain={[1850, 2021]}>
+					<Line data={data.historicalCarbon.data} x={'time'} y={'value'} color="black" />
 				</Pathway>
 			</div>
 			<p>in Mt CO₂</p>

@@ -2,6 +2,7 @@ import type { PyodideInterface } from 'pyodide';
 import { open_dataset, type DataArraySelection } from './xarray';
 import { principles } from '$lib/principles';
 import { toJsOpts, type PathWayQuery, type UncertainTime } from './models';
+import { dsGlobal } from './data';
 
 export class CountriesDatabase {
 	cache = new Map<string, CountryDatabase>();
@@ -117,8 +118,68 @@ export class CountryDatabase {
 		return r;
 	}
 
-	temperatureAssesment(pathwayQuery: PathWayQuery) {
+	temperatureAssesments(pathwayQuery: PathWayQuery) {
+		const principleIds = Object.keys(principles) as (keyof typeof principles)[];
+		return Object.fromEntries(
+			principleIds.map((p) => [p, this.temperatureAssesment(pathwayQuery, p)])
+		);
+	}
+
+	temperatureAssesment(
+		pathwayQuery: PathWayQuery,
+		effortSharing: keyof typeof principles,
+		Hot_air = 'exclude',
+		Ambition = 'high',
+		Conditionality = 'conditional',
+		Scenario = 'SSP2',
+		Convergence_year = 2040
+	) {
 		// TODO get from a NetCDF file
-		return Object.fromEntries(Object.keys(principles).map((p) => [p, -1]));
+		return -1;
+
+		let selection: DataArraySelection = {};
+		const pathwaySelection = {
+			Risk_of_exceedance: pathwayQuery.exceedanceRisk,
+			Negative_emissions: pathwayQuery.negativeEmissions,
+			Non_CO2_mitigation_potential: pathwayQuery.nonCO2Mitigation
+		};
+		const pinnedSelection = {
+			Region: this.iso,
+			Hot_air,
+			Ambition,
+			Conditionality
+		};
+		if (effortSharing === 'GF') {
+			selection = {
+				...pathwaySelection,
+				...pinnedSelection
+			};
+		} else if (effortSharing === 'PC' || effortSharing === 'AP' || effortSharing === 'GDR') {
+			selection = {
+				...pathwaySelection,
+				Scenario,
+				...pinnedSelection
+			};
+		} else if (effortSharing === 'PCC') {
+			selection = {
+				...pathwaySelection,
+				Convergence_year,
+				Scenario,
+				...pinnedSelection
+			};
+		} else if (effortSharing === 'ECPC') {
+			selection = {
+				Scenario,
+				...pinnedSelection
+			};
+		} else {
+			throw new Error(`Effort sharing principle ${effortSharing} not found`);
+		}
+		const variable = effortSharing + '_temp';
+		// TODO verify with new data file
+		// most likely temperature assesment
+		// is stored in dsGlobal as it has no time dimension
+		const value = dsGlobal.get(variable).sel.callKwargs(selection).values.tolist();
+		return value;
 	}
 }

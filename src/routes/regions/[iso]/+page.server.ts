@@ -2,8 +2,11 @@ import { borders, countriesDb } from '$lib/server/db/data';
 import type { RouteParams } from './$types';
 import { searchParam } from '$lib/searchparam';
 import {
+	currentPolicy,
 	gdpOverTime,
 	historicalCarbon,
+	ndc,
+	netzero,
 	pathwayChoices,
 	pathwayQueryFromSearchParams,
 	populationOverTime
@@ -31,9 +34,9 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 	const effortSharingData = db.effortSharings(pathwayQuery);
 	const hist = historicalCarbon(iso, 1850);
 	const reference = {
-		currentPolicy: [],
-		ndc: [],
-		netzero: []
+		currentPolicy: currentPolicy(iso),
+		ndc: ndc(iso),
+		netzero: netzero(iso)
 	};
 	const population = populationOverTime(iso, 1850, 2100);
 	const gdp = gdpOverTime(iso, 1850, 2100);
@@ -50,7 +53,7 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 
 	const name = borders.labels.get(iso) || iso;
 	const iso2 = borders.iso3to2.get(iso) || iso;
-	const temperatureAssesment = db.temperatureAssesment(pathwayQuery);
+	const temperatureAssesment = db.temperatureAssesments(pathwayQuery);
 	const indicators = {
 		ambitionGap: -1,
 		emissionGap: -1,
@@ -65,7 +68,10 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 			name
 		},
 		pathway,
-		historicalCarbon: hist,
+		historicalCarbon: {
+			data: hist,
+			extent: extent(hist, (d) => d.value) as [number, number]
+		},
 		effortSharing: {
 			initial: initialEffortScharingName,
 			data: effortSharingData
