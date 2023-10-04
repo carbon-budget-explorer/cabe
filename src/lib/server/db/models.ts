@@ -166,42 +166,32 @@ export function fullCenturyBudgetSpatial(
 	let selection: DataArraySelection = {};
 	const pathwaySelection = {
 		Temperature: pathwayQuery.temperature,
-		Risk_of_exceedance: pathwayQuery.exceedanceRisk,
-		Negative_emissions: pathwayQuery.negativeEmissions,
-		Non_CO2_mitigation_potential: pathwayQuery.nonCO2Mitigation
+		Risk: pathwayQuery.exceedanceRisk,
+		NegEmis: pathwayQuery.negativeEmissions,
+		NonCO2: pathwayQuery.nonCO2Mitigation
 	};
-	const Time = slice(pyodide, 2021, 2100);
 	if (effortSharing === 'GF') {
 		selection = {
 			...pathwaySelection,
-			Time
 		};
-	} else if (effortSharing === 'PC' || effortSharing === 'AP' || effortSharing === 'GDR') {
+	} else if (effortSharing === 'PC' || effortSharing === 'AP' || effortSharing === 'GDR' || effortSharing === 'ECPC') {
 		selection = {
 			...pathwaySelection,
 			Scenario,
-			Time
 		};
 	} else if (effortSharing === 'PCC') {
 		selection = {
 			...pathwaySelection,
 			Convergence_year,
 			Scenario,
-			Time
-		};
-	} else if (effortSharing === 'ECPC') {
-		selection = {
-			Scenario
 		};
 	} else {
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
-
-	let da = dsMap.get(effortSharing).sel.callKwargs(selection);
-	if (effortSharing !== 'ECPC') {
-		da = da.sum('Time');
-	}
-	let df = da.to_pandas();
+	let df = dsMap.get(effortSharing).sel.callKwargs(selection).to_pandas();
+	// Taking mean over TrajUnc dimension
+	// TODO should we pin TrajUnc to a specific value? Or take max or min?
+	df = df.agg.callKwargs({ func: 'mean', axis: 1 });
 	// Index is called Region and column is unnamed
 	df.index.rename('ISO', true);
 	df = df.reset_index();

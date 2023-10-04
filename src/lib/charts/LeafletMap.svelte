@@ -42,7 +42,7 @@
 
 	let tileLayer;
 
-	$: domain = variable === 'temp' ? [1.5, 3] : [-50_000, 200_000];
+	$: domain = variable === 'temp' ? [1.5, 3] : [0, 5_000];
 	$: colormap = variable === 'temp' ? (d: number) => interpolateRdBu(1 - d) : interpolatePuOr;
 	$: scale = scaleSequential()
 		.clamp(true)

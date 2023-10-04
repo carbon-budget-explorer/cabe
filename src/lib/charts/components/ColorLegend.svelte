@@ -37,7 +37,8 @@
 		}
 	);
 	$: tickValues = range(ticks + 1).map((i) => quantile(scale.domain(), i / ticks));
-	$: tickFormat = format(',r');
+	// TODO make format configurable as prop, so CO2 and temperature can have different formats
+	const tickFormat = format('.4');
 </script>
 
 <div class="absolute bottom-4 right-14">
