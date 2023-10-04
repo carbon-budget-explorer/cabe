@@ -6,7 +6,6 @@
 	import GlobalBudgetForm from '$lib/PathwayForm.svelte';
 	import RegionFilter from '$lib/RegionFilter.svelte';
 	import LeafletMap from '$lib/charts/LeafletMap.svelte';
-	import type { GeoJSON } from 'geojson';
 
 	import { principles } from '$lib/principles';
 	import type { PageData } from './$types';
@@ -86,33 +85,36 @@
 					</div>
 				{/if}
 			</div>
-			<div class="absolute inset-x-1/3 top-0 z-[500] rounded-b-md bg-white p-2 shadow-lg">
-				<h2 class="text-center text-2xl">
-					{data.effortSharing
-						? principles[data.effortSharing].label
-						: 'Select an effort sharing principle below.'}
-				</h2>
-				<h2 class="text-center text-2xl">
-					{selectedFeature && selectedFeature.properties
-						? selectedFeature.properties.NAME
-						: 'Click on a region to see more information.'}
-				</h2>
+			<div
+				class="absolute inset-x-1/3 top-0 z-[500] flex flex-row justify-between rounded-b-md bg-white p-2 shadow-lg"
+			>
+			{#if !data.effortSharing}
+			<div>
+						Select an effort sharing principle below.
+					</div>
+					{/if}
+				<div>
+					{#if selectedFeature && selectedFeature.properties}
+						<a
+							href={`/regions/${selectedFeature.properties.ISO_A3_EH}?${$page.url.search}`}
+							class="mb-1 mr-2 py-2  rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
+							>{selectedFeature.properties.NAME}</a
+						>
+					{:else}
+						Click on a region to see more information.
+					{/if}
+				</div>
 
-				{#if selectedFeature && selectedFeature.properties && selectedMetric}
-					<!-- TODO replace with key indicators -->
-					<div class="text-center">
+				<div>
+					{#if selectedFeature && selectedFeature.properties && selectedMetric}
+						<!-- TODO replace with key indicators -->
 						{data.variable === 'temp'
 							? `${selectedMetric.value.toPrecision(2)} °C`
 							: selectedMetric.value > 1_000
 							? `${(selectedMetric.value / 1_000).toPrecision(3)} Gt CO2`
-							: `${(selectedMetric.value / 1_000).toPrecision(3)} Mt CO2`}
-					</div>
-					<a
-						href={`/regions/${selectedFeature.properties.ISO_A3_EH}?${$page.url.search}`}
-						class="mb-2 mr-2 block rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-3xl font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
-						>Country details</a
-					>
-				{/if}
+							: `${(selectedMetric.value).toPrecision(3)} Mt CO2`}
+					{/if}
+				</div>
 			</div>
 			<div class="h-full w-full">
 				<div class="flex h-full w-full items-center justify-center bg-white">
