@@ -32,8 +32,12 @@
 
 <main class="flex flex-col gap-2">
 	<header class="flex flex-row gap-4">
-		<img src={`https://flagcdn.com/${data.iso2?.toLowerCase()}.svg`} class="h-8" alt={data.name} />
-		<h1 class="text-3xl font-bold">{data.name}</h1>
+		<img
+			src={`https://flagcdn.com/${data.info.iso2?.toLowerCase()}.svg`}
+			class="h-8"
+			alt={data.info.name}
+		/>
+		<h1 class="text-3xl font-bold">{data.info.name}</h1>
 	</header>
 	<section id="key-indicators">
 		<p class="bg-slate-400 px-2 text-2xl">Key indicators</p>
@@ -42,46 +46,28 @@
 				<div class="justify-left flex flex-row gap-10">
 					<div class="">
 						<p>Ambition gap</p>
-						<p>value</p>
+						<p>{data.indicators.ambitionGap}</p>
 					</div>
 					<div class="">
 						<p>Emission gap</p>
-						<p>value</p>
+						<p>{data.indicators.emissionGap}</p>
 					</div>
 					<div class="">
 						<p>NDC Ambition (normalized)</p>
-						<p>value</p>
+						<p>{data.indicators.ndcAmbition}</p>
 					</div>
 					<div class="">
 						<p>Historical emissions (cumulative)</p>
-						<p>value</p>
+						<p>{(data.indicators.historicalCarbon / 1_000).toFixed()} Gt CO₂</p>
 					</div>
 				</div>
 				<div class="justify-left flex flex-row gap-10 pt-10">
-					<div class="" title="Assessment effort sharing">
-						<p>Grandfathering</p>
-						<p>value</p>
-					</div>
-					<div class="" title="Assessment effort sharing">
-						<p>Per capita</p>
-						<p>value</p>
-					</div>
-					<div class="" title="Assessment effort sharing">
-						<p>Per capita convergence</p>
-						<p>value</p>
-					</div>
-					<div class="" title="Assessment effort sharing">
-						<p>Ability to pay</p>
-						<p>value</p>
-					</div>
-					<div class="" title="Assessment effort sharing">
-						<p>Greenhouse development rights</p>
-						<p>value</p>
-					</div>
-					<div class="" title="Assessment effort sharing">
-						<p>Equal cumulative per capita</p>
-						<p>value</p>
-					</div>
+					{#each Object.entries(principles) as [id, { label }]}
+						<div title="Temperature assessment of effort sharing">
+							<p>{label}</p>
+							<p>{data.indicators.temperatureAssesment[id]} &deg;C</p>
+						</div>
+					{/each}
 				</div>
 			</div>
 		</div>
@@ -219,10 +205,11 @@
 		<p>Ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl eget.</p>
 	</section>
 	<section id="details">
+		<!-- TODO use same x-axis for all charts? -->
 		<div>
 			<h2 class="text-xl" id="pop">Population</h2>
 			<div class="h-64">
-				<Pathway yDomain={data.details.population.extent} xDomain={[1850, 2100]}>
+				<Pathway yDomain={data.details.population.extent} xDomain={[1940, 2100]}>
 					<Line data={data.details.population.data} x={'time'} y={'value'} color="black" />
 				</Pathway>
 			</div>
@@ -230,7 +217,7 @@
 		<div>
 			<h2 class="text-xl" id="gdp">Gross domestic product (GDP)</h2>
 			<div class="h-64">
-				<Pathway yDomain={data.details.gdp.extent} xDomain={[1850, 2100]}>
+				<Pathway yDomain={data.details.gdp.extent} xDomain={[1940, 2100]}>
 					<Line data={data.details.gdp.data} x={'time'} y={'value'} color="black" />
 				</Pathway>
 			</div>
@@ -242,7 +229,7 @@
 					<Line data={data.historicalCarbon} x={'time'} y={'value'} color="black" />
 				</Pathway>
 			</div>
-			<p>in Gt CO₂</p>
+			<p>in Mt CO₂</p>
 		</div>
 		<div>
 			<h2 class="text-xl" id="hist-emis">policy costs ????</h2>

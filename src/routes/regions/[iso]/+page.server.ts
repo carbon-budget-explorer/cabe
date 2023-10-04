@@ -49,12 +49,21 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 	};
 
 	const name = borders.labels.get(iso) || iso;
-	const iso2 = borders.geojson.features.find((f) => f.properties.ISO_A3_EH === iso)?.properties
-		.ISO_A2_EH;
+	const iso2 = borders.iso3to2.get(iso) || iso;
+	const temperatureAssesment = db.temperatureAssesment(pathwayQuery);
+	const indicators = {
+		ambitionGap: -1,
+		emissionGap: -1,
+		ndcAmbition: -1,
+		historicalCarbon: hist.map((d) => d.value).reduce((a, b) => a + b, 0),
+		temperatureAssesment
+	};
 	const r = {
-		iso,
-		iso2,
-		name,
+		info: {
+			iso,
+			iso2,
+			name
+		},
 		pathway,
 		historicalCarbon: hist,
 		effortSharing: {
@@ -62,6 +71,7 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 			data: effortSharingData
 		},
 		reference,
+		indicators,
 		details
 	};
 	return r;

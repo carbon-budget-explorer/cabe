@@ -2,7 +2,7 @@ import { readFile, stat } from 'node:fs/promises';
 
 export interface BorderProperties {
 	ISO_A3_EH: string;
-	ISO_A2_EH: string;
+	ISO_A2_EH?: string;
 	NAME: string;
 }
 
@@ -18,6 +18,7 @@ export type BordersCollection = GeoJSON.FeatureCollection<null, BorderProperties
 
 export class Borders {
 	public labels = new Map<string, string>();
+	public iso3to2 = new Map<string, string>();
 	constructor(public geojson: BordersCollection, public lastModified: Date) {
 		for (const feature of geojson.features) {
 			const iso = feature.properties.ISO_A3_EH;
@@ -25,10 +26,10 @@ export class Borders {
 			const label = feature.properties.NAME;
 			feature.properties = {
 				ISO_A3_EH: iso,
-				ISO_A2_EH: iso2,
 				NAME: label
 			};
 			this.labels.set(iso, label);
+			this.iso3to2.set(iso, iso2?.toLowerCase() ?? iso);
 		}
 	}
 

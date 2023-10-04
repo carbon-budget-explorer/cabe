@@ -5,16 +5,7 @@
 	import 'leaflet/dist/leaflet.css';
 	import { browser } from '$app/environment';
 	import type { GeoJSONOptions, MapOptions } from 'leaflet';
-	import {
-		interpolateCividis,
-		interpolatePuOr,
-		interpolateRainbow,
-		interpolateRdBu,
-		interpolateTurbo,
-		interpolateViridis,
-		min,
-		scaleSequential
-	} from 'd3';
+	import { interpolatePuOr, interpolateRdBu, scaleSequential } from 'd3';
 	import ColorLegend from './components/ColorLegend.svelte';
 
 	export let variable: string;

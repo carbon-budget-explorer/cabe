@@ -116,4 +116,9 @@ export class CountryDatabase {
 			.toJs(toJsOpts) as UncertainTime[];
 		return r;
 	}
+
+	temperatureAssesment(pathwayQuery: PathWayQuery) {
+		// TODO get from a NetCDF file
+		return Object.fromEntries(Object.keys(principles).map((p) => [p, -1]));
+	}
 }
