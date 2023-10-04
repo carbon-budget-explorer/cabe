@@ -13,13 +13,14 @@
 		yScale: Readable<ScaleLinear<number, number, never>>;
 	}>('LayerCake');
 
-	export let data: Record<string, number>[];
+	type Row = Record<string, number>;
+	export let data: Row[];
 	export let x = 'x';
 	export let y0 = 'y0';
 	export let y1 = 'y1';
 	export let color = '#ab00d6';
 
-	$: shade = area<Record<string, number>>()
+	$: shade = area<Row>()
 		.x((d) => $xScale(d[x]))
 		.y1((d) => $yScale(d[y1]))
 		.y0((d) => $yScale(d[y0]))

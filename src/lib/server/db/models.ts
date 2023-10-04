@@ -1,5 +1,5 @@
 import type { principles } from '$lib/principles';
-import { dsGlobal, dsMap, pyodide } from './data';
+import { dsGlobal, dsMap, dsRef, pyodide } from './data';
 import type { SpatialMetric, TemnporalMetric } from './utils';
 import { slice, type DataArraySelection } from './xarray';
 
@@ -99,14 +99,24 @@ export interface TimeSeries {
 /**
  * make pyodide toJs(toJsOpts) return a list of JS object instead of list of Map instances
  */
-const toJsOpts = { dict_converter: Object.fromEntries };
+export const toJsOpts = { dict_converter: Object.fromEntries };
+export type UncertainTime = {
+	time: number;
+	mean: number;
+	max: number;
+	min: number;
+};
+export type CertainTime = {
+	time: number;
+	value: number;
+};
 
-export function pathwayCarbon(query: PathWayQuery) {
+export function pathwayCarbon(query: PathWayQuery, ds = dsGlobal) {
 	// ds.CO2_globe.sel(
 	// 	Temperature=1.5, Risk=0.2, NegEmis=0.4, NonCO2=0.35, Time=slice(2021, 2100)
 	// 	).to_pandas()
 	const Time = slice(pyodide, 2021, 2100);
-	let df = dsGlobal.CO2_globe.sel
+	const df = ds.CO2_globe.sel
 		.callKwargs({
 			Temperature: query.temperature,
 			Risk: query.exceedanceRisk,
@@ -121,29 +131,53 @@ export function pathwayCarbon(query: PathWayQuery) {
 		.transpose()
 		.reset_index()
 		.to_dict.callKwargs({ orient: 'records' })
-		.toJs(toJsOpts) as {
-		time: number;
-		mean: number;
-		max: number;
-		min: number;
-	}[];
+		.toJs(toJsOpts) as UncertainTime[];
 }
 
-export function historicalCarbon() {
-	const Time = slice(pyodide, 1990, 2021);
+export function historicalCarbon(region = 'WORLD', start = 1990, end = 2021) {
+	const Time = slice(pyodide, start, end);
 	let df = dsGlobal.CO2_hist.sel
 		.callKwargs({
-			Region: 'WORLD',
+			Region: region,
 			Time
 		})
 		.to_pandas();
 	df.index.rename('time', true);
 	df = df.reset_index();
 	df.set('value', df.pop(0));
-	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as Record<
-		number,
-		number
-	>[];
+	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as CertainTime[];
+	return values;
+}
+
+export function populationOverTime(region: string, start = 1850, stop = 2100, Scenario = 'SSP2') {
+	const Time = slice(pyodide, start, stop);
+	let df = dsGlobal.Population.sel
+		.callKwargs({
+			Scenario,
+			Region: region,
+			Time
+		})
+		.to_pandas();
+	df.index.rename('time', true);
+	df = df.dropna().reset_index();
+	df.set('value', df.pop(0));
+	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as CertainTime[];
+	return values;
+}
+
+export function gdpOverTime(region: string, start = 1850, stop = 2100, Scenario = 'SSP2') {
+	const Time = slice(pyodide, start, stop);
+	let df = dsGlobal.GDP.sel
+		.callKwargs({
+			Scenario,
+			Region: region,
+			Time
+		})
+		.to_pandas();
+	df.index.rename('time', true);
+	df = df.dropna().reset_index();
+	df.set('value', df.pop(0));
+	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as CertainTime[];
 	return values;
 }
 
@@ -165,42 +199,37 @@ export function fullCenturyBudgetSpatial(
 	let selection: DataArraySelection = {};
 	const pathwaySelection = {
 		Temperature: pathwayQuery.temperature,
-		Risk_of_exceedance: pathwayQuery.exceedanceRisk,
-		Negative_emissions: pathwayQuery.negativeEmissions,
-		Non_CO2_mitigation_potential: pathwayQuery.nonCO2Mitigation
+		Risk: pathwayQuery.exceedanceRisk,
+		NegEmis: pathwayQuery.negativeEmissions,
+		NonCO2: pathwayQuery.nonCO2Mitigation
 	};
-	const Time = slice(pyodide, 2021, 2100);
 	if (effortSharing === 'GF') {
 		selection = {
-			...pathwaySelection,
-			Time
+			...pathwaySelection
 		};
-	} else if (effortSharing === 'PC' || effortSharing === 'AP' || effortSharing === 'GDR') {
+	} else if (
+		effortSharing === 'PC' ||
+		effortSharing === 'AP' ||
+		effortSharing === 'GDR' ||
+		effortSharing === 'ECPC'
+	) {
 		selection = {
 			...pathwaySelection,
-			Scenario,
-			Time
+			Scenario
 		};
 	} else if (effortSharing === 'PCC') {
 		selection = {
 			...pathwaySelection,
 			Convergence_year,
-			Scenario,
-			Time
-		};
-	} else if (effortSharing === 'ECPC') {
-		selection = {
 			Scenario
 		};
 	} else {
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
-
-	let da = dsMap.get(effortSharing).sel.callKwargs(selection);
-	if (effortSharing !== 'ECPC') {
-		da = da.sum('Time');
-	}
-	let df = da.to_pandas();
+	let df = dsMap.get(effortSharing).sel.callKwargs(selection).to_pandas();
+	// Taking mean over TrajUnc dimension
+	// TODO should we pin TrajUnc to a specific value? Or take max or min?
+	df = df.agg.callKwargs({ func: 'mean', axis: 1 });
 	// Index is called Region and column is unnamed
 	df.index.rename('ISO', true);
 	df = df.reset_index();
@@ -313,10 +342,9 @@ export function temperatureAssesment(
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);
 	}
 
-	let df = dsGlobal
-		.get(effortSharing + '_temp')
-		.sel.callKwargs(selection)
-		.to_pandas();
+	const variable = effortSharing + '_temp';
+	// TODO get from file that has variable
+	let df = dsGlobal.get(variable).sel.callKwargs(selection).to_pandas();
 	df.index.rename('ISO', true);
 	df = df.reset_index();
 	df.set('value', df.pop(0));
@@ -332,9 +360,8 @@ const policyMap = {
 function policyPathway(policy: keyof typeof policyMap, Region: string) {
 	// Calculate mean, min and max over all models
 	const Time = slice(pyodide, 2021, 2100 + 1);
-	const policy_ds = dsGlobal
-		// .get(policyMap[policy])
-		.get('CO2_ndc') // TODO this is a temporary hack since curpol and netzero are gone
+	const policy_ds = dsRef
+		.get(policyMap[policy])
 		.sel.callKwargs({ Region, Time })
 		.drop('Region')
 		.groupby('Time');
@@ -343,9 +370,9 @@ function policyPathway(policy: keyof typeof policyMap, Region: string) {
 	// instead of calculating them on the fly each time
 	const df = xr
 		.merge([
-			policy_ds.mean(['Conditionality', 'Hot_air', 'Ambition']).rename('mean'),
-			policy_ds.min(['Conditionality', 'Hot_air', 'Ambition']).rename('min'),
-			policy_ds.max(['Conditionality', 'Hot_air', 'Ambition']).rename('max')
+			policy_ds.mean(['Model']).rename('mean'),
+			policy_ds.min(['Model']).rename('min'),
+			policy_ds.max(['Model']).rename('max')
 		])
 		.to_pandas();
 	df.index.rename('time', true);
