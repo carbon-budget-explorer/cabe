@@ -172,18 +172,23 @@ export function fullCenturyBudgetSpatial(
 	};
 	if (effortSharing === 'GF') {
 		selection = {
-			...pathwaySelection,
+			...pathwaySelection
 		};
-	} else if (effortSharing === 'PC' || effortSharing === 'AP' || effortSharing === 'GDR' || effortSharing === 'ECPC') {
+	} else if (
+		effortSharing === 'PC' ||
+		effortSharing === 'AP' ||
+		effortSharing === 'GDR' ||
+		effortSharing === 'ECPC'
+	) {
 		selection = {
 			...pathwaySelection,
-			Scenario,
+			Scenario
 		};
 	} else if (effortSharing === 'PCC') {
 		selection = {
 			...pathwaySelection,
 			Convergence_year,
-			Scenario,
+			Scenario
 		};
 	} else {
 		throw new Error(`Effort sharing principle ${effortSharing} not found`);

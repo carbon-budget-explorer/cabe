@@ -6,7 +6,8 @@
 	import GlobalBudgetForm from '$lib/PathwayForm.svelte';
 	import RegionFilter from '$lib/RegionFilter.svelte';
 	import LeafletMap from '$lib/charts/LeafletMap.svelte';
-
+	import type { GeoJSON } from 'geojson';
+	
 	import { principles } from '$lib/principles';
 	import type { PageData } from './$types';
 
@@ -88,16 +89,14 @@
 			<div
 				class="absolute inset-x-1/3 top-0 z-[500] flex flex-row justify-between rounded-b-md bg-white p-2 shadow-lg"
 			>
-			{#if !data.effortSharing}
-			<div>
-						Select an effort sharing principle below.
-					</div>
-					{/if}
+				{#if !data.effortSharing}
+					<div>Select an effort sharing principle below.</div>
+				{/if}
 				<div>
 					{#if selectedFeature && selectedFeature.properties}
 						<a
 							href={`/regions/${selectedFeature.properties.ISO_A3_EH}?${$page.url.search}`}
-							class="mb-1 mr-2 py-2  rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
+							class="mb-1 mr-2 rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2 text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
 							>{selectedFeature.properties.NAME}</a
 						>
 					{:else}
@@ -112,7 +111,7 @@
 							? `${selectedMetric.value.toPrecision(2)} °C`
 							: selectedMetric.value > 1_000
 							? `${(selectedMetric.value / 1_000).toPrecision(3)} Gt CO2`
-							: `${(selectedMetric.value).toPrecision(3)} Mt CO2`}
+							: `${selectedMetric.value.toPrecision(3)} Mt CO2`}
 					{/if}
 				</div>
 			</div>
