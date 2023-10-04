@@ -7,7 +7,7 @@
 	import RegionFilter from '$lib/RegionFilter.svelte';
 	import LeafletMap from '$lib/charts/LeafletMap.svelte';
 	import type { GeoJSON } from 'geojson';
-	
+
 	import { principles } from '$lib/principles';
 	import type { PageData } from './$types';
 

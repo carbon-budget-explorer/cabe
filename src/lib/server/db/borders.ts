@@ -2,6 +2,7 @@ import { readFile, stat } from 'node:fs/promises';
 
 export interface BorderProperties {
 	ISO_A3_EH: string;
+	ISO_A2_EH: string;
 	NAME: string;
 }
 
@@ -20,9 +21,11 @@ export class Borders {
 	constructor(public geojson: BordersCollection, public lastModified: Date) {
 		for (const feature of geojson.features) {
 			const iso = feature.properties.ISO_A3_EH;
+			const iso2 = feature.properties.ISO_A2_EH;
 			const label = feature.properties.NAME;
 			feature.properties = {
 				ISO_A3_EH: iso,
+				ISO_A2_EH: iso2,
 				NAME: label
 			};
 			this.labels.set(iso, label);

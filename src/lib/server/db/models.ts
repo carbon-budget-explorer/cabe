@@ -106,6 +106,10 @@ export type UncertainTime = {
 	max: number;
 	min: number;
 };
+export type CertainTime = {
+	time: number;
+	value: number;
+};
 
 export function pathwayCarbon(query: PathWayQuery, ds = dsGlobal) {
 	// ds.CO2_globe.sel(
@@ -130,8 +134,8 @@ export function pathwayCarbon(query: PathWayQuery, ds = dsGlobal) {
 		.toJs(toJsOpts) as UncertainTime[];
 }
 
-export function historicalCarbon(region = 'WORLD') {
-	const Time = slice(pyodide, 1990, 2021);
+export function historicalCarbon(region = 'WORLD', start = 1990, end = 2021) {
+	const Time = slice(pyodide, start, end);
 	let df = dsGlobal.CO2_hist.sel
 		.callKwargs({
 			Region: region,
@@ -141,10 +145,39 @@ export function historicalCarbon(region = 'WORLD') {
 	df.index.rename('time', true);
 	df = df.reset_index();
 	df.set('value', df.pop(0));
-	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as Record<
-		number,
-		number
-	>[];
+	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as CertainTime[];
+	return values;
+}
+
+export function populationOverTime(region: string, start = 1850, stop = 2100, Scenario = 'SSP2') {
+	const Time = slice(pyodide, start, stop);
+	let df = dsGlobal.Population.sel
+		.callKwargs({
+			Scenario,
+			Region: region,
+			Time
+		})
+		.to_pandas();
+	df.index.rename('time', true);
+	df = df.dropna().reset_index();
+	df.set('value', df.pop(0));
+	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as CertainTime[];
+	return values;
+}
+
+export function gdpOverTime(region: string, start = 1850, stop = 2100, Scenario = 'SSP2') {
+	const Time = slice(pyodide, start, stop);
+	let df = dsGlobal.GDP.sel
+		.callKwargs({
+			Scenario,
+			Region: region,
+			Time
+		})
+		.to_pandas();
+	df.index.rename('time', true);
+	df = df.dropna().reset_index();
+	df.set('value', df.pop(0));
+	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as CertainTime[];
 	return values;
 }
 

@@ -2,11 +2,14 @@ import { borders, countriesDb } from '$lib/server/db/data';
 import type { RouteParams } from './$types';
 import { searchParam } from '$lib/searchparam';
 import {
+	gdpOverTime,
 	historicalCarbon,
 	pathwayChoices,
-	pathwayQueryFromSearchParams
+	pathwayQueryFromSearchParams,
+	populationOverTime
 } from '$lib/server/db/models';
 import type { principles } from '$lib/principles';
+import { extent } from 'd3';
 
 export const load = async ({ params, url }: { params: RouteParams; url: URL }) => {
 	const iso = params.iso;
@@ -26,20 +29,31 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 	);
 
 	const effortSharingData = db.effortSharings(pathwayQuery);
-	const hist = historicalCarbon(iso);
+	const hist = historicalCarbon(iso, 1850);
 	const reference = {
 		currentPolicy: [],
 		ndc: [],
 		netzero: []
 	};
+	const population = populationOverTime(iso, 1850, 2100);
+	const gdp = gdpOverTime(iso, 1850, 2100);
 	const details = {
-		gdp: [],
-		population: []
+		gdp: {
+			data: gdp,
+			extent: extent(gdp, (d) => d.value) as [number, number]
+		},
+		population: {
+			data: population,
+			extent: extent(population, (d) => d.value) as [number, number]
+		}
 	};
 
 	const name = borders.labels.get(iso) || iso;
+	const iso2 = borders.geojson.features.find((f) => f.properties.ISO_A3_EH === iso)?.properties
+		.ISO_A2_EH;
 	const r = {
 		iso,
+		iso2,
 		name,
 		pathway,
 		historicalCarbon: hist,
