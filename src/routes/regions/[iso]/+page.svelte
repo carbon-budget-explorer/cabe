@@ -11,6 +11,8 @@
 	import Area from '$lib/charts/components/Area.svelte';
 	import { principles } from '$lib/principles';
 	import Gap from '$lib/charts/components/Gap.svelte';
+	import { cubicOut } from 'svelte/easing';
+	import { tweened } from 'svelte/motion';
 	export let data: PageData;
 
 	function updateQueryParam(name: string, value: string) {
@@ -28,6 +30,11 @@
 
 	let activeEffortSharings = [data.effortSharing.initial];
 	let activeReference: string[] = [];
+
+	// Transitions
+	const tweenOptions = { duration: 1000, easing: cubicOut };
+	const tweenedEffortSharing = tweened(data.effortSharing.data, tweenOptions)
+	$: tweenedEffortSharing.set(data.effortSharing.data);
 </script>
 
 <main class="flex flex-col gap-2">
@@ -114,19 +121,19 @@
 					{#if activeEffortSharing === 'ECPC'}
 						<!-- TODO show ECPC as error bar on chart -->
 						<Gap
-							x={data.effortSharing.data[activeEffortSharing][0].time}
-							y0={data.effortSharing.data[activeEffortSharing][0].min}
-							y1={data.effortSharing.data[activeEffortSharing][0].max}
+							x={$tweenedEffortSharing[activeEffortSharing][0].time}
+							y0={$tweenedEffortSharing[activeEffortSharing][0].min}
+							y1={$tweenedEffortSharing[activeEffortSharing][0].max}
 						/>
 					{:else}
 						<Line
-							data={data.effortSharing.data[activeEffortSharing]}
+							data={$tweenedEffortSharing[activeEffortSharing]}
 							x={'time'}
 							y={'mean'}
 							color={principles[activeEffortSharing].color}
 						/>
 						<Area
-							data={data.effortSharing.data[activeEffortSharing]}
+							data={$tweenedEffortSharing[activeEffortSharing]}
 							x={'time'}
 							y0={'min'}
 							y1={'max'}
