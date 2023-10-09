@@ -94,7 +94,10 @@ jobs:
       - name: Fake data
         working-directory: __tests__
         # During first page the nc files are opened, use dummy files to prevent build failure
-        run: cp dummy.nc xr_dataread.nc xr_alloc_2030.nc xr_total4.nc
+        run: |
+          cp dummy.nc xr_dataread.nc &&
+          cp dummy.nc xr_alloc_2030.nc &&
+          cp dummy.nc xr_total4.nc
       - name: 🎭 Playwright run
         run: npm test
         env:
@@ -116,7 +119,10 @@ jobs:
       - name: Fake data
         working-directory: __tests__
         # During first page the nc files are opened, use dummy files to prevent build failure
-        run: cp dummy.nc xr_dataread.nc xr_alloc_2030.nc xr_total4.nc
+        run: |
+          cp dummy.nc xr_dataread.nc &&
+          cp dummy.nc xr_alloc_2030.nc &&
+          cp dummy.nc xr_total4.nc
       - name: ⚙️  Build
         run: npm run build
         env:
