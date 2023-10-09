@@ -2,7 +2,7 @@
 
 Install with
 
-    pip install flask gunicor
+    pip install flask gunicorn
 
 Run with
 
@@ -11,15 +11,28 @@ Run with
 """
 
 import time
-from starlette.responses import JSONResponse
-from fastapi.responses import ORJSONResponse, UJSONResponse
+# from starlette.responses import JSONResponse
+# from starlette.applications import Starlette
+# from starlette.routing import Route
+# from fastapi.responses import ORJSONResponse, UJSONResponse
 import xarray as xr
 
-from flask import Flask
-app = Flask(__name__)
+# from flask import Flask
+# app = Flask(__name__)
 
 # from fastapi import FastAPI
 # app = FastAPI()
+
+from bottle import default_app, route
+app = default_app()
+"""
+
+pip install fastapi uvicorn
+
+uvicorn --workers 4 ws:app 
+
+"""
+
 
 ds = xr.open_dataset("data/xr_alloc_USA.nc")
 
@@ -111,8 +124,11 @@ def getEffortSharings():
 
 
 # @app.route("/")
-@app.get("/")
-def hello_world():
+# @app.get("/")
+@route("/")
+def hello_world(
+    # request
+                ):
     t = time.process_time()
 
     effortSharings = getEffortSharings()
@@ -121,4 +137,11 @@ def hello_world():
     # print(effortSharings)
     print("Elapsed time: ", elapsed_time)
     # return elapsed_time
+    # return JSONResponse(effortSharings)
     return effortSharings
+
+# app = Starlette(
+#     routes=[
+#         Route("/", endpoint=hello_world),
+#     ],
+# )

@@ -53,6 +53,7 @@
 		"d3-scale": "^4.0.2",
 		"d3-scale-chromatic": "^3.0.0",
 		"layercake": "^7.6.1",
+		"node-calls-python": "^1.7.7",
 		"pyodide": "^0.24.0-alpha.1",
 		"svelte-vega": "^2.0.0"
 	},
