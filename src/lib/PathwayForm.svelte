@@ -19,18 +19,34 @@
 <div>
 	<div>
 		<p>Limit global warming to</p>
-		<CustomRange bind:value={temperature} options={choices.temperature} name="temperature" />
+		<CustomRange
+			bind:value={temperature}
+			options={choices.temperature.map((d) => Number(d))}
+			name="temperature"
+		/>
 	</div>
 	<div>
 		<p>Acceptable risk of exceeding global warming limit</p>
-		<CustomRange bind:value={risk} options={choices.exceedanceRisk} name="risk" />
+		<CustomRange
+			bind:value={risk}
+			options={choices.exceedanceRisk.map((d) => Number(d))}
+			name="risk"
+		/>
 	</div>
 	<div>
 		<p>Assumption of non CO2 emissions to mitigate</p>
-		<CustomRange bind:value={nonCO2} options={choices.nonCO2Mitigation} name="nonCO2" />
+		<CustomRange
+			bind:value={nonCO2}
+			options={choices.nonCO2Mitigation.map((d) => Number(d))}
+			name="nonCO2"
+		/>
 	</div>
 	<div>
 		<p>Assumption amount of negative emissions in 2050 - 2100.</p>
-		<CustomRange bind:value={negEmis} options={choices.negativeEmissions} name="negEmis" />
+		<CustomRange
+			bind:value={negEmis}
+			options={choices.negativeEmissions.map((d) => Number(d))}
+			name="negEmis"
+		/>
 	</div>
 </div>
