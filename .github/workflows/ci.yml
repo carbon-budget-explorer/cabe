@@ -91,10 +91,14 @@ jobs:
         run: npm run download:borders
       - name: 🛠 Setup browsers
         run: npx playwright install
+      - name: Fake data
+        working-directory: __tests__
+        # During first page the nc files are opened, use dummy files to prevent build failure
+        run: cp dummy.nc xr_dataread.nc xr_alloc_2030.nc xr_total4.nc
       - name: 🎭 Playwright run
         run: npm test
         env:
-          CABE_TOTALS_PATH: __tests__/dummy.nc
+          CABE_DATA_DIR: __tests__
   build:
     runs-on: ubuntu-latest
     steps:
@@ -109,7 +113,11 @@ jobs:
         run: npm ci
       - name: ⬇️  Install data deps
         run: npm run download:borders
+      - name: Fake data
+        working-directory: __tests__
+        # During first page the nc files are opened, use dummy files to prevent build failure
+        run: cp dummy.nc xr_dataread.nc xr_alloc_2030.nc xr_total4.nc
       - name: ⚙️  Build
         run: npm run build
         env:
-          CABE_TOTALS_PATH: __tests__/dummy.nc
+          CABE_DATA_DIR: __tests__

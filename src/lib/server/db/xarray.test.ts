@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeAll } from 'vitest';
 
-import { open_dataset, open_pyodide, slice } from './xarray';
+import { mount_data, open_dataset, open_pyodide, slice } from './xarray';
 import type { PyodideInterface } from 'pyodide';
 
 /*
@@ -27,6 +27,7 @@ describe('open_dataset', () => {
 	let pyodide: PyodideInterface;
 	beforeAll(async () => {
 		pyodide = await open_pyodide();
+		await mount_data('__tests__', pyodide);
 		ds = await open_dataset(testnc, pyodide);
 	});
 
