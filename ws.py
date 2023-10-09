@@ -2,8 +2,8 @@
 
 Install with
 
-    pip install flask gunicorn
-
+    pip install flask gunicorn Flask-Caching
+ 
 Run with
 
     gunicorn -w 4 'ws:app'
@@ -17,14 +17,19 @@ import time
 # from fastapi.responses import ORJSONResponse, UJSONResponse
 import xarray as xr
 
-# from flask import Flask
-# app = Flask(__name__)
+
+from flask import Flask
+app = Flask(__name__)
+
+from flask_caching import Cache
+cache = Cache(config={'CACHE_TYPE': 'FileSystemCache', 'CACHE_DIR': 'cache'})
+cache.init_app(app)
 
 # from fastapi import FastAPI
 # app = FastAPI()
 
-from bottle import default_app, route
-app = default_app()
+# from bottle import default_app, route
+# app = default_app()
 """
 
 pip install fastapi uvicorn
@@ -124,8 +129,9 @@ def getEffortSharings():
 
 
 # @app.route("/")
-# @app.get("/")
-@route("/")
+@app.get("/")
+@cache.cached(timeout=300) # for 5 minutes return same result
+# @route("/")
 def hello_world(
     # request
                 ):
