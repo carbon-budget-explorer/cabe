@@ -69,7 +69,8 @@ export function pathwayStats(query: PathWayQuery): PathwayStats {
 			Temperature: query.temperature,
 			Risk: query.exceedanceRisk,
 			NegEmis: query.negativeEmissions,
-			NonCO2: query.nonCO2Mitigation
+			NonCO2: query.nonCO2Mitigation,
+			TrajUnc: 'Medium'
 		})
 		.sum()
 		.values.tolist();

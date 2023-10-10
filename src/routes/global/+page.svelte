@@ -67,12 +67,42 @@
 				<h1 class="text-xl">Compose your pathway</h1>
 				<h2>Choose from the options below and see how it affects the remaining carbon budget.</h2>
 			</div>
-			<div class="">
+			<div class="border-4 border-[#82a56e]">
 				<PathwayForm
 					choices={data.pathway.choices}
 					query={data.pathway.query}
 					onChange={updateQueryParam}
 				/>
+			</div>
+			<div>
+				<h1 class="text-xl">Reference pathways</h1>
+				<!-- <h2>(Currenty policy)</h2> -->
+				<h2>Compare your own pathway with the following references:</h2>
+			</div>
+			<div class="grow">
+				<ul>
+					<li>
+						<label>
+							<b style={`color: ${ipcc_red}`}>▬</b>
+							<input type="checkbox" bind:checked={policyPathwayToggles.current} />{' '}Current
+							policy</label
+						>
+					</li>
+					<li>
+						<label>
+							<b style={`color: ${ipcc_blue}`}>▬</b>
+							<input type="checkbox" bind:checked={policyPathwayToggles.ndc} />{' '}Nationally
+							determined contributions (NDCs)</label
+						>
+					</li>
+					<li>
+						<label>
+							<b style={`color: ${ipcc_purple}`}>▬</b>
+							<input type="checkbox" bind:checked={policyPathwayToggles.netzero} />{' '}Net
+							zero-scenarios</label
+						>
+					</li>
+				</ul>
 			</div>
 			<div class="p-4 shadow-lg">
 				<h1>Difference between your scenario and current policy</h1>
@@ -92,12 +122,25 @@
 		</div>
 
 		<div class="flex grow flex-col gap-4">
-			<div class="rounded-lg border-4 p-2">
-				<ul>
-					<li>Global budget: {($globalBudgetCounter / 1_000).toFixed(2)} Gt CO2</li>
-					<li>Used 1850-2021: {(data.result.pathwayStats.used / 1_000).toFixed(2)} Gt CO2</li>
-					<li>Remaining till 2050: {($remainingBudgetCounter / 1_000).toFixed(2)} Gt CO2</li>
-				</ul>
+			<div class="rounded-lg border-4 p-2 flex flex-row gap-4">
+				<div class="border-green-400 bg-green-300 shadow-xl border-4 p-2">
+					<p class="text-4xl">
+						{($remainingBudgetCounter / 1_000).toFixed(0)}
+					</p>
+					<p>Gt CO2</p>
+					<p>Global budget</p>
+				</div>
+				<div class="border-green-400 bg-green-300 shadow-xl border-4 p-2">
+					<p class="text-4xl">
+						{($remainingBudgetCounter / 1_000 / 37).toFixed(0)}x
+					</p>
+					<p>current emissions</p>
+				</div>
+				<!-- <ul>
+					<li>Remaining carbon budget: {($remainingBudgetCounter / 1_000).toFixed(2)} Gt CO2</li>
+					<li>Total historical emissions: {(data.result.pathwayStats.used / 1_000).toFixed(2)} Gt CO2</li>
+					
+				</ul> -->
 			</div>
 			<div class="grow p-4 shadow-lg">
 				<Pathway>
@@ -142,36 +185,7 @@
 			</div>
 		</div>
 		<div class="flex h-full max-w-[25%] flex-col justify-between gap-4 p-4 shadow-lg">
-			<div>
-				<h1 class="text-xl">Reference pathways</h1>
-				<!-- <h2>(Currenty policy)</h2> -->
-				<h2>Compare your own pathway with the following references:</h2>
-			</div>
-			<div class="grow">
-				<ul>
-					<li>
-						<label>
-							<b style={`color: ${ipcc_red}`}>▬</b>
-							<input type="checkbox" bind:checked={policyPathwayToggles.current} />{' '}Current
-							policy</label
-						>
-					</li>
-					<li>
-						<label>
-							<b style={`color: ${ipcc_blue}`}>▬</b>
-							<input type="checkbox" bind:checked={policyPathwayToggles.ndc} />{' '}Nationally
-							determined contributions (NDCs)</label
-						>
-					</li>
-					<li>
-						<label>
-							<b style={`color: ${ipcc_purple}`}>▬</b>
-							<input type="checkbox" bind:checked={policyPathwayToggles.netzero} />{' '}Net
-							zero-scenarios</label
-						>
-					</li>
-				</ul>
-			</div>
+
 
 			<div>
 				<a

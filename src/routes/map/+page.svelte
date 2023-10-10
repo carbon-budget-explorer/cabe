@@ -73,7 +73,7 @@
 							onChange={updateQueryParam}
 						/>
 						<div class="flex flex-col pt-4">
-							<h2>CO2 budget from 2021 till</h2>
+							<h2>CO2 budget</h2>
 							<label>
 								<input
 									disabled
@@ -82,7 +82,7 @@
 									value="2030"
 									bind:group={data.variable}
 								/>
-								2030
+								in 2030
 							</label>
 							<label>
 								<input
@@ -92,11 +92,11 @@
 									value="2040"
 									bind:group={data.variable}
 								/>
-								2040
+								in 2040
 							</label>
 							<label>
 								<input type="radio" name="variable" value="2100" bind:group={data.variable} />
-								2100 (full century)
+								full century
 							</label>
 						</div>
 					</div>
