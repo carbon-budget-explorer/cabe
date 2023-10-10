@@ -4,7 +4,6 @@
 	import { page } from '$app/stores';
 	import GlobalBudgetForm from '$lib/PathwayForm.svelte';
 
-	import { slide } from 'svelte/transition';
 	import type { PageData } from './$types';
 	import Pathway from '$lib/charts/Pathway.svelte';
 	import Line from '$lib/charts/components/Line.svelte';
@@ -28,9 +27,11 @@
 		ndc: '#fddaec',
 		netzero: '#f2f2f2' // TODO find better color, now almost same as background
 	};
-	let showSettngsPanel = false;
 
-	let activeEffortSharings = [data.effortSharing.initial];
+	let activeEffortSharings = Object.fromEntries(
+		Object.keys(principles).map((id) => [id, id === data.effortSharing.initial])
+	);
+
 	let activeReference: string[] = [];
 
 	// Transitions
@@ -52,15 +53,7 @@
 		<p class="bg-slate-400 px-2 text-2xl">Key indicators</p>
 		<div class="border-10 mb-2 flex flex-row gap-10 border-2 border-slate-400 bg-slate-200 p-2">
 			<div class="grow">
-				<div class="justify-left flex flex-row gap-10">
-					<div class="">
-						<p>Ambition gap</p>
-						<p>{data.indicators.ambitionGap}</p>
-					</div>
-					<div class="">
-						<p>Emission gap</p>
-						<p>{data.indicators.emissionGap}</p>
-					</div>
+				<div class="justify-left flex flex-col gap-10">
 					<div class="">
 						<p>NDC Ambition (normalized)</p>
 						<p>{data.indicators.ndcAmbition}</p>
@@ -70,46 +63,58 @@
 						<p>{(data.indicators.historicalCarbon / 1_000).toFixed()} Gt CO₂</p>
 					</div>
 				</div>
-				<div class="justify-left flex flex-row gap-10 pt-10">
-					{#each Object.entries(principles) as [id, { label }]}
-						<div title="Temperature assessment of effort sharing">
-							<p>{label}</p>
-							<p>{data.indicators.temperatureAssesment[id]} &deg;C</p>
-						</div>
-					{/each}
-				</div>
+			</div>
+			<div class="flex w-full flex-row justify-evenly gap-2">
+				{#each Object.entries(principles) as [id, { label, color }]}
+					<button
+						class={activeEffortSharings[id]
+							? 'h-48 w-48 border-2 border-black shadow-lg'
+							: 'h-48 w-48 border-2 shadow-lg'}
+						style={`background-color: ${color}`}
+						on:click={() => (activeEffortSharings[id] = !activeEffortSharings[id])}
+					>
+						<p class="text-xl">{label}</p>
+						<p>Ambition gap: 23 Gt CO2</p>
+						<p>Emission gap: 23 Gt CO2</p>
+					</button>
+				{/each}
 			</div>
 		</div>
 	</section>
 	<section id="overview" class="flex h-[500px] grow flex-row">
-		{#if showSettngsPanel}
-			<div class="relative">
-				<button
-					class="absolute right-0 top-0"
-					title="Toggle selection panel"
-					on:click={() => (showSettngsPanel = !showSettngsPanel)}
-				>
-					⚙
-				</button>
-				<div transition:slide={{ axis: 'x' }}>
-					<GlobalBudgetForm
-						choices={data.pathway.choices}
-						query={data.pathway.query}
-						onChange={updateQueryParam}
-					/>
+		<div>
+			<GlobalBudgetForm
+				choices={data.pathway.choices}
+				query={data.pathway.query}
+				onChange={updateQueryParam}
+			/>
+			<div>
+				<h1 class="pt-4">Reference pathways</h1>
+				<div>
+					<!-- TODO this checkbox group is also used in /global page, deduplicate -->
+					<label class="block">
+						<b style={`color: ${referenceColors.currentPolicy}`}>▬</b>
+						<input
+							class="mr-1"
+							type="checkbox"
+							value="currentPolicy"
+							bind:group={activeReference}
+						/>
+						Current policy</label
+					>
+					<label class="block">
+						<b style={`color: ${referenceColors.ndc}`}>▬</b>
+						<input class="mr-1" type="checkbox" value="ndc" bind:group={activeReference} />
+						Nationally determined contributions (NDCs)
+					</label>
+					<label class="block">
+						<b style={`color: ${referenceColors.netzero}`}>▬</b>
+						<input class="mr-1" type="checkbox" value="netzero" bind:group={activeReference} />
+						Net zero-scenarios
+					</label>
 				</div>
 			</div>
-		{:else}
-			<div>
-				<button
-					class=""
-					title="Toggle selection panel"
-					on:click={() => (showSettngsPanel = !showSettngsPanel)}
-				>
-					⚙
-				</button>
-			</div>
-		{/if}
+		</div>
 
 		<!-- TODO compute smarter extent -->
 		<Pathway yDomain={[-50, data.historicalCarbon.extent[1]]}>
@@ -119,31 +124,22 @@
 				y={'value'}
 				color="black"
 			/>
-			{#each activeEffortSharings as activeEffortSharing}
-				<g name={activeEffortSharing}>
-					{#if activeEffortSharing === 'ECPC'}
-						<!-- TODO show ECPC as error bar on chart -->
-						<Gap
-							x={$tweenedEffortSharing[activeEffortSharing][0].time}
-							y0={$tweenedEffortSharing[activeEffortSharing][0].min}
-							y1={$tweenedEffortSharing[activeEffortSharing][0].max}
-						/>
-					{:else}
-						<Line
-							data={$tweenedEffortSharing[activeEffortSharing]}
-							x={'time'}
-							y={'mean'}
-							color={principles[activeEffortSharing].color}
-						/>
-						<Area
-							data={$tweenedEffortSharing[activeEffortSharing]}
-							x={'time'}
-							y0={'min'}
-							y1={'max'}
-							color={principles[activeEffortSharing].color}
-						/>
-					{/if}
-				</g>
+			{#each Object.entries(principles) as [id, { color }]}
+				{#if activeEffortSharings[id]}
+					<g name={id}>
+						{#if id === 'ECPC'}
+							<!-- TODO show ECPC as error bar on chart -->
+							<Gap
+								x={$tweenedEffortSharing[id][0].time}
+								y0={$tweenedEffortSharing[id][0].min}
+								y1={$tweenedEffortSharing[id][0].max}
+							/>
+						{:else}
+							<Line data={$tweenedEffortSharing[id]} x={'time'} y={'mean'} {color} />
+							<Area data={$tweenedEffortSharing[id]} x={'time'} y0={'min'} y1={'max'} {color} />
+						{/if}
+					</g>
+				{/if}
 			{/each}
 
 			{#if activeReference.includes('currentPolicy')}
@@ -193,37 +189,6 @@
 				</g>
 			{/if}
 		</Pathway>
-		<div>
-			<h1 class="pt-4">Reference pathways</h1>
-			<div>
-				<!-- TODO this checkbox group is also used in /global page, deduplicate -->
-				<label class="block">
-					<b style={`color: ${referenceColors.currentPolicy}`}>▬</b>
-					<input class="mr-1" type="checkbox" value="currentPolicy" bind:group={activeReference} />
-					Current policy</label
-				>
-				<label class="block">
-					<b style={`color: ${referenceColors.ndc}`}>▬</b>
-					<input class="mr-1" type="checkbox" value="ndc" bind:group={activeReference} />
-					Nationally determined contributions (NDCs)
-				</label>
-				<label class="block">
-					<b style={`color: ${referenceColors.netzero}`}>▬</b>
-					<input class="mr-1" type="checkbox" value="netzero" bind:group={activeReference} />
-					Net zero-scenarios
-				</label>
-			</div>
-			<h1 class="pt-4">Effort sharing</h1>
-			<div>
-				{#each Object.entries(principles) as [id, { label, color }]}
-					<label class="block">
-						<b style={`color: ${color}`}>▬</b>
-						<input type="checkbox" class="mr-1" value={id} bind:group={activeEffortSharings} />
-						{label}
-					</label>
-				{/each}
-			</div>
-		</div>
 	</section>
 	<section id="description" class="py-8">
 		<p>Some text about country carbon budget and plans.</p>
