@@ -14,8 +14,7 @@ export const dsGlobal = await open_dataset(globalPath, pyodide);
 const mapPath = dataDir + '/xr_alloc_2030.nc';
 export const dsMap = await open_dataset(mapPath, pyodide);
 
-// TODO replace with correct path to reference scenario file
-const refPath = dataDir + '/xr_total4.nc';
+const refPath = dataDir + '/xr_policyscen.nc';
 export const dsRef = await open_dataset(refPath, pyodide);
 
 const bordersPath = dataDir + '/ne_110m_admin_0_countries.geojson';

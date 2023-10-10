@@ -77,14 +77,14 @@
 			<div class="p-4 shadow-lg">
 				<h1>Difference between your scenario and current policy</h1>
 				<ul>
-					<li on:mouseenter={toggleAmbitionGap} on:mouseleave={toggleAmbitionGap}>
-						<span class="cursor-grab hover:bg-slate-200">
-							Ambition gap: {($ambitionGapTweened / 1_000).toFixed(2)} GtCO2
-						</span>
-					</li>
 					<li on:mouseenter={toggleEmissionGap} on:mouseleave={toggleEmissionGap}>
 						<span class="cursor-grab hover:bg-slate-200">
 							Emission gap: {($emissionGapTweened / 1_000).toFixed(2)} GtCO2
+						</span>
+					</li>
+					<li on:mouseenter={toggleAmbitionGap} on:mouseleave={toggleAmbitionGap}>
+						<span class="cursor-grab hover:bg-slate-200">
+							Ambition gap: {($ambitionGapTweened / 1_000).toFixed(2)} GtCO2
 						</span>
 					</li>
 				</ul>
@@ -102,7 +102,7 @@
 			<div class="grow p-4 shadow-lg">
 				<Pathway>
 					<Line data={data.result.historicalCarbon} x={'time'} y={'value'} color="black" />
-					{#if policyPathwayToggles.current || ambitionGapHover}
+					{#if policyPathwayToggles.current || emissionGapHover}
 						<Line data={data.result.currentPolicy} x={'time'} y={'mean'} color={ipcc_red} />
 						<Area
 							data={data.result.currentPolicy}
@@ -112,7 +112,7 @@
 							color={ipcc_red}
 						/>
 					{/if}
-					{#if policyPathwayToggles.ndc || emissionGapHover}
+					{#if policyPathwayToggles.ndc || ambitionGapHover}
 						<Line data={data.result.ndc} x={'time'} y={'mean'} color={ipcc_blue} />
 						<Area data={data.result.ndc} x={'time'} y0={'min'} y1={'max'} color={ipcc_blue} />
 					{/if}
@@ -124,14 +124,14 @@
 					{#if ambitionGapHover}
 						<Gap
 							x={2030}
-							y0={data.result.currentPolicy[gapIndex].mean}
+							y0={data.result.ndc[gapIndex].mean}
 							y1={$pathwayCarbonTweened.find((d) => d.time === 2030)?.mean || 0}
 						/>
 					{/if}
 					{#if emissionGapHover}
 						<Gap
 							x={2030}
-							y0={data.result.ndc[gapIndex].mean}
+							y0={data.result.currentPolicy[gapIndex].mean}
 							y1={$pathwayCarbonTweened.find((d) => d.time === 2030)?.mean || 0}
 						/>
 					{/if}
