@@ -90,7 +90,7 @@
 						<p
 							on:mouseenter={() => (hoveredAmbitionGap = id)}
 							on:mouseleave={() => (hoveredAmbitionGap = null)}
-							class="inline hover:bg-slate-200"
+							class="inline hover:bg-[#888] hover:bg-opacity-50"
 						>
 							{$tweenedEffortSharing[id].ambitionGap.toFixed(2)} Mt CO2
 						</p>
@@ -98,7 +98,7 @@
 						<p
 							on:mouseenter={() => (hoveredEmissionGap = id)}
 							on:mouseleave={() => (hoveredEmissionGap = null)}
-							class="inline hover:bg-slate-200"
+							class="inline hover:bg-[#888] hover:bg-opacity-50"
 						>
 							{$tweenedEffortSharing[id].emissionGap.toFixed(2)} Mt CO2
 						</p>
@@ -168,21 +168,23 @@
 							<Gap
 								x={2030}
 								y0={data.reference.ndc[gapIndex].mean}
-								y1={$tweenedEffortSharing[hoveredAmbitionGap].CO2.find((d) => d.time === 2030)?.mean || 0}
+								y1={$tweenedEffortSharing[hoveredAmbitionGap].CO2.find((d) => d.time === 2030)
+									?.mean || 0}
 							/>
 						{/if}
 						{#if activeEffortSharings[id] && hoveredEmissionGap}
 							<Gap
 								x={2030}
 								y0={data.reference.currentPolicy[gapIndex].mean}
-								y1={$tweenedEffortSharing[hoveredEmissionGap].CO2.find((d) => d.time === 2030)?.mean || 0}
+								y1={$tweenedEffortSharing[hoveredEmissionGap].CO2.find((d) => d.time === 2030)
+									?.mean || 0}
 							/>
 						{/if}
 					</g>
 				{/if}
 			{/each}
 
-			{#if activeReference.includes('currentPolicy') ||hoveredEmissionGap }
+			{#if activeReference.includes('currentPolicy') || hoveredEmissionGap}
 				<g name="currentPolicy">
 					<Line
 						data={data.reference.currentPolicy}
@@ -199,7 +201,7 @@
 					/>
 				</g>
 			{/if}
-			{#if activeReference.includes('ndc') ||hoveredAmbitionGap }
+			{#if activeReference.includes('ndc') || hoveredAmbitionGap}
 				<g name="ndc">
 					<Line data={data.reference.ndc} x={'time'} y={'mean'} color={referenceColors.ndc} />
 					<Area
