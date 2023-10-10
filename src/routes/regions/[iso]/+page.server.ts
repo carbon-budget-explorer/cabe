@@ -3,7 +3,6 @@ import type { RouteParams } from './$types';
 import { searchParam } from '$lib/searchparam';
 import {
 	currentPolicy,
-	emissionGap,
 	gdpOverTime,
 	historicalCarbon,
 	ndc,
@@ -54,11 +53,9 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 
 	const name = borders.labels.get(iso) || iso;
 	const iso2 = borders.iso3to2.get(iso) || iso;
-	const temperatureAssesment = db.temperatureAssesments(pathwayQuery);
 	const indicators = {
 		ndcAmbition: -1,
-		historicalCarbon: hist.map((d) => d.value).reduce((a, b) => a + b, 0),
-		temperatureAssesment
+		historicalCarbon: hist.map((d) => d.value).reduce((a, b) => a + b, 0)
 	};
 	const effortSharing = Object.fromEntries(
 		Object.keys(principles).map((principle) => {
