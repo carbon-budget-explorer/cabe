@@ -122,15 +122,15 @@
 		</div>
 
 		<div class="flex grow flex-col gap-4">
-			<div class="rounded-lg border-4 p-2 flex flex-row gap-4">
-				<div class="border-green-400 bg-green-300 shadow-xl border-4 p-2">
+			<div class="flex flex-row gap-4 rounded-lg border-4 p-2">
+				<div class="border-4 border-green-400 bg-green-300 p-2 shadow-xl">
 					<p class="text-4xl">
 						{($remainingBudgetCounter / 1_000).toFixed(0)}
 					</p>
 					<p>Gt CO2</p>
 					<p>Global budget</p>
 				</div>
-				<div class="border-green-400 bg-green-300 shadow-xl border-4 p-2">
+				<div class="border-4 border-green-400 bg-green-300 p-2 shadow-xl">
 					<p class="text-4xl">
 						{($remainingBudgetCounter / 1_000 / 37).toFixed(0)}x
 					</p>
@@ -185,8 +185,6 @@
 			</div>
 		</div>
 		<div class="flex h-full max-w-[25%] flex-col justify-between gap-4 p-4 shadow-lg">
-
-
 			<div>
 				<a
 					class="mb-2 mr-2 block rounded-lg bg-gradient-to-br from-green-400 to-blue-600 px-5 py-2.5 text-center text-3xl font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-800"
