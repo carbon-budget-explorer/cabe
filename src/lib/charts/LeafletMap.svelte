@@ -12,8 +12,8 @@
 	export let metrics: NamedSpatialMetric[];
 
 	const mapOptions: MapOptions = {
-		center: [10, 0],
-		zoom: 2,
+		center: [30, 5],
+		zoom: 3,
 		minZoom: 2,
 		zoomControl: false
 		// TODO when open street map is not shown render less gray background
@@ -21,7 +21,7 @@
 
 	const tileUrl = 'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.{ext}';
 	const tileLayerOptions = {
-		minZoom: 3,
+		minZoom: 4,
 		maxZoom: 20,
 		maxNativeZoom: 19,
 		attribution:
