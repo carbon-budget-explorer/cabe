@@ -34,6 +34,11 @@
 
 	let activeReference: string[] = [];
 
+	// Gap hover
+	let gapIndex = data.reference.ndc.map((d) => d.time).indexOf(2030);
+	let hoveredAmbitionGap: string | null = null;
+	let hoveredEmissionGap: string | null = null;
+
 	// Transitions
 	const tweenOptions = { duration: 1000, easing: cubicOut };
 	const tweenedEffortSharing = tweened(data.effortSharing, tweenOptions);
@@ -82,9 +87,21 @@
 							href={`/about#${id}`}>ⓘ</a
 						>
 						<p>Ambition gap:</p>
-						<p>{$tweenedEffortSharing[id].ambitionGap.toFixed(2)} Mt CO2</p>
+						<p
+							on:mouseenter={() => (hoveredAmbitionGap = id)}
+							on:mouseleave={() => (hoveredAmbitionGap = null)}
+							class="inline hover:bg-slate-200"
+						>
+							{$tweenedEffortSharing[id].ambitionGap.toFixed(2)} Mt CO2
+						</p>
 						<p>Emission gap:</p>
-						<p>{$tweenedEffortSharing[id].emissionGap.toFixed(2)} Mt CO2</p>
+						<p
+							on:mouseenter={() => (hoveredEmissionGap = id)}
+							on:mouseleave={() => (hoveredEmissionGap = null)}
+							class="inline hover:bg-slate-200"
+						>
+							{$tweenedEffortSharing[id].emissionGap.toFixed(2)} Mt CO2
+						</p>
 					</button>
 				{/each}
 			</div>
@@ -134,7 +151,7 @@
 				color="black"
 			/>
 			{#each Object.entries(principles) as [id, { color }]}
-				{#if activeEffortSharings[id]}
+				{#if activeEffortSharings[id] || hoveredAmbitionGap === id || hoveredEmissionGap === id}
 					<g name={id}>
 						{#if id === 'ECPC'}
 							<!-- TODO show ECPC as error bar on chart -->
@@ -147,11 +164,25 @@
 							<Line data={$tweenedEffortSharing[id].CO2} x={'time'} y={'mean'} {color} />
 							<Area data={$tweenedEffortSharing[id].CO2} x={'time'} y0={'min'} y1={'max'} {color} />
 						{/if}
+						{#if activeEffortSharings[id] && hoveredAmbitionGap}
+							<Gap
+								x={2030}
+								y0={data.reference.ndc[gapIndex].mean}
+								y1={$tweenedEffortSharing[hoveredAmbitionGap].CO2.find((d) => d.time === 2030)?.mean || 0}
+							/>
+						{/if}
+						{#if activeEffortSharings[id] && hoveredEmissionGap}
+							<Gap
+								x={2030}
+								y0={data.reference.currentPolicy[gapIndex].mean}
+								y1={$tweenedEffortSharing[hoveredEmissionGap].CO2.find((d) => d.time === 2030)?.mean || 0}
+							/>
+						{/if}
 					</g>
 				{/if}
 			{/each}
 
-			{#if activeReference.includes('currentPolicy')}
+			{#if activeReference.includes('currentPolicy') ||hoveredEmissionGap }
 				<g name="currentPolicy">
 					<Line
 						data={data.reference.currentPolicy}
@@ -168,7 +199,7 @@
 					/>
 				</g>
 			{/if}
-			{#if activeReference.includes('ndc')}
+			{#if activeReference.includes('ndc') ||hoveredAmbitionGap }
 				<g name="ndc">
 					<Line data={data.reference.ndc} x={'time'} y={'mean'} color={referenceColors.ndc} />
 					<Area
@@ -197,7 +228,6 @@
 					/>
 				</g>
 			{/if}
-			<!-- TODO hover over gap number should show gap in chart -->
 		</Pathway>
 	</section>
 	<section id="description" class="py-8">
