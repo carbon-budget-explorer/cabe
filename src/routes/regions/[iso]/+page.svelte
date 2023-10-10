@@ -197,6 +197,7 @@
 					/>
 				</g>
 			{/if}
+			<!-- TODO hover over gap number should show gap in chart -->
 		</Pathway>
 	</section>
 	<section id="description" class="py-8">
