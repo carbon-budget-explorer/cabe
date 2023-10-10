@@ -17,8 +17,8 @@ export const dsMap = await open_dataset(mapPath, pyodide);
 const refPath = dataDir + '/xr_policyscen.nc';
 export const dsRef = await open_dataset(refPath, pyodide);
 
-const tempPath = dataDir + '/xr_temps.nc';
-export const dsTemp = await open_dataset(tempPath, pyodide);
+// const tempPath = dataDir + '/xr_temps.nc';
+// export const dsTemp = await open_dataset(tempPath, pyodide);
 
 const bordersPath = dataDir + '/ne_110m_admin_0_countries.geojson';
 export const borders = await open_borders(bordersPath);

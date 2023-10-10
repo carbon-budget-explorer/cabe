@@ -44,13 +44,12 @@
 	const tweenedEffortSharing = tweened(data.effortSharing, tweenOptions);
 	$: tweenedEffortSharing.set(data.effortSharing);
 
-	console.log(data.effortSharing['ECPC'])
+	console.log(data.effortSharing['ECPC']);
 </script>
 
 <main class="flex flex-col gap-2">
-
 	<section id="key-indicators">
-		<div class="border-10 mb-2 flex flex-row gap-10  p-2">
+		<div class="border-10 mb-2 flex flex-row gap-10 p-2">
 			<div class="grow">
 				<header class="flex flex-row gap-4">
 					<img
@@ -72,43 +71,42 @@
 					</div>
 				</div>
 			</div>
-				{#each Object.entries(principles) as [id, { label, color }]}
-					<button
+			{#each Object.entries(principles) as [id, { label, color }]}
+				<button on:click={() => (activeEffortSharings[id] = !activeEffortSharings[id])}>
+					<div
 						class={activeEffortSharings[id]
-							? 'relative h-48 w-48 border-8 shadow-lg block text-start'
-							: 'relative h-48 w-48 border-2 shadow-lg '}
-						style={`border-color: ${color}`}
-						on:click={() => (activeEffortSharings[id] = !activeEffortSharings[id])}
+							? 'relative h-48 w-48 border-4 text-start shadow-lg'
+							: 'relative h-48 w-48 border-4 text-start shadow-lg'}
+						style={`border-color: ${activeEffortSharings[id] ? color : '#EEE'}`}
 					>
-						<h3 class="text-xl" style={`background-color: ${color}`} >{label}</h3>
-						<a
-							class="absolute right-1 top-1 inline-block text-xl"
-							title="More information"
-							target="_blank"
-							rel="noopener"
-							href={`/about#${id}`}>ⓘ</a
-						>
-						<p>Ambition gap:</p>
-						<p
-							on:mouseenter={() => (hoveredAmbitionGap = id)}
-							on:mouseleave={() => (hoveredAmbitionGap = null)}
-							class="inline hover:bg-[#888] hover:bg-opacity-50"
-						>
-							{$tweenedEffortSharing[id].ambitionGap.toFixed(2)} Mt CO2
-						</p>
-						<p>Emission gap:</p>
-						<p
-							on:mouseenter={() => (hoveredEmissionGap = id)}
-							on:mouseleave={() => (hoveredEmissionGap = null)}
-							class="inline hover:bg-[#888] hover:bg-opacity-50"
-						>
-							{$tweenedEffortSharing[id].emissionGap.toFixed(2)} Mt CO2
-						</p>
-					</button>
-				{/each}
+						<h3 class="h-1/3 px-2 text-xl" style={`background-color: ${color}`}>
+							{label}
+							<a title="More information" target="_blank" rel="noopener" href={`/about#${id}`}>ⓘ</a>
+						</h3>
+						<div class="p-2">
+							<p>Ambition gap:</p>
+							<p
+								on:mouseenter={() => (hoveredAmbitionGap = id)}
+								on:mouseleave={() => (hoveredAmbitionGap = null)}
+								class="inline hover:bg-[#888] hover:bg-opacity-50"
+							>
+								{$tweenedEffortSharing[id].ambitionGap.toFixed(2)} Mt CO2
+							</p>
+							<p>Emission gap:</p>
+							<p
+								on:mouseenter={() => (hoveredEmissionGap = id)}
+								on:mouseleave={() => (hoveredEmissionGap = null)}
+								class="inline hover:bg-[#888] hover:bg-opacity-50"
+							>
+								{$tweenedEffortSharing[id].emissionGap.toFixed(2)} Mt CO2
+							</p>
+						</div>
+					</div>
+				</button>
+			{/each}
 		</div>
 	</section>
-	<hr class="pb-2">
+	<hr class="pb-2" />
 	<section id="overview" class="flex h-[500px] grow flex-row">
 		<div>
 			<GlobalBudgetForm
