@@ -3,8 +3,7 @@ import { searchParam } from '$lib/searchparam';
 import {
 	fullCenturyBudgetSpatial,
 	pathwayChoices,
-	pathwayQueryFromSearchParams,
-	temperatureAssesment
+	pathwayQueryFromSearchParams
 } from '$lib/server/db/models';
 import type { SpatialMetric } from '$lib/server/db/utils';
 import type { principles } from '$lib/principles';
@@ -17,7 +16,7 @@ export async function load({ url }: { url: URL }) {
 		choices
 	};
 
-	const selectedVariable: string = searchParam(url, 'variable', 'budget');
+	const selectedVariable: string = searchParam(url, 'variable', '2100');
 	const selectedEffortSharing = searchParam<undefined | keyof typeof principles>(
 		url,
 		'effortSharing',
@@ -25,10 +24,8 @@ export async function load({ url }: { url: URL }) {
 	);
 	let rawMetrics: SpatialMetric[] = [];
 	if (selectedEffortSharing !== undefined) {
-		if (selectedVariable === 'budget') {
+		if (selectedVariable === '2100') {
 			rawMetrics = fullCenturyBudgetSpatial(pathwayQuery, selectedEffortSharing);
-		} else if (selectedVariable === 'temp') {
-			rawMetrics = temperatureAssesment(pathwayQuery, selectedEffortSharing);
 		} else {
 			throw new Error(`Unknown variable: ${selectedVariable}`);
 		}

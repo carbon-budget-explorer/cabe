@@ -73,14 +73,30 @@
 							onChange={updateQueryParam}
 						/>
 						<div class="flex flex-col pt-4">
-							<h2>Variable</h2>
+							<h2>CO2 budget from 2021 till</h2>
 							<label>
-								<input type="radio" name="variable" value="budget" bind:group={data.variable} />
-								Full century CO2 budget
+								<input
+									disabled
+									type="radio"
+									name="variable"
+									value="2030"
+									bind:group={data.variable}
+								/>
+								2030
 							</label>
 							<label>
-								<input type="radio" name="variable" value="temp" bind:group={data.variable} />
-								Temperature assessment
+								<input
+									disabled
+									type="radio"
+									name="variable"
+									value="2040"
+									bind:group={data.variable}
+								/>
+								2040
+							</label>
+							<label>
+								<input type="radio" name="variable" value="2100" bind:group={data.variable} />
+								2100 (full century)
 							</label>
 						</div>
 					</div>
@@ -107,9 +123,7 @@
 				<div>
 					{#if selectedFeature && selectedFeature.properties && selectedMetric}
 						<!-- TODO replace with key indicators -->
-						{data.variable === 'temp'
-							? `${selectedMetric.value.toPrecision(2)} °C`
-							: selectedMetric.value > 1_000
+						{selectedMetric.value > 1_000
 							? `${(selectedMetric.value / 1_000).toPrecision(3)} Gt CO2`
 							: `${selectedMetric.value.toPrecision(3)} Mt CO2`}
 					{/if}
@@ -117,12 +131,7 @@
 			</div>
 			<div class="h-full w-full">
 				<div class="flex h-full w-full items-center justify-center bg-white">
-					<LeafletMap
-						borders={data.borders}
-						metrics={data.metrics}
-						bind:selectedFeature
-						variable={data.variable}
-					/>
+					<LeafletMap borders={data.borders} metrics={data.metrics} bind:selectedFeature />
 				</div>
 			</div>
 			<div class="absolute bottom-2 z-[500] flex w-full flex-row justify-center gap-2">
