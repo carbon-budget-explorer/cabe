@@ -2,7 +2,7 @@ import type { PyodideInterface } from 'pyodide';
 import { open_dataset, type DataArraySelection } from './xarray';
 import { principles } from '$lib/principles';
 import { toJsOpts, type PathWayQuery, type UncertainTime } from './models';
-import { dsGlobal } from './data';
+import { dsGlobal, dsTemp } from './data';
 
 export class CountriesDatabase {
 	cache = new Map<string, CountryDatabase>();
@@ -134,9 +134,7 @@ export class CountryDatabase {
 		Scenario = 'SSP2',
 		Convergence_year = 2040
 	) {
-		// TODO get from a NetCDF file
-		return -1;
-
+		return -1
 		let selection: DataArraySelection = {};
 		const pathwaySelection = {
 			Risk_of_exceedance: pathwayQuery.exceedanceRisk,
@@ -175,11 +173,8 @@ export class CountryDatabase {
 		} else {
 			throw new Error(`Effort sharing principle ${effortSharing} not found`);
 		}
-		const variable = effortSharing + '_temp';
-		// TODO verify with new data file
-		// most likely temperature assesment
-		// is stored in dsGlobal as it has no time dimension
-		const value = dsGlobal.get(variable).sel.callKwargs(selection).values.tolist();
+
+		const value = dsTemp.get(effortSharing).sel.callKwargs(selection).mean().tolist();
 		return value;
 	}
 }

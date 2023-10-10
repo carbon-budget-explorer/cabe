@@ -43,22 +43,25 @@
 	const tweenOptions = { duration: 1000, easing: cubicOut };
 	const tweenedEffortSharing = tweened(data.effortSharing, tweenOptions);
 	$: tweenedEffortSharing.set(data.effortSharing);
+
+	console.log(data.effortSharing['ECPC'])
 </script>
 
 <main class="flex flex-col gap-2">
-	<header class="flex flex-row gap-4">
-		<img
-			src={`https://flagcdn.com/${data.info.iso2?.toLowerCase()}.svg`}
-			class="h-8"
-			alt={data.info.name}
-		/>
-		<h1 class="text-3xl font-bold">{data.info.name}</h1>
-	</header>
+
 	<section id="key-indicators">
-		<p class="bg-slate-400 px-2 text-2xl">Key indicators</p>
-		<div class="border-10 mb-2 flex flex-row gap-10 border-2 border-slate-400 bg-slate-200 p-2">
+		<div class="border-10 mb-2 flex flex-row gap-10  p-2">
 			<div class="grow">
-				<div class="justify-left flex flex-col gap-10">
+				<header class="flex flex-row gap-4">
+					<img
+						src={`https://flagcdn.com/${data.info.iso2?.toLowerCase()}.svg`}
+						class="h-8"
+						alt={data.info.name}
+					/>
+					<h1 class="text-3xl font-bold">{data.info.name}</h1>
+				</header>
+				<p class="text-2xl">Key indicators</p>
+				<div class="justify-left flex flex-col gap-4">
 					<div class="">
 						<p>NDC Ambition (normalized)</p>
 						<p>{data.indicators.ndcAmbition}</p>
@@ -69,16 +72,15 @@
 					</div>
 				</div>
 			</div>
-			<div class="flex w-full flex-row justify-evenly gap-2">
 				{#each Object.entries(principles) as [id, { label, color }]}
 					<button
 						class={activeEffortSharings[id]
-							? 'relative h-48 w-48 border-2 border-black shadow-lg'
-							: 'relative h-48 w-48 border-2 shadow-lg'}
-						style={`background-color: ${color}`}
+							? 'relative h-48 w-48 border-8 shadow-lg block text-start'
+							: 'relative h-48 w-48 border-2 shadow-lg '}
+						style={`border-color: ${color}`}
 						on:click={() => (activeEffortSharings[id] = !activeEffortSharings[id])}
 					>
-						<p class="text-xl">{label}</p>
+						<h3 class="text-xl" style={`background-color: ${color}`} >{label}</h3>
 						<a
 							class="absolute right-1 top-1 inline-block text-xl"
 							title="More information"
@@ -104,9 +106,9 @@
 						</p>
 					</button>
 				{/each}
-			</div>
 		</div>
 	</section>
+	<hr class="pb-2">
 	<section id="overview" class="flex h-[500px] grow flex-row">
 		<div>
 			<GlobalBudgetForm
