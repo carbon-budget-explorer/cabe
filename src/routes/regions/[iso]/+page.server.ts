@@ -3,6 +3,7 @@ import type { RouteParams } from './$types';
 import { searchParam } from '$lib/searchparam';
 import {
 	currentPolicy,
+	emissionGap,
 	gdpOverTime,
 	historicalCarbon,
 	ndc,
@@ -11,7 +12,7 @@ import {
 	pathwayQueryFromSearchParams,
 	populationOverTime
 } from '$lib/server/db/models';
-import type { principles } from '$lib/principles';
+import { principles } from '$lib/principles';
 import { extent } from 'd3';
 
 export const load = async ({ params, url }: { params: RouteParams; url: URL }) => {
@@ -25,7 +26,7 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 		query: pathwayQuery,
 		choices
 	};
-	const initialEffortScharingName = searchParam<keyof typeof principles>(
+	const initialEffortSharingName = searchParam<keyof typeof principles>(
 		url,
 		'effortSharing',
 		'PC' // When no effort sharing is selected on prev page, use per capita as default
@@ -55,12 +56,34 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 	const iso2 = borders.iso3to2.get(iso) || iso;
 	const temperatureAssesment = db.temperatureAssesments(pathwayQuery);
 	const indicators = {
-		ambitionGap: -1,
-		emissionGap: -1,
 		ndcAmbition: -1,
 		historicalCarbon: hist.map((d) => d.value).reduce((a, b) => a + b, 0),
 		temperatureAssesment
 	};
+	const effortSharing = Object.fromEntries(
+		Object.keys(principles).map((principle) => {
+			const principleKey = principle as keyof typeof principles;
+			const CO2 = effortSharingData[principleKey];
+			let emissionGap = -1;
+			let ambitionGap = -1;
+			if (principleKey !== 'ECPC') {
+				emissionGap =
+					reference.currentPolicy.find((d) => d.time === 2030)!.mean -
+					CO2.find((d) => d.time === 2030)!.mean;
+				ambitionGap =
+					reference.ndc.find((d) => d.time === 2030)!.mean - CO2.find((d) => d.time === 2030)!.mean;
+			}
+			return [
+				principleKey,
+				{
+					CO2,
+					emissionGap,
+					ambitionGap
+				}
+			];
+		})
+	);
+
 	const r = {
 		info: {
 			iso,
@@ -72,10 +95,8 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 			data: hist,
 			extent: extent(hist, (d) => d.value) as [number, number]
 		},
-		effortSharing: {
-			initial: initialEffortScharingName,
-			data: effortSharingData
-		},
+		initialEffortSharingName,
+		effortSharing,
 		reference,
 		indicators,
 		details

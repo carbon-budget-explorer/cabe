@@ -29,15 +29,15 @@
 	};
 
 	let activeEffortSharings = Object.fromEntries(
-		Object.keys(principles).map((id) => [id, id === data.effortSharing.initial])
+		Object.keys(principles).map((id) => [id, id === data.initialEffortSharingName])
 	);
 
 	let activeReference: string[] = [];
 
 	// Transitions
 	const tweenOptions = { duration: 1000, easing: cubicOut };
-	const tweenedEffortSharing = tweened(data.effortSharing.data, tweenOptions);
-	$: tweenedEffortSharing.set(data.effortSharing.data);
+	const tweenedEffortSharing = tweened(data.effortSharing, tweenOptions);
+	$: tweenedEffortSharing.set(data.effortSharing);
 </script>
 
 <main class="flex flex-col gap-2">
@@ -68,14 +68,23 @@
 				{#each Object.entries(principles) as [id, { label, color }]}
 					<button
 						class={activeEffortSharings[id]
-							? 'h-48 w-48 border-2 border-black shadow-lg'
-							: 'h-48 w-48 border-2 shadow-lg'}
+							? 'relative h-48 w-48 border-2 border-black shadow-lg'
+							: 'relative h-48 w-48 border-2 shadow-lg'}
 						style={`background-color: ${color}`}
 						on:click={() => (activeEffortSharings[id] = !activeEffortSharings[id])}
 					>
 						<p class="text-xl">{label}</p>
-						<p>Ambition gap: 23 Gt CO2</p>
-						<p>Emission gap: 23 Gt CO2</p>
+						<a
+							class="absolute right-1 top-1 inline-block text-xl"
+							title="More information"
+							target="_blank"
+							rel="noopener"
+							href={`/about#${id}`}>ⓘ</a
+						>
+						<p>Ambition gap:</p>
+						<p>{$tweenedEffortSharing[id].ambitionGap.toFixed(2)} Mt CO2</p>
+						<p>Emission gap:</p>
+						<p>{$tweenedEffortSharing[id].emissionGap.toFixed(2)} Mt CO2</p>
 					</button>
 				{/each}
 			</div>
@@ -130,13 +139,13 @@
 						{#if id === 'ECPC'}
 							<!-- TODO show ECPC as error bar on chart -->
 							<Gap
-								x={$tweenedEffortSharing[id][0].time}
-								y0={$tweenedEffortSharing[id][0].min}
-								y1={$tweenedEffortSharing[id][0].max}
+								x={$tweenedEffortSharing[id].CO2[0].time}
+								y0={$tweenedEffortSharing[id].CO2[0].min}
+								y1={$tweenedEffortSharing[id].CO2[0].max}
 							/>
 						{:else}
-							<Line data={$tweenedEffortSharing[id]} x={'time'} y={'mean'} {color} />
-							<Area data={$tweenedEffortSharing[id]} x={'time'} y0={'min'} y1={'max'} {color} />
+							<Line data={$tweenedEffortSharing[id].CO2} x={'time'} y={'mean'} {color} />
+							<Area data={$tweenedEffortSharing[id].CO2} x={'time'} y0={'min'} y1={'max'} {color} />
 						{/if}
 					</g>
 				{/if}
