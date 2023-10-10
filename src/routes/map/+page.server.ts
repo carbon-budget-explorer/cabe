@@ -21,7 +21,7 @@ export async function load({ url }: { url: URL }) {
 	const selectedEffortSharing = searchParam<undefined | keyof typeof principles>(
 		url,
 		'effortSharing',
-		undefined
+		'PCC'
 	);
 	let rawMetrics: SpatialMetric[] = [];
 	if (selectedEffortSharing !== undefined) {
