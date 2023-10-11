@@ -69,7 +69,8 @@ export function pathwayStats(query: PathWayQuery): PathwayStats {
 			Temperature: query.temperature,
 			Risk: query.exceedanceRisk,
 			NegEmis: query.negativeEmissions,
-			NonCO2: query.nonCO2Mitigation
+			NonCO2: query.nonCO2Mitigation,
+			TrajUnc: 'Medium'
 		})
 		.sum()
 		.values.tolist();
@@ -408,8 +409,9 @@ export function ambitionGap(query: PathWayQuery, Time = 2030) {
 			...pathwaySelection,
 			Time
 		})
+		.mean()
 		.values.tolist() as number;
-	const averagePolicy = dsGlobal.CO2_ndc.sel // TODO revert to CurPol
+	const averagePolicy = dsRef.NDC.sel
 		.callKwargs({
 			Region: 'WORLD',
 			Time
@@ -431,8 +433,9 @@ export function emissionGap(query: PathWayQuery, Time = 2030) {
 			...pathwaySelection,
 			Time
 		})
+		.mean()
 		.values.tolist() as number;
-	const averagePolicy = dsGlobal.CO2_ndc.sel // TODO is this correct?
+	const averagePolicy = dsRef.CurPol.sel
 		.callKwargs({
 			Region: 'WORLD',
 			Time

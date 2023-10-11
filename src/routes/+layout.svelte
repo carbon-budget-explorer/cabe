@@ -12,7 +12,7 @@
 
 <div class="flex h-screen max-h-screen flex-col">
 	<nav class="flex flex-row space-x-8 bg-slate-100 p-4">
-		<div class="steps py-8">
+		<div class="steps py-1">
 			<ol class="w-full items-center space-y-4 sm:flex sm:space-x-8 sm:space-y-0">
 				<li>
 					<a href={`/${$page.url.search}`}>Carbon Budget Explorer logo</a>

@@ -8,7 +8,6 @@
 	import { interpolatePuOr, interpolateRdBu, scaleSequential } from 'd3';
 	import ColorLegend from './components/ColorLegend.svelte';
 
-	export let variable: string;
 	export let borders: BordersCollection;
 	export let metrics: NamedSpatialMetric[];
 
@@ -33,8 +32,8 @@
 
 	let tileLayer;
 
-	$: domain = variable === 'temp' ? [1.5, 3] : [0, 5_000];
-	$: colormap = variable === 'temp' ? (d: number) => interpolateRdBu(1 - d) : interpolatePuOr;
+	$: domain = [0, 5_000];
+	$: colormap = interpolatePuOr;
 	$: scale = scaleSequential()
 		.clamp(true)
 		.domain(domain) // 0.8 dampens sensitivy outliers
@@ -97,11 +96,7 @@
 				on:click={onClick}
 			/>
 		</LeafletMap>
-		<ColorLegend
-			title={variable === 'temp' ? '°C' : 'Gt CO₂'}
-			{...notypecheck({ scale: scale })}
-			{scale}
-		/>
+		<ColorLegend title={'Gt CO₂'} {...notypecheck({ scale: scale })} {scale} />
 	{/if}
 </div>
 
