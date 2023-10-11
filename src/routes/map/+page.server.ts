@@ -9,7 +9,7 @@ import type { SpatialMetric } from '$lib/server/db/utils';
 import type { principles } from '$lib/principles';
 
 export async function load({ url }: { url: URL }) {
-	const choices = pathwayChoices();
+	const choices = await pathwayChoices();
 	const pathwayQuery = pathwayQueryFromSearchParams(url.searchParams, choices);
 	const pathway = {
 		query: pathwayQuery,

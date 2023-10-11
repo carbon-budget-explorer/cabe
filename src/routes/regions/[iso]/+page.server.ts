@@ -19,7 +19,7 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 	// TODO validate iso, check that file exists
 	const db = await countriesDb.get(iso);
 
-	const choices = pathwayChoices();
+	const choices = await pathwayChoices();
 	const pathwayQuery = pathwayQueryFromSearchParams(url.searchParams, choices);
 	const pathway = {
 		query: pathwayQuery,
@@ -32,14 +32,14 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 	);
 
 	const effortSharingData = db.effortSharings(pathwayQuery);
-	const hist = historicalCarbon(iso, 1850);
+	const hist = await historicalCarbon(iso, 1850, 2021);
 	const reference = {
 		currentPolicy: currentPolicy(iso),
 		ndc: ndc(iso),
 		netzero: netzero(iso)
 	};
-	const population = populationOverTime(iso, 1850, 2100);
-	const gdp = gdpOverTime(iso, 1850, 2100);
+	const population = await populationOverTime(iso, 1850, 2100);
+	const gdp = await gdpOverTime(iso, 1850, 2100);
 	const details = {
 		gdp: {
 			data: gdp,

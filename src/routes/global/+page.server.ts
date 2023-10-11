@@ -13,14 +13,13 @@ import {
 } from '$lib/server/db/models';
 
 export const load = (async ({ url }: { url: URL }) => {
-	const choices = pathwayChoices();
+	const choices = await pathwayChoices();
 	const query = pathwayQueryFromSearchParams(url.searchParams, choices);
-	console.log(url.search);
 
 	const result = {
 		pathwayCarbon: await pathwayCarbon(url.search),
-		pathwayStats: pathwayStats(query),
-		historicalCarbon: historicalCarbon(),
+		pathwayStats: await pathwayStats(url.search),
+		historicalCarbon: await historicalCarbon(),
 		currentPolicy: currentPolicy(),
 		ndc: ndc(),
 		netzero: netzero(),

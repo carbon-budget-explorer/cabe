@@ -16,74 +16,6 @@ export interface PathwayStats {
 	remaining: number;
 }
 
-export function pathwayQueryFromSearchParams(
-	searchParams: URLSearchParams,
-	choices: Record<keyof PathWayQuery, string[]>
-): PathWayQuery {
-	// TODO check each searchParam is in respective choices array
-	const temperature = searchParams.get('temperature') ?? choices.temperature[0];
-	const exceedanceRisk = searchParams.get('exceedanceRisk') ?? choices.exceedanceRisk[0];
-	// TODO when more choices are available use Medium==1 as default
-	const nonCO2Mitigation = searchParams.get('nonCO2Mitigation') ?? choices.nonCO2Mitigation[0];
-	const negativeEmissions = searchParams.get('negativeEmissions') ?? choices.negativeEmissions[0];
-	return {
-		temperature,
-		exceedanceRisk,
-		nonCO2Mitigation,
-		negativeEmissions
-	};
-}
-
-export function pathwayChoices(): Record<keyof PathWayQuery, string[]> {
-	return {
-		temperature: Temperatures(),
-		exceedanceRisk: exceedanceRisks(),
-		nonCO2Mitigation: nonCO2Mitigations(),
-		negativeEmissions: negativeEmissions()
-	};
-}
-
-function Temperatures() {
-	return dsGlobal.Temperature.values.tolist().toJs() as string[];
-}
-
-function exceedanceRisks() {
-	return dsGlobal.Risk.values.tolist().toJs() as string[];
-}
-
-function nonCO2Mitigations() {
-	return dsGlobal.NonCO2.values.tolist().toJs() as string[];
-}
-
-function negativeEmissions() {
-	return dsGlobal.NegEmis.values.tolist().toJs() as string[];
-}
-
-export function pathwayStats(query: PathWayQuery): PathwayStats {
-	// TODO check number, now returns 2171597.23 while we expect 3500Gt
-	// ds.CO2_hist.sel(Region='WORLD')
-	const used: number = dsGlobal.CO2_hist.sel.callKwargs({ Region: 'WORLD' }).sum().values.tolist();
-
-	const remaining: number = dsGlobal.CO2_globe.sel
-		.callKwargs({
-			Temperature: query.temperature,
-			Risk: query.exceedanceRisk,
-			NegEmis: query.negativeEmissions,
-			NonCO2: query.nonCO2Mitigation,
-			TrajUnc: 'Medium'
-		})
-		.sum()
-		.values.tolist();
-	const total = used + remaining;
-
-	const result = {
-		total: total,
-		used,
-		remaining
-	};
-	return result;
-}
-
 export interface TimeSeriesValue {
 	time: number;
 	mean: number;
@@ -112,6 +44,38 @@ export type CertainTime = {
 	value: number;
 };
 
+export function pathwayQueryFromSearchParams(
+	searchParams: URLSearchParams,
+	choices: Record<keyof PathWayQuery, string[]>
+): PathWayQuery {
+	// TODO check each searchParam is in respective choices array
+	const temperature = searchParams.get('temperature') ?? choices.temperature[0];
+	const exceedanceRisk = searchParams.get('exceedanceRisk') ?? choices.exceedanceRisk[0];
+	// TODO when more choices are available use Medium==1 as default
+	const nonCO2Mitigation = searchParams.get('nonCO2Mitigation') ?? choices.nonCO2Mitigation[0];
+	const negativeEmissions = searchParams.get('negativeEmissions') ?? choices.negativeEmissions[0];
+	return {
+		temperature,
+		exceedanceRisk,
+		nonCO2Mitigation,
+		negativeEmissions
+	};
+}
+
+export async function pathwayChoices(): Promise<Record<keyof PathWayQuery, string[]>> {
+	const url = 'http://127.0.0.1:5000/pathwayChoices';
+	const response = await fetch(url);
+	const choices = await response.json();
+	return choices;
+}
+
+export async function pathwayStats(search: string): Promise<PathwayStats> {
+	const url = 'http://127.0.0.1:5000/pathwayStats' + search;
+	const response = await fetch(url);
+	const stats = await response.json();
+	return stats;
+}
+
 export async function pathwayCarbon(search: string) {
 	// TODO: send data instead of search string?
 	// TODO: update search with default choices
@@ -121,60 +85,46 @@ export async function pathwayCarbon(search: string) {
 	return effortSharingData;
 }
 
-export function historicalCarbon(region = 'WORLD', start = 1990, end = 2021) {
-	const Time = slice(pyodide, start, end);
-	let df = dsGlobal.CO2_hist.sel
-		.callKwargs({
-			Region: region,
-			Time
-		})
-		.to_pandas();
-	df.index.rename('time', true);
-	df = df.reset_index();
-	df.set('value', df.pop(0));
-	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as CertainTime[];
-	return values;
+export async function historicalCarbon(
+	region = 'WORLD',
+	start = 1990,
+	end = 2021
+): Promise<CertainTime[]> {
+	const url = `http://127.0.0.1:5000/historicalCarbon/${region}?start=${start}&end=${end}`;
+	const response = await fetch(url);
+	const histCO2 = await response.json();
+	return histCO2;
 }
 
-export function populationOverTime(region: string, start = 1850, stop = 2100, Scenario = 'SSP2') {
-	const Time = slice(pyodide, start, stop);
-	let df = dsGlobal.Population.sel
-		.callKwargs({
-			Scenario,
-			Region: region,
-			Time
-		})
-		.to_pandas();
-	df.index.rename('time', true);
-	df = df.dropna().reset_index();
-	df.set('value', df.pop(0));
-	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as CertainTime[];
-	return values;
+export async function populationOverTime(
+	region: string,
+	start = 1850,
+	end = 2100,
+	Scenario = 'SSP2'
+): Promise<CertainTime[]> {
+	const url = `http://127.0.0.1:5000/populationOverTime/${region}?start=${start}&end=${end}`;
+	const response = await fetch(url);
+	const population = await response.json();
+	return population;
 }
 
-export function gdpOverTime(region: string, start = 1850, stop = 2100, Scenario = 'SSP2') {
-	const Time = slice(pyodide, start, stop);
-	let df = dsGlobal.GDP.sel
-		.callKwargs({
-			Scenario,
-			Region: region,
-			Time
-		})
-		.to_pandas();
-	df.index.rename('time', true);
-	df = df.dropna().reset_index();
-	df.set('value', df.pop(0));
-	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as CertainTime[];
-	return values;
+export async function gdpOverTime(
+	region: string,
+	start = 1850,
+	end = 2100,
+	Scenario = 'SSP2'
+): Promise<CertainTime[]> {
+	const url = `http://127.0.0.1:5000/gdpOverTime/${region}?start=${start}&end=${end}`;
+	const response = await fetch(url);
+	const gdp = await response.json();
+	return gdp;
 }
 
-export function listFutureYears(): number[] {
-	const Time = slice(pyodide, 2021, 2100 + 1);
-	return dsGlobal.Time.sel.callKwargs({ Time }).values.tolist().toJs() as number[];
-}
-
-export function listRegions(): string[] {
-	return dsGlobal.Region.values.tolist().toJs() as string[];
+export async function listRegions(): Promise<string[]> {
+	const url = `http://127.0.0.1:5000/regions`;
+	const response = await fetch(url);
+	const regions = await response.json();
+	return regions;
 }
 
 export function fullCenturyBudgetSpatial(
@@ -280,62 +230,6 @@ export function fullCenturyBudgetSingleRegion(
 		Time: number;
 		value: number;
 	}[];
-}
-
-export function temperatureAssesment(
-	pathwayQuery: PathWayQuery,
-	effortSharing: keyof typeof principles,
-	Hot_air = 'exclude',
-	Ambition = 'high',
-	Conditionality = 'conditional',
-	Scenario = 'SSP2',
-	Convergence_year = 2040
-): SpatialMetric[] {
-	let selection: DataArraySelection = {};
-	const pathwaySelection = {
-		Risk_of_exceedance: pathwayQuery.exceedanceRisk,
-		Negative_emissions: pathwayQuery.negativeEmissions,
-		Non_CO2_mitigation_potential: pathwayQuery.nonCO2Mitigation
-	};
-	const pinnedSelection = {
-		Hot_air,
-		Ambition,
-		Conditionality
-	};
-	if (effortSharing === 'GF') {
-		selection = {
-			...pathwaySelection,
-			...pinnedSelection
-		};
-	} else if (effortSharing === 'PC' || effortSharing === 'AP' || effortSharing === 'GDR') {
-		selection = {
-			...pathwaySelection,
-			Scenario,
-			...pinnedSelection
-		};
-	} else if (effortSharing === 'PCC') {
-		selection = {
-			...pathwaySelection,
-			Convergence_year,
-			Scenario,
-			...pinnedSelection
-		};
-	} else if (effortSharing === 'ECPC') {
-		selection = {
-			Scenario,
-			...pinnedSelection
-		};
-	} else {
-		throw new Error(`Effort sharing principle ${effortSharing} not found`);
-	}
-
-	const variable = effortSharing + '_temp';
-	// TODO get from file that has variable
-	let df = dsGlobal.get(variable).sel.callKwargs(selection).to_pandas();
-	df.index.rename('ISO', true);
-	df = df.reset_index();
-	df.set('value', df.pop(0));
-	return df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts);
 }
 
 const policyMap = {
