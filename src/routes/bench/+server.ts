@@ -1,14 +1,14 @@
-import { countriesDb } from "$lib/server/db/data";
+import { countriesDb } from '$lib/server/db/data';
 
 export const GET = async () => {
-	const iso ='USA';
+	const iso = 'USA';
 	const db = await countriesDb.get(iso);
 	const pathwayQuery = {
-		temperature: '2.3',
-		exceedanceRisk: '0.2',
-		nonCO2Mitigation: '0.2',
-		negativeEmissions: '0.6'
-	}
+		temperature: '1.5',
+		exceedanceRisk: '0.5',
+		nonCO2Mitigation: '0.5',
+		negativeEmissions: '0.5'
+	};
 	console.time('effortSharings');
 	const effortSharingData = db.effortSharings(pathwayQuery);
 	console.timeEnd('effortSharings');

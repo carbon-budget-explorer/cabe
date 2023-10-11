@@ -2,7 +2,7 @@
 
 Install with
 
-    pip install flask gunicor
+    pip install flask gunicorn
 
 Run with
 
@@ -11,11 +11,10 @@ Run with
 """
 
 import time
-from starlette.responses import JSONResponse
-from fastapi.responses import ORJSONResponse, UJSONResponse
 import xarray as xr
 
 from flask import Flask
+
 app = Flask(__name__)
 
 # from fastapi import FastAPI
@@ -30,29 +29,29 @@ def getEffortSharings():
         {
             "principle": "GF",
             "selection": {
-                "Temperature": "2.3",
-                "Risk": "0.2",
-                "NegEmis": "0.6",
-                "NonCO2": "0.2",
+                "Temperature": "1.5",
+                "Risk": "0.5",
+                "NegEmis": "0.5",
+                "NonCO2": "0.5",
             },
         },
         {
             "principle": "PC",
             "selection": {
-                "Temperature": "2.3",
-                "Risk": "0.2",
-                "NegEmis": "0.6",
-                "NonCO2": "0.2",
+                "Temperature": "1.5",
+                "Risk": "0.5",
+                "NegEmis": "0.5",
+                "NonCO2": "0.5",
                 "Scenario": "SSP2",
             },
         },
         {
             "principle": "PCC",
             "selection": {
-                "Temperature": "2.3",
-                "Risk": "0.2",
-                "NegEmis": "0.6",
-                "NonCO2": "0.2",
+                "Temperature": "1.5",
+                "Risk": "0.5",
+                "NegEmis": "0.5",
+                "NonCO2": "0.5",
                 "Convergence_year": 2040,
                 "Scenario": "SSP2",
             },
@@ -60,30 +59,30 @@ def getEffortSharings():
         {
             "principle": "AP",
             "selection": {
-                "Temperature": "2.3",
-                "Risk": "0.2",
-                "NegEmis": "0.6",
-                "NonCO2": "0.2",
+                "Temperature": "1.5",
+                "Risk": "0.5",
+                "NegEmis": "0.5",
+                "NonCO2": "0.5",
                 "Scenario": "SSP2",
             },
         },
         {
             "principle": "GDR",
             "selection": {
-                "Temperature": "2.3",
-                "Risk": "0.2",
-                "NegEmis": "0.6",
-                "NonCO2": "0.2",
+                "Temperature": "1.5",
+                "Risk": "0.5",
+                "NegEmis": "0.5",
+                "NonCO2": "0.5",
                 "Scenario": "SSP2",
             },
         },
         {
             "principle": "ECPC",
             "selection": {
-                "Temperature": "2.3",
-                "Risk": "0.2",
-                "NegEmis": "0.6",
-                "NonCO2": "0.2",
+                "Temperature": "1.5",
+                "Risk": "0.5",
+                "NegEmis": "0.5",
+                "NonCO2": "0.5",
                 "Scenario": "SSP2",
             },
         },
@@ -93,7 +92,12 @@ def getEffortSharings():
         pr = p["principle"]
         rp = getattr(ds, pr).sel(**p["selection"])
         if pr == "ECPC":
-            unc = rp.to_pandas().agg(["mean", "min", "max"]).transpose().to_dict()
+            unc = (
+                rp.to_pandas()
+                .agg(["mean", "min", "max"])
+                .transpose()
+                .to_dict()
+            )
             r[pr] = {
                 "time": "2100",
                 "mean": unc["mean"],
@@ -105,7 +109,9 @@ def getEffortSharings():
             if pr in {"GF", "PC"}:
                 df = df.transpose()
             r[pr] = (
-                df.agg(["mean", "min", "max"], axis=1).reset_index().to_dict(orient="records")
+                df.agg(["mean", "min", "max"], axis=1)
+                .reset_index()
+                .to_dict(orient="records")
             )
     return r
 
