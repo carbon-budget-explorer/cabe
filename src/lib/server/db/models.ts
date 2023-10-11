@@ -112,27 +112,13 @@ export type CertainTime = {
 	value: number;
 };
 
-export function pathwayCarbon(query: PathWayQuery, ds = dsGlobal) {
-	// ds.CO2_globe.sel(
-	// 	Temperature=1.5, Risk=0.2, NegEmis=0.4, NonCO2=0.35, Time=slice(2021, 2100)
-	// 	).to_pandas()
-	const Time = slice(pyodide, 2021, 2100);
-	const df = ds.CO2_globe.sel
-		.callKwargs({
-			Temperature: query.temperature,
-			Risk: query.exceedanceRisk,
-			NegEmis: query.negativeEmissions,
-			NonCO2: query.nonCO2Mitigation,
-			Time
-		})
-		.rename.callKwargs({ Time: 'time' })
-		.to_pandas();
-	return df.agg
-		.callKwargs({ func: ['min', 'mean', 'max'] })
-		.transpose()
-		.reset_index()
-		.to_dict.callKwargs({ orient: 'records' })
-		.toJs(toJsOpts) as UncertainTime[];
+export async function pathwayCarbon(search: string) {
+	// TODO: send data instead of search string?
+	// TODO: update search with default choices
+	const url = 'http://127.0.0.1:5000/pathwayCarbon' + search;
+	const response = await fetch(url);
+	const effortSharingData = await response.json();
+	return effortSharingData;
 }
 
 export function historicalCarbon(region = 'WORLD', start = 1990, end = 2021) {

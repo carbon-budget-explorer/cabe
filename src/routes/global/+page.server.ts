@@ -15,9 +15,10 @@ import {
 export const load = (async ({ url }: { url: URL }) => {
 	const choices = pathwayChoices();
 	const query = pathwayQueryFromSearchParams(url.searchParams, choices);
+	console.log(url.search);
 
 	const result = {
-		pathwayCarbon: pathwayCarbon(query),
+		pathwayCarbon: await pathwayCarbon(url.search),
 		pathwayStats: pathwayStats(query),
 		historicalCarbon: historicalCarbon(),
 		currentPolicy: currentPolicy(),
