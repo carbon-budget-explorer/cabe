@@ -34,9 +34,9 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 	const effortSharingData = db.effortSharings(pathwayQuery);
 	const hist = await historicalCarbon(iso, 1850, 2021);
 	const reference = {
-		currentPolicy: currentPolicy(iso),
-		ndc: ndc(iso),
-		netzero: netzero(iso)
+		currentPolicy: await currentPolicy(iso),
+		ndc: await ndc(iso),
+		netzero: await netzero(iso)
 	};
 	const population = await populationOverTime(iso, 1850, 2100);
 	const gdp = await gdpOverTime(iso, 1850, 2100);

@@ -99,8 +99,8 @@ export async function historicalCarbon(
 export async function populationOverTime(
 	region: string,
 	start = 1850,
-	end = 2100,
-	Scenario = 'SSP2'
+	end = 2100
+	// Scenario = 'SSP2'
 ): Promise<CertainTime[]> {
 	const url = `http://127.0.0.1:5000/populationOverTime/${region}?start=${start}&end=${end}`;
 	const response = await fetch(url);
@@ -111,8 +111,8 @@ export async function populationOverTime(
 export async function gdpOverTime(
 	region: string,
 	start = 1850,
-	end = 2100,
-	Scenario = 'SSP2'
+	end = 2100
+	// Scenario = 'SSP2'
 ): Promise<CertainTime[]> {
 	const url = `http://127.0.0.1:5000/gdpOverTime/${region}?start=${start}&end=${end}`;
 	const response = await fetch(url);
@@ -127,200 +127,33 @@ export async function listRegions(): Promise<string[]> {
 	return regions;
 }
 
-export function fullCenturyBudgetSpatial(
-	pathwayQuery: PathWayQuery,
-	effortSharing: keyof typeof principles,
-	Scenario = 'SSP2',
-	Convergence_year = 2040
-): SpatialMetric[] {
-	let selection: DataArraySelection = {};
-	const pathwaySelection = {
-		Temperature: pathwayQuery.temperature,
-		Risk: pathwayQuery.exceedanceRisk,
-		NegEmis: pathwayQuery.negativeEmissions,
-		NonCO2: pathwayQuery.nonCO2Mitigation
-	};
-	if (effortSharing === 'GF') {
-		selection = {
-			...pathwaySelection
-		};
-	} else if (
-		effortSharing === 'PC' ||
-		effortSharing === 'AP' ||
-		effortSharing === 'GDR' ||
-		effortSharing === 'ECPC'
-	) {
-		selection = {
-			...pathwaySelection,
-			Scenario
-		};
-	} else if (effortSharing === 'PCC') {
-		selection = {
-			...pathwaySelection,
-			Convergence_year,
-			Scenario
-		};
-	} else {
-		throw new Error(`Effort sharing principle ${effortSharing} not found`);
-	}
-	let df = dsMap.get(effortSharing).sel.callKwargs(selection).to_pandas();
-	// Taking mean over TrajUnc dimension
-	// TODO should we pin TrajUnc to a specific value? Or take max or min?
-	df = df.agg.callKwargs({ func: 'mean', axis: 1 });
-	// Index is called Region and column is unnamed
-	df.index.rename('ISO', true);
-	df = df.reset_index();
-	df.set('value', df.pop(0));
-	const values = df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as {
-		ISO: string;
-		value: number;
-	}[];
+export async function fullCenturyBudgetSpatial(
+	search: string
+	// effortSharing: keyof typeof principles
+	// Scenario = 'SSP2',
+	// Convergence_year = 2040
+): Promise<SpatialMetric[]> {
+	const url = `http://127.0.0.1:5000/fullCenturyBudgetSpatial${search}`;
+	const response = await fetch(url);
+	const values = await response.json();
 	return values;
 }
 
-export function fullCenturyBudgetSingleRegion(
-	Region: string,
-	pathwayQuery: PathWayQuery,
-	effortSharing: keyof typeof principles,
-	Scenario = 'SSP2',
-	Convergence_year = 2040
-): TemnporalMetric[] {
-	const Time = slice(pyodide, 2021, 2100);
-	let selection: DataArraySelection = {};
-	const pathwaySelection = {
-		Temperature: pathwayQuery.temperature,
-		Risk_of_exceedance: pathwayQuery.exceedanceRisk,
-		Negative_emissions: pathwayQuery.negativeEmissions,
-		Non_CO2_mitigation_potential: pathwayQuery.nonCO2Mitigation
-	};
-	if (effortSharing === 'GF') {
-		selection = {
-			...pathwaySelection,
-			Region,
-			Time
-		};
-	} else if (effortSharing === 'PC' || effortSharing === 'AP' || effortSharing === 'GDR') {
-		selection = {
-			...pathwaySelection,
-			Scenario,
-			Region,
-			Time
-		};
-	} else if (effortSharing === 'PCC') {
-		selection = {
-			...pathwaySelection,
-			Convergence_year,
-			Scenario,
-			Region,
-			Time
-		};
-	} else if (effortSharing === 'ECPC') {
-		selection = {
-			Scenario,
-			Region
-		};
-		// TODO Handle single value instead of array over time
-	} else {
-		throw new Error(`Effort sharing principle ${effortSharing} not found`);
-	}
-	let df = dsGlobal.get(effortSharing).sel.callKwargs(selection).to_pandas();
-	df = df.reset_index();
-	df.set('value', df.pop(0));
-	return df.to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as {
-		Time: number;
-		value: number;
-	}[];
+async function policyPathway(policy: string, Region: string): Promise<UncertainTime[]> {
+	const url = `http://127.0.0.1:5000/policyPathway/${policy}/${Region}`;
+	const response = await fetch(url);
+	const values = await response.json();
+	return values;
 }
 
-const policyMap = {
-	current: 'CurPol',
-	ndc: 'NDC',
-	netzero: 'NetZero'
-} as const;
-
-function policyPathway(policy: keyof typeof policyMap, Region: string) {
-	// Calculate mean, min and max over all models
-	const Time = slice(pyodide, 2021, 2100 + 1);
-	const policy_ds = dsRef
-		.get(policyMap[policy])
-		.sel.callKwargs({ Region, Time })
-		.drop('Region')
-		.groupby('Time');
-	const xr = pyodide.pyimport('xarray');
-	// TODO precompute mean, min and max
-	// instead of calculating them on the fly each time
-	const df = xr
-		.merge([
-			policy_ds.mean(['Model']).rename('mean'),
-			policy_ds.min(['Model']).rename('min'),
-			policy_ds.max(['Model']).rename('max')
-		])
-		.to_pandas();
-	df.index.rename('time', true);
-	return df.reset_index().to_dict.callKwargs({ orient: 'records' }).toJs(toJsOpts) as {
-		time: number;
-		mean: number;
-		min: number;
-		max: number;
-	}[];
+export async function currentPolicy(Region = 'WORLD'): Promise<UncertainTime[]> {
+	return await policyPathway('CurPol', Region);
 }
 
-export function currentPolicy(Region = 'WORLD') {
-	return policyPathway('current', Region);
+export async function ndc(Region = 'WORLD'): Promise<UncertainTime[]> {
+	return await policyPathway('NDC', Region);
 }
 
-export function ndc(Region = 'WORLD') {
-	return policyPathway('ndc', Region);
-}
-
-export function netzero(Region = 'WORLD') {
-	return policyPathway('netzero', Region);
-}
-
-export function ambitionGap(query: PathWayQuery, Time = 2030) {
-	const pathwaySelection = {
-		Temperature: query.temperature,
-		Risk: query.exceedanceRisk,
-		NegEmis: query.negativeEmissions,
-		NonCO2: query.nonCO2Mitigation
-	};
-	const pathway = dsGlobal.CO2_globe.sel
-		.callKwargs({
-			...pathwaySelection,
-			Time
-		})
-		.mean()
-		.values.tolist() as number;
-	const averagePolicy = dsRef.NDC.sel
-		.callKwargs({
-			Region: 'WORLD',
-			Time
-		})
-		.mean()
-		.values.tolist() as number;
-	return averagePolicy - pathway;
-}
-
-export function emissionGap(query: PathWayQuery, Time = 2030) {
-	const pathwaySelection = {
-		Temperature: query.temperature,
-		Risk: query.exceedanceRisk,
-		NegEmis: query.negativeEmissions,
-		NonCO2: query.nonCO2Mitigation
-	};
-	const pathway = dsGlobal.CO2_globe.sel
-		.callKwargs({
-			...pathwaySelection,
-			Time
-		})
-		.mean()
-		.values.tolist() as number;
-	const averagePolicy = dsRef.CurPol.sel
-		.callKwargs({
-			Region: 'WORLD',
-			Time
-		})
-		.mean()
-		.values.tolist() as number;
-	return averagePolicy - pathway;
+export async function netzero(Region = 'WORLD'): Promise<UncertainTime[]> {
+	return await policyPathway('NetZero', Region);
 }
