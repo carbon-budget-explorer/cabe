@@ -3,9 +3,12 @@ import { describe, test, expect, beforeAll } from 'vitest';
 import { mount_data, open_dataset, open_pyodide, slice } from './xarray';
 import type { PyodideInterface } from 'pyodide';
 
+// TODO: keeping this around so we can reuse some of it for
+// testing the new flask backend
+
 /*
 
-The __tests__/dummy.nc was created with 
+The __tests__/dummy.nc was created with
 
 ```python
 import xarray as xr

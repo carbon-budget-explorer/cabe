@@ -1,7 +1,9 @@
-import type { principles } from '$lib/principles';
-import { dsGlobal, dsMap, dsRef, pyodide } from './data';
-import type { SpatialMetric, TemnporalMetric } from './utils';
-import { slice, type DataArraySelection } from './xarray';
+import { principles } from '$lib/principles';
+
+export interface SpatialMetric {
+	ISO: string;
+	value: number;
+}
 
 export interface PathWayQuery {
 	temperature: string;
@@ -156,4 +158,20 @@ export async function ndc(Region = 'WORLD'): Promise<UncertainTime[]> {
 
 export async function netzero(Region = 'WORLD'): Promise<UncertainTime[]> {
 	return await policyPathway('NetZero', Region);
+}
+
+export async function effortSharing(ISO: string, principle: string, search: string) {
+	const url = `http://127.0.0.1:5000/${ISO}/${principle}${search}`;
+	const response = await fetch(url);
+	const values = await response.json();
+	return values;
+}
+
+export async function effortSharings(ISO: string, search: string) {
+	const r: Record<string, any> = {};
+	for (const principle of Object.keys(principles)) {
+		r[principle] = await effortSharing(ISO, principle, search);
+	}
+
+	return r;
 }

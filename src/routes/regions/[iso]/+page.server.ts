@@ -1,8 +1,9 @@
-import { borders, countriesDb } from '$lib/server/db/data';
+import { borders } from '$lib/server/db/data';
 import type { RouteParams } from './$types';
 import { searchParam } from '$lib/searchparam';
 import {
 	currentPolicy,
+	effortSharings,
 	gdpOverTime,
 	historicalCarbon,
 	ndc,
@@ -10,14 +11,12 @@ import {
 	pathwayChoices,
 	pathwayQueryFromSearchParams,
 	populationOverTime
-} from '$lib/server/db/models';
+} from '$lib/server/db/data_client';
 import { principles } from '$lib/principles';
 import { extent } from 'd3';
 
 export const load = async ({ params, url }: { params: RouteParams; url: URL }) => {
 	const iso = params.iso;
-	// TODO validate iso, check that file exists
-	const db = await countriesDb.get(iso);
 
 	const choices = await pathwayChoices();
 	const pathwayQuery = pathwayQueryFromSearchParams(url.searchParams, choices);
@@ -31,7 +30,8 @@ export const load = async ({ params, url }: { params: RouteParams; url: URL }) =
 		'PC' // When no effort sharing is selected on prev page, use per capita as default
 	);
 
-	const effortSharingData = db.effortSharings(pathwayQuery);
+	// TODO validate iso, check that file exists
+	const effortSharingData = await effortSharings(iso, url.search);
 	const hist = await historicalCarbon(iso, 1850, 2021);
 	const reference = {
 		currentPolicy: await currentPolicy(iso),

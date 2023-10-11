@@ -4,8 +4,8 @@ import {
 	fullCenturyBudgetSpatial,
 	pathwayChoices,
 	pathwayQueryFromSearchParams
-} from '$lib/server/db/models';
-import type { SpatialMetric } from '$lib/server/db/utils';
+} from '$lib/server/db/data_client';
+import type { SpatialMetric } from '$lib/server/db/data_client';
 import type { principles } from '$lib/principles';
 
 export async function load({ url }: { url: URL }) {

@@ -191,3 +191,51 @@ def policyPathway(policy, region):
     ).to_pandas()
     df.index.rename("time", True)
     return df.reset_index().to_dict(orient="records")
+
+
+# Country-specific data (xr_alloc_<ISO>.nc)
+
+
+def get_ds(ISO):
+    return xr.open_dataset(f"data/xr_alloc_{ISO}.nc")
+
+
+@app.get("/<ISO>/<principle>")
+def effortSharing(ISO, principle):
+    selection = dict(
+        Temperature=request.args.get("temperature", 1.5),
+        Risk=request.args.get("exceedanceRisk", 0.5),
+        NegEmis=request.args.get("negativeEmissions", 0.5),
+        NonCO2=request.args.get("nonCO2Mitigation", 0.5),
+    )
+    # TODO should I do aggregation on Scenario and Convergence_year?
+    # or use static selection?
+    if principle in ["PC", "PCC", "AP", "GDR", "ECPC"]:
+        selection.update(Scenario="SSP2")
+    if principle == "PCC":
+        selection.update(Convergence_year=2040)
+
+    ds = get_ds(ISO)[principle].sel(**selection)
+    if principle == "ECPC":
+        uncertainty = (
+            ds.to_pandas().agg(["mean", "min", "max"]).transpose().to_dict()
+        )
+        return [
+            {"time": 2100, **uncertainty},
+        ]
+    else:
+        df = ds.rename(Time="time").to_pandas()
+        if principle in ["GF", "PC"]:
+            # These effort sharing principles have Time dimension after TrajUnc dimension
+            # While all other principles have TrajUnc dimension after Time dimension
+            # Causing columns to be Time and TrajUnc to be rows in dataframe
+            # We want the opposite
+            # TODO order dimensions for each principle in same way, so this is not needed anymore
+
+            df = df.transpose()
+
+        return (
+            df.agg(["mean", "min", "max"], axis=1)
+            .reset_index()
+            .to_dict(orient="records")
+        )

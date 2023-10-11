@@ -1,6 +1,6 @@
 <script lang="ts">
 	import CustomRange from './CustomRange.svelte';
-	import type { PathWayQuery } from './server/db/models';
+	import type { PathWayQuery } from './server/db/data_client';
 
 	export let query: PathWayQuery;
 	export let choices: Record<keyof PathWayQuery, string[]>;
