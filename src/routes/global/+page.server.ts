@@ -8,7 +8,7 @@ import {
 	pathwayChoices,
 	pathwayQueryFromSearchParams,
 	pathwayStats
-} from '$lib/server/db/data_client';
+} from '$lib/api';
 
 export const load = (async ({ url }: { url: URL }) => {
 	const choices = await pathwayChoices();

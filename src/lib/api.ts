@@ -1,4 +1,5 @@
 import { principles } from '$lib/principles';
+import { browser } from '$app/environment'; 
 
 export interface SpatialMetric {
 	ISO: string;
@@ -51,11 +52,11 @@ export function pathwayQueryFromSearchParams(
 	choices: Record<keyof PathWayQuery, string[]>
 ): PathWayQuery {
 	// TODO check each searchParam is in respective choices array
-	const temperature = searchParams.get('temperature') ?? choices.temperature[0];
-	const exceedanceRisk = searchParams.get('exceedanceRisk') ?? choices.exceedanceRisk[0];
+	const temperature = searchParams.get('temperature') ?? choices.temperature[Math.floor(choices.temperature.length / 2)];
+	const exceedanceRisk = searchParams.get('exceedanceRisk') ?? choices.exceedanceRisk[Math.floor(choices.exceedanceRisk.length / 2)];
 	// TODO when more choices are available use Medium==1 as default
-	const nonCO2Mitigation = searchParams.get('nonCO2Mitigation') ?? choices.nonCO2Mitigation[0];
-	const negativeEmissions = searchParams.get('negativeEmissions') ?? choices.negativeEmissions[0];
+	const nonCO2Mitigation = searchParams.get('nonCO2Mitigation') ?? choices.nonCO2Mitigation[Math.floor(choices.nonCO2Mitigation.length / 2)];
+	const negativeEmissions = searchParams.get('negativeEmissions') ?? choices.negativeEmissions[Math.floor(choices.negativeEmissions.length / 2)];
 	return {
 		temperature,
 		exceedanceRisk,
@@ -64,27 +65,38 @@ export function pathwayQueryFromSearchParams(
 	};
 }
 
+export const API_URL = 'http://127.0.0.1:5000';
+
+async function getJSON(path: string, myfetch=fetch) {
+	let url = `${API_URL}/${path}`;
+	if (browser) {
+		url = `/api/${path}`;
+	}
+	console.time(url);
+	const response = await myfetch(url);
+	if (!response.ok) {
+		console.error(url)
+		throw new Error(response.statusText)
+	}
+	const data = await response.json();
+	console.timeEnd(url);
+	return data
+}
+
 export async function pathwayChoices(): Promise<Record<keyof PathWayQuery, string[]>> {
-	const url = 'http://127.0.0.1:5000/pathwayChoices';
-	const response = await fetch(url);
-	const choices = await response.json();
-	return choices;
+	const path = '/pathwayChoices';
+	return getJSON(path);
 }
 
 export async function pathwayStats(search: string): Promise<PathwayStats> {
-	const url = 'http://127.0.0.1:5000/pathwayStats' + search;
-	const response = await fetch(url);
-	const stats = await response.json();
-	return stats;
+	const path = `/pathwayStats${search}`;
+	return getJSON(path);
 }
 
 export async function pathwayCarbon(search: string) {
 	// TODO: send data instead of search string?
 	// TODO: update search with default choices
-	const url = 'http://127.0.0.1:5000/pathwayCarbon' + search;
-	const response = await fetch(url);
-	const effortSharingData = await response.json();
-	return effortSharingData;
+	return getJSON(`/pathwayCarbon${search}`);
 }
 
 export async function historicalCarbon(
@@ -92,10 +104,7 @@ export async function historicalCarbon(
 	start = 1990,
 	end = 2021
 ): Promise<CertainTime[]> {
-	const url = `http://127.0.0.1:5000/historicalCarbon/${region}?start=${start}&end=${end}`;
-	const response = await fetch(url);
-	const histCO2 = await response.json();
-	return histCO2;
+	return getJSON(`/historicalCarbon/${region}?start=${start}&end=${end}`);
 }
 
 export async function populationOverTime(
@@ -104,10 +113,8 @@ export async function populationOverTime(
 	end = 2100
 	// Scenario = 'SSP2'
 ): Promise<CertainTime[]> {
-	const url = `http://127.0.0.1:5000/populationOverTime/${region}?start=${start}&end=${end}`;
-	const response = await fetch(url);
-	const population = await response.json();
-	return population;
+	return getJSON(`/populationOverTime/${region}?start=${start}&end=${end}`);
+	
 }
 
 export async function gdpOverTime(
@@ -116,17 +123,11 @@ export async function gdpOverTime(
 	end = 2100
 	// Scenario = 'SSP2'
 ): Promise<CertainTime[]> {
-	const url = `http://127.0.0.1:5000/gdpOverTime/${region}?start=${start}&end=${end}`;
-	const response = await fetch(url);
-	const gdp = await response.json();
-	return gdp;
+	return getJSON(`/gdpOverTime/${region}?start=${start}&end=${end}`);
 }
 
 export async function listRegions(): Promise<string[]> {
-	const url = `http://127.0.0.1:5000/regions`;
-	const response = await fetch(url);
-	const regions = await response.json();
-	return regions;
+	return getJSON(`/regions`);
 }
 
 export async function fullCenturyBudgetSpatial(
@@ -135,17 +136,11 @@ export async function fullCenturyBudgetSpatial(
 	// Scenario = 'SSP2',
 	// Convergence_year = 2040
 ): Promise<SpatialMetric[]> {
-	const url = `http://127.0.0.1:5000/fullCenturyBudgetSpatial${search}`;
-	const response = await fetch(url);
-	const values = await response.json();
-	return values;
+	return getJSON( `/fullCenturyBudgetSpatial${search}`);
 }
 
 async function policyPathway(policy: string, Region: string): Promise<UncertainTime[]> {
-	const url = `http://127.0.0.1:5000/policyPathway/${policy}/${Region}`;
-	const response = await fetch(url);
-	const values = await response.json();
-	return values;
+	return getJSON(`/policyPathway/${policy}/${Region}`);
 }
 
 export async function currentPolicy(Region = 'WORLD'): Promise<UncertainTime[]> {
@@ -160,17 +155,15 @@ export async function netzero(Region = 'WORLD'): Promise<UncertainTime[]> {
 	return await policyPathway('NetZero', Region);
 }
 
-export async function effortSharing(ISO: string, principle: string, search: string) {
-	const url = `http://127.0.0.1:5000/${ISO}/${principle}${search}`;
-	const response = await fetch(url);
-	const values = await response.json();
-	return values;
+export async function effortSharing(ISO: string, principle: string, search: string, fetch) {
+	return getJSON(`/${ISO}/${principle}${search}`, fetch);
 }
 
-export async function effortSharings(ISO: string, search: string) {
+export async function effortSharings(ISO: string, search: string, fetch: any) {
+	// return getJSON(`/${ISO}/effortSharings${search}`);
 	const r: Record<string, any> = {};
 	for (const principle of Object.keys(principles)) {
-		r[principle] = await effortSharing(ISO, principle, search);
+		r[principle] = await effortSharing(ISO, principle, search, fetch);
 	}
 
 	return r;

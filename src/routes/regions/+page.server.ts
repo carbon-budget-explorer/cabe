@@ -1,5 +1,5 @@
 import { borders } from '$lib/server/db/data';
-import { listRegions } from '$lib/server/db/data_client';
+import { listRegions } from '$lib/api';
 
 export async function load() {
 	const regionIsos = await listRegions();
