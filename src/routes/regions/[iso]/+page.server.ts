@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	const iso = params.iso;
 
 	const choices = await pathwayChoices();
-	
+
 	const hist = await historicalCarbon(iso, 1850, 2021);
 	const reference = {
 		currentPolicy: await currentPolicy(iso),
@@ -44,7 +44,6 @@ export const load: PageServerLoad = async ({ params }) => {
 		ndcAmbition: -1,
 		historicalCarbon: hist.map((d) => d.value).reduce((a, b) => a + b, 0)
 	};
-
 
 	const r = {
 		info: {

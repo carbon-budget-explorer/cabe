@@ -1,10 +1,6 @@
 import { borders as bordersDb } from '$lib/server/db/data';
 import { searchParam } from '$lib/searchparam';
-import {
-	fullCenturyBudgetSpatial,
-	pathwayChoices,
-	pathwayQueryFromSearchParams
-} from '$lib/api';
+import { fullCenturyBudgetSpatial, pathwayChoices, pathwayQueryFromSearchParams } from '$lib/api';
 import type { SpatialMetric } from '$lib/api';
 import type { principles } from '$lib/principles';
 
