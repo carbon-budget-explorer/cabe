@@ -21,7 +21,7 @@ export async function load({ url }: { url: URL }) {
 	let rawMetrics: SpatialMetric[] = [];
 	if (selectedEffortSharing !== undefined) {
 		if (selectedVariable === '2100') {
-			rawMetrics = await fullCenturyBudgetSpatial(url.search, selectedEffortSharing);
+			rawMetrics = await fullCenturyBudgetSpatial(url.search);
 		} else {
 			throw new Error(`Unknown variable: ${selectedVariable}`);
 		}

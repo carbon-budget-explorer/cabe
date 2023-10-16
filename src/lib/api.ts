@@ -101,7 +101,7 @@ export async function pathwayStats(search: string): Promise<PathwayStats> {
 	return getJSON(path);
 }
 
-export async function pathwayCarbon(search: string) {
+export async function pathwayCarbon(search: string): Promise<UncertainTime[]> {
 	// TODO: send data instead of search string?
 	// TODO: update search with default choices
 	return getJSON(`/pathwayCarbon${search}`);
@@ -162,11 +162,11 @@ export async function netzero(Region = 'WORLD'): Promise<UncertainTime[]> {
 	return await policyPathway('NetZero', Region);
 }
 
-export async function effortSharing(ISO: string, principle: string, search: string, fetch) {
+export async function effortSharing(ISO: string, principle: string, search: string, fetch: any) {
 	return getJSON(`/${ISO}/${principle}${search}`, fetch);
 }
 
-export async function effortSharings(ISO: string, search: string, fetch: any) {
+export async function effortSharings(ISO: string, search: string, fetch: any): Promise<Record<string, UncertainTime[]>> {
 	// return getJSON(`/${ISO}/effortSharings${search}`);
 	const r: Record<string, any> = {};
 	for (const principle of Object.keys(principles)) {
