@@ -2,7 +2,7 @@ import { describe, test, expect, beforeAll } from 'vitest';
 
 test('1+1', () => {
 	expect(1 + 1).toBe(2);
-})
+});
 
 // import { mount_data, open_dataset, open_pyodide, slice } from './xarray';
 // import type { PyodideInterface } from 'pyodide';

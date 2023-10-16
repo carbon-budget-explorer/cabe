@@ -166,7 +166,11 @@ export async function effortSharing(ISO: string, principle: string, search: stri
 	return getJSON(`/${ISO}/${principle}${search}`, fetch);
 }
 
-export async function effortSharings(ISO: string, search: string, fetch: any): Promise<Record<string, UncertainTime[]>> {
+export async function effortSharings(
+	ISO: string,
+	search: string,
+	fetch: any
+): Promise<Record<string, UncertainTime[]>> {
 	// return getJSON(`/${ISO}/effortSharings${search}`);
 	const r: Record<string, any> = {};
 	for (const principle of Object.keys(principles)) {
