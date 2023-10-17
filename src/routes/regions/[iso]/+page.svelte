@@ -43,8 +43,6 @@
 	const tweenOptions = { duration: 1000, easing: cubicOut };
 	const tweenedEffortSharing = tweened(data.effortSharing, tweenOptions);
 	$: tweenedEffortSharing.set(data.effortSharing);
-
-	console.log(data.effortSharing['ECPC']);
 </script>
 
 <main class="flex flex-col gap-2">
@@ -143,7 +141,7 @@
 		</div>
 
 		<!-- TODO compute smarter extent -->
-		<Pathway yDomain={[data.historicalCarbon.extent[1] * -.2, data.historicalCarbon.extent[1]]}>
+		<Pathway yDomain={[data.historicalCarbon.extent[1] * -0.2, data.historicalCarbon.extent[1]]}>
 			<Line
 				data={data.historicalCarbon.data.filter((d) => d.time >= 1990)}
 				x={'time'}
