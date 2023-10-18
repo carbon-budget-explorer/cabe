@@ -179,7 +179,6 @@
 					</div>
 				</div>
 			</div>
-			<a class="btn-primary btn" href={`/map${$page.url.search}`}>Proceed to effort sharing</a>
 		</div>
 	</div>
 
