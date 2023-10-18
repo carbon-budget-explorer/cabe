@@ -72,9 +72,9 @@
 	$: updateQueryParam('exceedanceRisk', risk);
 </script>
 
-<div class="flex h-full flex-row justify-between gap-4">
-	<div id="sidebar" class="grid h-full max-w-[25%] justify-stretch gap-4">
-		<div class="card bg-base-100 shadow-xl">
+<div class="flex h-full gap-4">
+	<div id="sidebar" class="flex h-full max-w-[25%] flex-col gap-4">
+		<div class="card card-compact flex-1 bg-base-100 shadow-xl">
 			<div class="card-body">
 				<h2 class="card-title">Global carbon budget</h2>
 
@@ -125,7 +125,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="card bg-base-100 shadow-xl">
+		<div class="card-compact card flex-1 bg-base-100 shadow-xl">
 			<div class="card-body">
 				<h2 class="card-title">Negative emissions</h2>
 				<p>
@@ -142,7 +142,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="card bg-base-100 shadow-xl">
+		<div class="card-compact card flex-1 bg-base-100 shadow-xl">
 			<div class="card-body">
 				<h2 class="card-title">Metrics</h2>
 
@@ -183,8 +183,12 @@
 		</div>
 	</div>
 
-	<div class="flex grow flex-col gap-4 bg-base-100">
-		<div class="relative grow p-4 shadow-lg">
+	<div class="flex grow flex-col">
+		<div class="tabs">
+			<a href="/" class="tab-lifted tab tab-active tab-lg">Global budget</a>
+			<a href="/map" class="tab-lifted tab tab-lg">Country shares</a>
+		</div>
+		<div class="relative grow bg-base-100 p-4 shadow-lg">
 			<Pathway>
 				<Line data={data.result.historicalCarbon} x={'time'} y={'value'} color="black" />
 				{#if policyPathwayToggles.current || emissionGapHover}
@@ -228,7 +232,7 @@
 			<div class="absolute bottom-20 left-24">
 				<label>
 					<b style={`color: ${ipcc_green}`}>▬</b>
-					<input type="checkbox" class="checkbox" checked disabled />{' '}Your pathway</label
+					<input type="checkbox" checked disabled />{' '}Your pathway</label
 				>
 				<h1 class="pb-2 pt-4 text-xl">Reference pathways</h1>
 				<ul>
@@ -236,31 +240,22 @@
 					<li>
 						<label>
 							<b style={`color: ${ipcc_red}`}>▬</b>
-							<input
-								type="checkbox"
-								class="checkbox"
-								bind:checked={policyPathwayToggles.current}
-							/>{' '}Current policy</label
+							<input type="checkbox" bind:checked={policyPathwayToggles.current} />{' '}Current
+							policy</label
 						>
 					</li>
 					<li>
 						<label>
 							<b style={`color: ${ipcc_blue}`}>▬</b>
-							<input
-								type="checkbox"
-								class="checkbox"
-								bind:checked={policyPathwayToggles.ndc}
-							/>{' '}Nationally determined contributions (NDCs)</label
+							<input type="checkbox" bind:checked={policyPathwayToggles.ndc} />{' '}Nationally
+							determined contributions (NDCs)</label
 						>
 					</li>
 					<li>
 						<label>
 							<b style={`color: ${ipcc_purple}`}>▬</b>
-							<input
-								type="checkbox"
-								class="checkbox"
-								bind:checked={policyPathwayToggles.netzero}
-							/>{' '}Net zero-scenarios</label
+							<input type="checkbox" bind:checked={policyPathwayToggles.netzero} />{' '}Net
+							zero-scenarios</label
 						>
 					</li>
 				</ul>
