@@ -185,7 +185,7 @@
 	<div class="flex grow flex-col">
 		<div class="tabs">
 			<a href="/" class="tab-lifted tab tab-active tab-lg">Global budget</a>
-			<a href="/map" class="tab-lifted tab tab-lg">Country shares</a>
+			<a href={`/map${$page.url.search}`} class="tab-lifted tab tab-lg">Country shares</a>
 		</div>
 		<div class="relative grow bg-base-100 p-4 shadow-lg">
 			<Pathway>
