@@ -1,11 +1,4 @@
 <script lang="ts">
-	const activeli = 'flex items-center space-x-2.5 text-blue-600 dark:text-blue-500';
-	const passiveli = 'flex items-center space-x-2.5 text-gray-500 dark:text-gray-400';
-	const activespan =
-		'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-blue-600 dark:border-blue-500';
-	const passivespan =
-		'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gray-500 dark:border-gray-400';
-
 	import '../app.css';
 	import { page } from '$app/stores';
 </script>
@@ -22,7 +15,7 @@
 		</div>
 	</div>
 
-	<div class="bg-base-200 p-4">
+	<div class="grow bg-base-200 p-4">
 		<slot />
 	</div>
 </div>
