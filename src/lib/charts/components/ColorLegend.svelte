@@ -41,7 +41,7 @@
 	const tickFormat = format('.4');
 </script>
 
-<div class="absolute bottom-4 right-14">
+<div class="absolute bottom-40 right-14">
 	<svg {width} {height} viewBox={`0 0 ${width} ${height}`} overflow="visible" display="block">
 		>
 		<image

@@ -1,6 +1,14 @@
 import { borders as bordersDb } from '$lib/server/db/data';
 import { searchParam } from '$lib/searchparam';
-import { fullCenturyBudgetSpatial, pathwayChoices, pathwayQueryFromSearchParams } from '$lib/api';
+import {
+	currentPolicy,
+	fullCenturyBudgetSpatial,
+	historicalCarbon,
+	pathwayCarbon,
+	pathwayChoices,
+	pathwayQueryFromSearchParams,
+	pathwayStats
+} from '$lib/api';
 import type { SpatialMetric } from '$lib/api';
 import type { principles } from '$lib/principles';
 
@@ -9,6 +17,7 @@ export async function load({ url }: { url: URL }) {
 	const pathwayQuery = pathwayQueryFromSearchParams(url.searchParams, choices);
 	const pathway = {
 		query: pathwayQuery,
+		stats: await pathwayStats(url.search),
 		choices
 	};
 
@@ -31,12 +40,19 @@ export async function load({ url }: { url: URL }) {
 		rawMetrics.filter((d) => !Number.isNaN(d.value) && d.value !== null && d.value !== undefined)
 	);
 
+	const global = {
+		historicalCarbon: await historicalCarbon(),
+		pathwayCarbon: await pathwayCarbon(url.search),
+		currentPolicy: await currentPolicy()
+	};
+
 	const data = {
 		pathway,
 		effortSharing: selectedEffortSharing,
 		metrics,
 		variable: selectedVariable,
-		borders: bordersDb.geojson
+		borders: bordersDb.geojson,
+		global
 	};
 	return data;
 }

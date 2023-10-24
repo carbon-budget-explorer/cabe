@@ -5,7 +5,7 @@
 	import 'leaflet/dist/leaflet.css';
 	import { browser } from '$app/environment';
 	import type { GeoJSONOptions, MapOptions } from 'leaflet';
-	import { interpolatePuOr, interpolateRdBu, scaleSequential } from 'd3';
+	import { interpolatePuOr, scaleSequential } from 'd3';
 	import ColorLegend from './components/ColorLegend.svelte';
 
 	export let borders: BordersCollection;
@@ -13,7 +13,7 @@
 
 	const mapOptions: MapOptions = {
 		center: [10, 0],
-		zoom: 2,
+		zoom: 1,
 		minZoom: 2,
 		zoomControl: false
 		// TODO when open street map is not shown render less gray background
@@ -67,14 +67,25 @@
 		}
 	};
 
-	export let selectedFeature:
+	export let clickedFeature:
+		| GeoJSON.Feature<GeoJSON.GeometryObject, GeoJSON.GeoJsonProperties>
+		| undefined;
+	export let hoveredFeature:
 		| GeoJSON.Feature<GeoJSON.GeometryObject, GeoJSON.GeoJsonProperties>
 		| undefined;
 
 	function onClick(e: any) {
-		selectedFeature = e.detail.sourceTarget.feature;
+		clickedFeature = e.detail.sourceTarget.feature;
 		// <GeoJSON> dts says e is a LeafletMouseEvent but it is not
 		// it is CustomEvent with e.detail being the LeafletMouseEvent
+	}
+
+	function onMouseOver(e) {
+		hoveredFeature = e.detail.sourceTarget.feature;
+	}
+
+	function onmouseout() {
+		hoveredFeature = undefined;
 	}
 
 	let leafletMap: LeafletMap;
@@ -94,6 +105,8 @@
 				options={geoJsonOptions}
 				events={['click', 'mouseover', 'mouseout']}
 				on:click={onClick}
+				on:mouseover={onMouseOver}
+				on:mouseout={onmouseout}
 			/>
 		</LeafletMap>
 		<ColorLegend title={'Gt CO₂'} {...notypecheck({ scale: scale })} {scale} />
