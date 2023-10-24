@@ -80,7 +80,7 @@
 		// it is CustomEvent with e.detail being the LeafletMouseEvent
 	}
 
-	function onMouseOver(e) {
+	function onMouseOver(e: any) {
 		hoveredFeature = e.detail.sourceTarget.feature;
 	}
 
