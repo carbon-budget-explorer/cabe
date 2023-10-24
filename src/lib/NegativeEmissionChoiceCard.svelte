@@ -10,7 +10,7 @@
 	$: onChange('negativeEmissions', negativeEmissions);
 </script>
 
-<div class="card card-compact flex-1 bg-base-100 shadow-xl">
+<div class="card-compact card flex-1 bg-base-100 shadow-xl">
 	<div class="card-body">
 		<h2 class="card-title">Negative emissions</h2>
 		<p>
