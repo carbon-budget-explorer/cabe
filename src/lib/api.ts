@@ -73,7 +73,7 @@ export function pathwayQueryFromSearchParams(
 	};
 }
 
-export const API_URL = 'http://127.0.0.1:5000';
+export const API_URL = process.env.CABE_API_URL ?? 'http://127.0.0.1:5000';
 
 async function getJSON(path: string, myfetch = fetch) {
 	let url = `${API_URL}/${path}`;
@@ -84,6 +84,7 @@ async function getJSON(path: string, myfetch = fetch) {
 	const response = await myfetch(url);
 	if (!response.ok) {
 		console.error(url);
+		console.timeEnd(url);
 		throw new Error(response.statusText);
 	}
 	const data = await response.json();
