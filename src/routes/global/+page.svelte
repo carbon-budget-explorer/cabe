@@ -1,21 +1,23 @@
 <script lang="ts">
-	import type { PageData } from '../global/$types';
-
-	import PathwayForm from '$lib/PathwayForm.svelte';
+	import { tweened } from 'svelte/motion';
+	import { cubicOut } from 'svelte/easing';
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
+
+	import NegativeEmissionChoiceCard from '$lib/NegativeEmissionChoiceCard.svelte';
+	import BudgetChoicesCard from '$lib/BudgetChoicesCard.svelte';
+	import ShareTabs from '$lib/ShareTabs.svelte';
 	import Pathway from '$lib/charts/Pathway.svelte';
 	import Line from '$lib/charts/components/Line.svelte';
 	import Area from '$lib/charts/components/Area.svelte';
 	import Gap from '$lib/charts/components/Gap.svelte';
-	import { tweened } from 'svelte/motion';
-	import { cubicOut } from 'svelte/easing';
-	import CustomRange from '$lib/CustomRange.svelte';
+
+	import type { PageData } from '../global/$types';
 
 	export let data: PageData;
 
-	// TODO generalize to colormap component or so
+	// TODO generalize to colormap component or named after the series it used for
 	const ipcc_green = '#82a56e';
 	const ipcc_red = '#f5331e';
 	const ipcc_blue = '#5bb0c6';
@@ -49,100 +51,29 @@
 	// $: console.log(data.result.currentPolicy); // only nans in input data...
 	// Transitions
 	const tweenOptions = { duration: 1000, easing: cubicOut };
-	const globalBudgetCounter = tweened(data.result.pathwayStats.total, tweenOptions);
-	$: globalBudgetCounter.set(data.result.pathwayStats.total);
-	const remainingBudgetCounter = tweened(data.result.pathwayStats.remaining, tweenOptions);
-	$: remainingBudgetCounter.set(data.result.pathwayStats.remaining);
 	const pathwayCarbonTweened = tweened(data.result.pathwayCarbon, tweenOptions);
 	$: pathwayCarbonTweened.set(data.result.pathwayCarbon);
 	const emissionGapTweened = tweened(data.result.emissionGap, tweenOptions);
 	$: emissionGapTweened.set(data.result.emissionGap);
 	const ambitionGapTweened = tweened(data.result.ambitionGap, tweenOptions);
 	$: ambitionGapTweened.set(data.result.ambitionGap);
-
-	let temperature: string = data.pathway.query.temperature || data.pathway.choices.temperature[0];
-	let negEmis: string =
-		data.pathway.query.negativeEmissions || data.pathway.choices.negativeEmissions[0];
-	let nonCO2: string =
-		data.pathway.query.nonCO2Mitigation || data.pathway.choices.nonCO2Mitigation[0];
-	let risk: string = data.pathway.query.exceedanceRisk || data.pathway.choices.exceedanceRisk[0];
-	$: updateQueryParam('temperature', temperature);
-	$: updateQueryParam('negativeEmissions', negEmis);
-	$: updateQueryParam('nonCO2Mitigation', nonCO2);
-	$: updateQueryParam('exceedanceRisk', risk);
 </script>
 
 <div class="flex h-full gap-4">
 	<div id="sidebar" class="flex h-full max-w-[25%] flex-col gap-4">
+		<BudgetChoicesCard
+			total={data.result.pathwayStats.total}
+			remaining={data.result.pathwayStats.remaining}
+			choices={data.pathway.choices}
+			query={data.pathway.query}
+			onChange={updateQueryParam}
+		/>
+		<NegativeEmissionChoiceCard
+			choices={data.pathway.choices.negativeEmissions}
+			query={data.pathway.query.negativeEmissions}
+			onChange={updateQueryParam}
+		/>
 		<div class="card card-compact flex-1 bg-base-100 shadow-xl">
-			<div class="card-body">
-				<h2 class="card-title">Global carbon budget</h2>
-
-				<div class="stats bg-accent shadow">
-					<div class="stat place-items-center">
-						<div class="stat-title">Total</div>
-						<div class="stat-value">{($remainingBudgetCounter / 1_000).toFixed(0)}</div>
-						<div class="stat-desc">Gt CO2</div>
-					</div>
-
-					<div class="stat place-items-center">
-						<div class="stat-title">Relative</div>
-						<div class="stat-value">
-							<!-- TODO fix this hardcoded 37 -->
-							{($remainingBudgetCounter / 1_000 / 37).toFixed(0)}x
-						</div>
-						<div class="stat-desc">current emissions</div>
-					</div>
-				</div>
-
-				<p class="pt-4">The remaining carbon budget depends on your choices!</p>
-
-				<div>
-					<div>
-						<p>Limit global warming to:</p>
-						<CustomRange
-							bind:value={temperature}
-							options={data.pathway.choices.temperature.map((d) => Number(d))}
-							name="temperature"
-						/>
-					</div>
-					<div>
-						<p>Acceptable risk of exceeding global warming limit</p>
-						<CustomRange
-							bind:value={risk}
-							options={data.pathway.choices.exceedanceRisk.map((d) => Number(d))}
-							name="risk"
-						/>
-					</div>
-					<div>
-						<p>Assumption of non CO2 emissions to mitigate</p>
-						<CustomRange
-							bind:value={nonCO2}
-							options={data.pathway.choices.nonCO2Mitigation.map((d) => Number(d))}
-							name="nonCO2"
-						/>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="card-compact card flex-1 bg-base-100 shadow-xl">
-			<div class="card-body">
-				<h2 class="card-title">Negative emissions</h2>
-				<p>
-					With less negative emissions you need to reduce faster. The global budget remains the
-					same.
-				</p>
-				<div>
-					<p>Assumption amount of negative emissions in 2050 - 2100.</p>
-					<CustomRange
-						bind:value={negEmis}
-						options={data.pathway.choices.negativeEmissions.map((d) => Number(d))}
-						name="negEmis"
-					/>
-				</div>
-			</div>
-		</div>
-		<div class="card-compact card flex-1 bg-base-100 shadow-xl">
 			<div class="card-body">
 				<h2 class="card-title">Metrics</h2>
 
@@ -183,10 +114,7 @@
 	</div>
 
 	<div class="flex grow flex-col">
-		<div class="tabs">
-			<a href="/" class="tab-lifted tab tab-active tab-lg">Global budget</a>
-			<a href={`/map${$page.url.search}`} class="tab-lifted tab tab-lg">Country shares</a>
-		</div>
+		<ShareTabs />
 		<div class="relative grow bg-base-100 p-4 shadow-lg">
 			<Pathway>
 				<Line data={data.result.historicalCarbon} x={'time'} y={'value'} color="black" />
