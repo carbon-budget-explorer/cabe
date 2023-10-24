@@ -11,7 +11,7 @@
 			>
 		</div>
 		<div class="flex-none">
-			<button class="btn-ghost btn-square btn">About</button>
+			<button class="btn-ghost btn-square btn px-10">About</button>
 		</div>
 	</div>
 
