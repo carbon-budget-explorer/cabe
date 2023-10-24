@@ -21,7 +21,6 @@ export async function load({ url }: { url: URL }) {
 		choices
 	};
 
-	const selectedVariable: string = searchParam(url, 'variable', '2100');
 	const selectedEffortSharing = searchParam<undefined | keyof typeof principles>(
 		url,
 		'effortSharing',
@@ -29,11 +28,7 @@ export async function load({ url }: { url: URL }) {
 	);
 	let rawMetrics: SpatialMetric[] = [];
 	if (selectedEffortSharing !== undefined) {
-		if (selectedVariable === '2100') {
-			rawMetrics = await fullCenturyBudgetSpatial(url.search);
-		} else {
-			throw new Error(`Unknown variable: ${selectedVariable}`);
-		}
+		rawMetrics = await fullCenturyBudgetSpatial(url.search);
 	}
 
 	const metrics = bordersDb.addNames(
@@ -50,7 +45,6 @@ export async function load({ url }: { url: URL }) {
 		pathway,
 		effortSharing: selectedEffortSharing,
 		metrics,
-		variable: selectedVariable,
 		borders: bordersDb.geojson,
 		global
 	};

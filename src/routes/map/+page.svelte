@@ -1,8 +1,6 @@
 <script lang="ts">
 	import clsx from 'clsx';
 	import type { GeoJSON } from 'geojson';
-	import { tweened } from 'svelte/motion';
-	import { cubicOut } from 'svelte/easing';
 
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
@@ -12,16 +10,11 @@
 	import BudgetChoicesCard from '$lib/BudgetChoicesCard.svelte';
 	import NegativeEmissionChoiceCard from '$lib/NegativeEmissionChoiceCard.svelte';
 	import ShareTabs from '$lib/ShareTabs.svelte';
-	import Pathway from '$lib/charts/Pathway.svelte';
-	import Line from '$lib/charts/components/Line.svelte';
-	import Area from '$lib/charts/components/Area.svelte';
+	import MiniPathwayCard from '$lib/MiniPathwayCard.svelte';
 
 	import type { PageData } from './$types';
 
 	export let data: PageData;
-
-	const ipcc_green = '#82a56e';
-	const ipcc_red = '#f5331e';
 
 	let clickedFeature:
 		| GeoJSON.Feature<GeoJSON.GeometryObject, GeoJSON.GeoJsonProperties>
@@ -49,11 +42,6 @@
 		}
 	}
 
-	function changeVariable(value: string) {
-		updateQueryParam('variable', value);
-	}
-	$: changeVariable(data.variable);
-
 	function selectEffortSharing(value: string) {
 		data.effortSharing = value as keyof typeof principles;
 	}
@@ -71,10 +59,6 @@
 	$: hoveredMetric = hoveredFeature
 		? data.metrics.find((m) => m.ISO === hoveredFeature!.properties!.ISO_A3_EH)
 		: undefined;
-
-	const tweenOptions = { duration: 1000, easing: cubicOut };
-	const pathwayCarbonTweened = tweened(data.global.pathwayCarbon, tweenOptions);
-	$: pathwayCarbonTweened.set(data.global.pathwayCarbon);
 </script>
 
 <div class="flex h-full gap-4">
@@ -91,33 +75,7 @@
 			query={data.pathway.query.negativeEmissions}
 			onChange={updateQueryParam}
 		/>
-		<div class="card-compact card flex-1 bg-base-100 shadow-xl">
-			<div class="card-body">
-				<a class="block h-full w-full" href={`/global${$page.url.search}`}>
-					<!-- TODO on x-axis have less or no ticks, now they are overlapping and unreadable -->
-					<!-- TODO would be cool when you navigate from /global to /map this chart would view transition from full screen to minimap -->
-					<Pathway>
-						<Line data={data.global.historicalCarbon} x={'time'} y={'value'} color="black" />
-						<Line data={$pathwayCarbonTweened} x={'time'} y={'mean'} color={ipcc_green} />
-						<Area
-							data={$pathwayCarbonTweened}
-							x={'time'}
-							y0={'min'}
-							y1={'max'}
-							color={ipcc_green}
-						/>
-						<Line data={data.global.currentPolicy} x={'time'} y={'mean'} color={ipcc_red} />
-						<Area
-							data={data.global.currentPolicy}
-							x={'time'}
-							y0={'min'}
-							y1={'max'}
-							color={ipcc_red}
-						/>
-					</Pathway>
-				</a>
-			</div>
-		</div>
+		<MiniPathwayCard global={data.global} />
 	</div>
 	<div class="flex grow flex-col">
 		<ShareTabs />
