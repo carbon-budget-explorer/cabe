@@ -73,7 +73,7 @@ export function pathwayQueryFromSearchParams(
 	};
 }
 
-export const API_URL = process.env.CABE_API_URL ?? 'http://127.0.0.1:5000';
+export const API_URL = import.meta.env.CABE_API_URL ?? 'http://127.0.0.1:5000';
 
 async function getJSON(path: string, myfetch = fetch) {
 	let url = `${API_URL}/${path}`;
@@ -97,15 +97,15 @@ export async function pathwayChoices(): Promise<Record<keyof PathWayQuery, strin
 	return getJSON(path);
 }
 
-export async function pathwayStats(search: string): Promise<PathwayStats> {
+export async function pathwayStats(search: string, fetch: any): Promise<PathwayStats> {
 	const path = `/pathwayStats${search}`;
-	return getJSON(path);
+	return getJSON(path, fetch);
 }
 
-export async function pathwayCarbon(search: string): Promise<UncertainTime[]> {
+export async function pathwayCarbon(search: string, fetch: any): Promise<UncertainTime[]> {
 	// TODO: send data instead of search string?
 	// TODO: update search with default choices
-	return getJSON(`/pathwayCarbon${search}`);
+	return getJSON(`/pathwayCarbon${search}`, fetch);
 }
 
 export async function historicalCarbon(

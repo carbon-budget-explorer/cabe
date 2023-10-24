@@ -163,7 +163,6 @@
 				>
 				<h1 class="pb-2 pt-4 text-xl">Reference pathways</h1>
 				<ul>
-					<li />
 					<li>
 						<label>
 							<b style={`color: ${ipcc_red}`}>▬</b>

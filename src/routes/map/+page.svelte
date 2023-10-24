@@ -82,7 +82,7 @@
 		<div class="flex h-full max-h-full w-full flex-row gap-2">
 			<div class="flex grow flex-col">
 				<div class="relative h-full w-full">
-					<div class="absolute left-0 top-0 z-[500] h-12 w-80 rounded-br-md bg-white p-2 shadow-lg">
+					<div class="absolute left-0 top-0 z-[500] h-12 w-80 rounded-br-md bg-white p-2 shadow">
 						{#if hoveredFeature && hoveredFeature.properties && hoveredMetric}
 							<div class="flex flex-row justify-between pt-1">
 								<div>

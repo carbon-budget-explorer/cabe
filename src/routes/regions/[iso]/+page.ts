@@ -1,6 +1,11 @@
 import type { PageLoad } from './$types';
 import { searchParam } from '$lib/searchparam';
-import { effortSharings, pathwayQueryFromSearchParams } from '$lib/api';
+import {
+	effortSharings,
+	pathwayCarbon,
+	pathwayQueryFromSearchParams,
+	pathwayStats
+} from '$lib/api';
 import { principles } from '$lib/principles';
 
 export const load: PageLoad = async ({ params, data, url, fetch }) => {
@@ -8,6 +13,7 @@ export const load: PageLoad = async ({ params, data, url, fetch }) => {
 	const pathwayQuery = pathwayQueryFromSearchParams(url.searchParams, data.pathway.choices);
 	const pathway = {
 		query: pathwayQuery,
+		stats: await pathwayStats(url.search, fetch),
 		...data.pathway
 	};
 	const initialEffortSharingName = searchParam<keyof typeof principles>(
@@ -43,10 +49,16 @@ export const load: PageLoad = async ({ params, data, url, fetch }) => {
 		})
 	);
 
+	const global = {
+		...data.global,
+		pathwayCarbon: await pathwayCarbon(url.search, fetch)
+	};
+
 	return {
 		...data,
 		pathway,
 		initialEffortSharingName,
-		effortSharing
+		effortSharing,
+		global
 	};
 };

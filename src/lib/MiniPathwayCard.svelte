@@ -27,6 +27,7 @@
 		<a class="block h-full w-full" href={`/global${$page.url.search}`}>
 			<!-- TODO on x-axis have less or no ticks, now they are overlapping and unreadable -->
 			<!-- TODO would be cool when you navigate from /global to /map this chart would view transition from full screen to minimap -->
+			<!-- TODO would be nice when you hover over line or area it would show tooltip with series description -->
 			<Pathway>
 				<Line data={global.historicalCarbon} x={'time'} y={'value'} color="black" />
 				<Line data={$pathwayCarbonTweened} x={'time'} y={'mean'} color={ipcc_green} />
