@@ -215,29 +215,21 @@ def effortSharing(ISO, principle):
         selection.update(Convergence_year=2040)
 
     ds = get_ds(ISO)[principle].sel(**selection)
-    if principle == "ECPC":
-        uncertainty = (
-            ds.to_pandas().agg(["mean", "min", "max"]).transpose().to_dict()
-        )
-        return [
-            {"time": 2100, **uncertainty},
-        ]
-    else:
-        df = ds.rename(Time="time").to_pandas()
-        if principle in ["GF", "PC"]:
-            # These effort sharing principles have Time dimension after TrajUnc dimension
-            # While all other principles have TrajUnc dimension after Time dimension
-            # Causing columns to be Time and TrajUnc to be rows in dataframe
-            # We want the opposite
-            # TODO order dimensions for each principle in same way, so this is not needed anymore
+    df = ds.rename(Time="time").to_pandas()
+    if principle in ["GF", "PC", "ECPC"]:
+        # These effort sharing principles have Time dimension after TrajUnc dimension
+        # While all other principles have TrajUnc dimension after Time dimension
+        # Causing columns to be Time and TrajUnc to be rows in dataframe
+        # We want the opposite
+        # TODO order dimensions for each principle in same way, so this is not needed anymore
 
-            df = df.transpose()
+        df = df.transpose()
 
-        return (
-            df.agg(["mean", "min", "max"], axis=1)
-            .reset_index()
-            .to_dict(orient="records")
-        )
+    return (
+        df.agg(["mean", "min", "max"], axis=1)
+        .reset_index()
+        .to_dict(orient="records")
+    )
 
 
 @app.get("/<ISO>/effortSharings")

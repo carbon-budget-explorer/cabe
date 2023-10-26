@@ -179,23 +179,14 @@
 					{#each Object.entries(principles) as [id, { color }]}
 						{#if activeEffortSharings[id] || hoveredAmbitionGap === id || hoveredEmissionGap === id}
 							<g name={id}>
-								{#if id === 'ECPC'}
-									<!-- TODO show ECPC as error bar on chart -->
-									<Gap
-										x={$tweenedEffortSharing[id].CO2[0].time}
-										y0={$tweenedEffortSharing[id].CO2[0].min}
-										y1={$tweenedEffortSharing[id].CO2[0].max}
-									/>
-								{:else}
-									<Line data={$tweenedEffortSharing[id].CO2} x={'time'} y={'mean'} {color} />
-									<Area
-										data={$tweenedEffortSharing[id].CO2}
-										x={'time'}
-										y0={'min'}
-										y1={'max'}
-										{color}
-									/>
-								{/if}
+								<Line data={$tweenedEffortSharing[id].CO2} x={'time'} y={'mean'} {color} />
+								<Area
+									data={$tweenedEffortSharing[id].CO2}
+									x={'time'}
+									y0={'min'}
+									y1={'max'}
+									{color}
+								/>
 								{#if activeEffortSharings[id] && hoveredAmbitionGap}
 									<Gap
 										x={2030}
