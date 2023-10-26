@@ -32,7 +32,19 @@
 
 	let tileLayer;
 
-	$: domain = [0, 15];
+	$: domain = [
+		// Rounding to bigger digits by first dividing then multiplying by 10
+		Math.floor(
+			Object.values(metrics)
+				.map((d) => d.value)
+				.reduce((a, b) => (a < b ? a : b)) / 10
+		) * 10,
+		Math.ceil(
+			Object.values(metrics)
+				.map((d) => d.value)
+				.reduce((a, b) => (a > b ? a : b)) / 10
+		) * 10
+	];
 	$: colormap = interpolatePuOr;
 	$: scale = scaleSequential().clamp(true).domain(domain).interpolator(colormap); // TODO configurable colormap?
 
