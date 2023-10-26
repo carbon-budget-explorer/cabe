@@ -167,7 +167,7 @@ def fullCenturyBudgetSpatial(year):
         "2030": ds_alloc_2030,
         "2040": ds_alloc_2040,
         "2050": ds_alloc_2050,
-        "FC": ds_alloc_FC,
+        "2021-2100": ds_alloc_FC,
     }
 
     return (

@@ -134,11 +134,12 @@ export async function listRegions(): Promise<string[]> {
 }
 
 export async function fullCenturyBudgetSpatial(
+	allocationTime: string,
 	search: string
 	// Scenario = 'SSP2',
 	// Convergence_year = 2040
 ): Promise<SpatialMetric[]> {
-	return getJSON(`/map/2030/GHG${search}`);
+	return getJSON(`/map/${allocationTime}/GHG${search}`);
 }
 
 async function policyPathway(policy: string, Region: string): Promise<UncertainTime[]> {
