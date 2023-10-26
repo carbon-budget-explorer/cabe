@@ -45,6 +45,11 @@ export const load: PageServerLoad = async ({ params }) => {
 		historicalCarbon: hist.map((d) => d.value).reduce((a, b) => a + b, 0)
 	};
 
+	const global = {
+		historicalCarbon: await historicalCarbon(),
+		currentPolicy: await currentPolicy()
+	};
+
 	const r = {
 		info: {
 			iso,
@@ -60,7 +65,8 @@ export const load: PageServerLoad = async ({ params }) => {
 		},
 		reference,
 		indicators,
-		details
+		details,
+		global
 	};
 	return r;
 };

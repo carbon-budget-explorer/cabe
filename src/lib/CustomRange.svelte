@@ -18,14 +18,18 @@
 </script>
 
 <label>
-	<input
-		type="range"
-		{name}
-		min="0"
-		max={len - 1}
-		step="1"
-		value={valIndex}
-		on:change={updateValue}
-	/>
-	{value}
+	<div class="flox-row flex gap-2">
+		<input
+			type="range"
+			{name}
+			min="0"
+			max={len - 1}
+			step="1"
+			value={valIndex}
+			on:change={updateValue}
+		/>
+		<div class="badge- badge">
+			{value}
+		</div>
+	</div>
 </label>
