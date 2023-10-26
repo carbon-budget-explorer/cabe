@@ -53,7 +53,7 @@
 	}
 	$: changeEffortSharing(data.effortSharing);
 
-	let allocationTime: string = '2021-2100';
+	let allocationTime = '2021-2100';
 	function updateAllocationTime(allocationTime: string) {
 		updateQueryParam('allocTime', allocationTime);
 	}
