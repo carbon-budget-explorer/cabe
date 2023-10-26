@@ -48,8 +48,8 @@
 	$: tweenedEffortSharing.set(data.effortSharing);
 </script>
 
-<div class="flex h-full gap-4">
-	<div id="sidebar" class="flex h-screen max-w-[25%] flex-col gap-4">
+<div class="flex h-full flex-row gap-4">
+	<div id="sidebar" class="flex h-full max-w-[25%] flex-col gap-4">
 		<BudgetChoicesCard
 			total={data.pathway.stats.total}
 			remaining={data.pathway.stats.remaining}
@@ -64,7 +64,7 @@
 		/>
 		<MiniPathwayCard global={data.global} />
 	</div>
-	<div class="flex grow flex-col">
+	<div class="flex h-full grow flex-col">
 		<div id="country-header" class="flex flex-row items-center gap-4">
 			<a href={`/map${$page.url.search}`} title="Back to map" class="text-8xl"> ← </a>
 			<img
@@ -74,7 +74,8 @@
 			/>
 			<h1 class="text-3xl font-bold">{data.info.name}</h1>
 		</div>
-		<div class="bg-base-100 p-2 shadow-xl">
+		<!-- setting *any* initial height + grow fixes overflow-auto with h-full -->
+		<div class="h-[500px] grow overflow-y-auto bg-base-100 p-2 shadow-xl">
 			<section id="key-indicators">
 				<div class="border-10 stats mb-2 flex flex-row gap-10 p-2">
 					<div class="stat place-items-center bg-accent shadow-lg">
