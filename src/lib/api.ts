@@ -71,9 +71,9 @@ export function pathwayQueryFromSearchParams(
 export const API_URL = import.meta.env.CABE_API_URL ?? 'http://127.0.0.1:5000';
 
 async function getJSON(path: string, myfetch = fetch) {
-	let url = `${API_URL}/${path}`;
+	let url = `${API_URL}${path}`;
 	if (browser) {
-		url = `/api/${path}`;
+		url = `/api${path}`;
 	}
 	console.time(url);
 	const response = await myfetch(url);
@@ -135,11 +135,10 @@ export async function listRegions(): Promise<string[]> {
 
 export async function fullCenturyBudgetSpatial(
 	search: string
-	// effortSharing: keyof typeof principles
 	// Scenario = 'SSP2',
 	// Convergence_year = 2040
 ): Promise<SpatialMetric[]> {
-	return getJSON(`/fullCenturyBudgetSpatial${search}`);
+	return getJSON(`/map/2030/GHG${search}`);
 }
 
 async function policyPathway(policy: string, Region: string): Promise<UncertainTime[]> {

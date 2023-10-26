@@ -61,8 +61,6 @@
 				100
 		])
 	);
-
-	$: console.log(reductions2030);
 </script>
 
 <div class="flex h-full flex-row gap-4">
@@ -96,9 +94,9 @@
 			<section id="key-indicators">
 				<div class="border-10 stats mb-2 flex flex-row gap-10 p-2">
 					<div class="stat place-items-center bg-accent shadow-lg">
-						<div class="stat-title">NDC Ambition</div>
-						<div class="stat-value">{data.indicators.ndcAmbition}</div>
-						<div class="stat-desc">Gt CO₂e (normalized)</div>
+						<div class="stat-title">NDC Ambition (2030)</div>
+						<div class="stat-value">{data.indicators.ndcAmbition.toFixed(0)}%</div>
+						<div class="stat-desc">wrt 1990</div>
 					</div>
 
 					<div class="stat place-items-center bg-accent shadow-lg">

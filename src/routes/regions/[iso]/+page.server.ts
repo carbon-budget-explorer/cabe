@@ -41,7 +41,12 @@ export const load: PageServerLoad = async ({ params }) => {
 	const name = borders.labels.get(iso) || iso;
 	const iso2 = borders.iso3to2.get(iso) || iso;
 	const indicators = {
-		ndcAmbition: -1,
+		ndcAmbition:
+			(-(
+				reference.ndc.find((d) => d.time === 2030)!.mean - hist.find((d) => d.time === 1990)!.value
+			) /
+				hist.find((d) => d.time === 1990)!.value) *
+			100,
 		historicalCarbon: hist.map((d) => d.value).reduce((a, b) => a + b, 0)
 	};
 

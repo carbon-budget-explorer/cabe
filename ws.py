@@ -10,6 +10,7 @@ Run with
 
 """
 
+from typing import Literal
 import xarray as xr
 
 from flask import Flask, request
@@ -142,11 +143,14 @@ def gdpOverTime(region):
 
 # Map data (xr_alloc_2030.nc etc)
 ds_alloc_2030 = xr.open_dataset("data/xr_alloc_2030.nc")
-# ds_alloc_2040 = xr.open_dataset("data/xr_alloc_2040.nc")
+ds_alloc_2040 = xr.open_dataset("data/xr_alloc_2040.nc")
+ds_alloc_2050 = xr.open_dataset("data/xr_alloc_2050.nc")
+ds_alloc_FC = xr.open_dataset("data/xr_alloc_FC.nc")
 
 
-@app.get("/fullCenturyBudgetSpatial")
-def fullCenturyBudgetSpatial():
+@app.get("/map/<year>/GHG")
+def fullCenturyBudgetSpatial(year):
+    """Get map of GHG by year"""
     effortSharing = request.args.get("effortSharing", "PCC")
     selection = dict(**pathwaySelection())
     if effortSharing in ["PC", "PCC", "AP", "GDR", "ECPC"]:
@@ -154,18 +158,24 @@ def fullCenturyBudgetSpatial():
     if effortSharing == "PCC":
         selection.update(Convergence_year=2040)
 
-    # TODO make it possible to choose 2040
-    df = ds_alloc_2030[effortSharing].sel(**selection).to_pandas()
+    file_by_year = {
+        "2030": ds_alloc_2030,
+        "2040": ds_alloc_2040,
+        "2050": ds_alloc_2050,
+        "FC": ds_alloc_FC,
+    }
 
-    # Taking mean over TrajUnc dimension
-    # TODO should we pin TrajUnc to a specific value? Or take max or min?
-    df = df.agg(func="mean", axis=1).dropna()  # Note: dropping nan values here
-
-    # Index is called Region and column is unnamed
-    df.index.rename("ISO", True)
-    df = df.reset_index()
-    df["value"] = df.pop(0)
-    return df.to_dict(orient="records")
+    return (
+        file_by_year[year][effortSharing]
+        .sel(**selection)
+        .mean(dim="TrajUnc")  # TODO: sel "Medium" instead of calculate mean?
+        .rename(Region="ISO")
+        .to_series()
+        .rename("value")
+        .dropna()  # Note: dropping NaN values here
+        .reset_index()
+        .to_dict(orient="records")
+    )
 
 
 # Reference pathway data (xr_policyscen.nc)
