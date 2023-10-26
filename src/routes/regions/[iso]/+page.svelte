@@ -24,18 +24,10 @@
 			goto(`?${params.toString()}`);
 		}
 	}
-	// Bottom colors from https://colorbrewer2.org/#type=qualitative&scheme=Pastel1&n=9
-	const referenceColors = {
-		currentPolicy: '#e5d8bd',
-		ndc: '#fddaec',
-		netzero: '#f2f2f2' // TODO find better color, now almost same as background
-	};
 
 	let activeEffortSharings = Object.fromEntries(
 		Object.keys(principles).map((id) => [id, id === data.initialEffortSharingName])
 	);
-
-	let activeReference: string[] = [];
 
 	// Gap hover
 	let gapIndex = data.reference.ndc.map((d) => d.time).indexOf(2030);
@@ -81,7 +73,7 @@
 					<div class="stat place-items-center bg-accent shadow-lg">
 						<div class="stat-title">NDC Ambition</div>
 						<div class="stat-value">{data.indicators.ndcAmbition}</div>
-						<div class="stat-desc">Gt CO₂ (normalized)</div>
+						<div class="stat-desc">Gt CO₂e (normalized)</div>
 					</div>
 
 					<div class="stat place-items-center bg-accent shadow-lg">
@@ -89,7 +81,7 @@
 						<div class="stat-value">
 							{(data.indicators.historicalCarbon / 1_000).toFixed()}
 						</div>
-						<div class="stat-desc">Gt CO₂ (cumulative)</div>
+						<div class="stat-desc">Gt CO₂e (cumulative)</div>
 					</div>
 				</div>
 				<div class="border-10 mb-2 flex w-full flex-row gap-4 p-2">
@@ -139,9 +131,9 @@
 					{#each Object.entries(principles) as [id, { color }]}
 						{#if activeEffortSharings[id] || hoveredAmbitionGap === id || hoveredEmissionGap === id}
 							<g name={id}>
-								<Line data={$tweenedEffortSharing[id].CO2} x={'time'} y={'mean'} {color} />
+								<Line data={$tweenedEffortSharing[id].GHG} x={'time'} y={'mean'} {color} />
 								<Area
-									data={$tweenedEffortSharing[id].CO2}
+									data={$tweenedEffortSharing[id].GHG}
 									x={'time'}
 									y0={'min'}
 									y1={'max'}
@@ -151,7 +143,7 @@
 									<Gap
 										x={2030}
 										y0={data.reference.ndc[gapIndex].mean}
-										y1={$tweenedEffortSharing[hoveredAmbitionGap].CO2.find((d) => d.time === 2030)
+										y1={$tweenedEffortSharing[hoveredAmbitionGap].GHG.find((d) => d.time === 2030)
 											?.mean || 0}
 									/>
 								{/if}
@@ -159,7 +151,7 @@
 									<Gap
 										x={2030}
 										y0={data.reference.currentPolicy[gapIndex].mean}
-										y1={$tweenedEffortSharing[hoveredEmissionGap].CO2.find((d) => d.time === 2030)
+										y1={$tweenedEffortSharing[hoveredEmissionGap].GHG.find((d) => d.time === 2030)
 											?.mean || 0}
 									/>
 								{/if}
@@ -198,7 +190,7 @@
 							<Line data={data.historicalCarbon.data} x={'time'} y={'value'} color="black" />
 						</Pathway>
 					</div>
-					<p>in Mt CO₂</p>
+					<p>in Mt CO₂e</p>
 				</div>
 				<div>
 					<h2 class="text-xl" id="hist-emis">policy costs ????</h2>

@@ -42,7 +42,7 @@
 		},
 		encoding: {
 			x: { field: 'year', type: 'quantitative' },
-			y: { title: 'Global GHG emissions [Gt CO2e/yr' }
+			y: { title: 'Global GHG emissions [Gt CO₂e/yr' }
 		},
 		layer: [
 			{

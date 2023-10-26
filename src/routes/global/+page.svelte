@@ -73,7 +73,7 @@
 			query={data.pathway.query.negativeEmissions}
 			onChange={updateQueryParam}
 		/>
-		<div class="card-compact card flex-1 bg-base-100 shadow-xl">
+		<div class="card card-compact flex-1 bg-base-100 shadow-xl">
 			<div class="card-body">
 				<h2 class="card-title">Metrics</h2>
 
@@ -86,7 +86,7 @@
 					<div class="stat place-items-center">
 						<div class="stat-title">Emission gap</div>
 						<div class="stat-value">{($emissionGapTweened / 1_000).toFixed(0)}</div>
-						<div class="stat-desc">Gt CO2</div>
+						<div class="stat-desc">Gt CO₂e</div>
 						<button
 							class="btn-sm btn mt-2"
 							on:mouseenter={toggleEmissionGap}
@@ -99,7 +99,7 @@
 					<div class="stat place-items-center">
 						<div class="stat-title">Amibition gap</div>
 						<div class="stat-value">{($ambitionGapTweened / 1_000).toFixed(0)}</div>
-						<div class="stat-desc">Gt CO2</div>
+						<div class="stat-desc">Gt CO₂e</div>
 						<button
 							class="btn-sm btn mt-2"
 							on:mouseenter={toggleAmbitionGap}

@@ -90,8 +90,8 @@
 								</div>
 								<div>
 									{hoveredMetric.value > 1_000
-										? `${(hoveredMetric.value / 1_000).toPrecision(3)} Gt CO₂`
-										: `${hoveredMetric.value.toPrecision(3)} Mt CO₂`}
+										? `${(hoveredMetric.value / 1_000).toPrecision(3)} Gt CO₂e`
+										: `${hoveredMetric.value.toPrecision(3)} Mt CO₂e`}
 								</div>
 							</div>
 						{:else}

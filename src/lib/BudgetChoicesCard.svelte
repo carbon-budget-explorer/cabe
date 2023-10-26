@@ -26,7 +26,7 @@
 	$: onChange('exceedanceRisk', exceedanceRisk);
 </script>
 
-<div class="card card-compact flex-1 bg-base-100 shadow-xl">
+<div class="card-compact card flex-1 bg-base-100 shadow-xl">
 	<div class="card-body">
 		<h2 class="card-title">Global carbon budget</h2>
 
@@ -34,7 +34,7 @@
 			<div class="stat place-items-center">
 				<div class="stat-title">Total</div>
 				<div class="stat-value">{($remainingBudgetCounter / 1_000).toFixed(0)}</div>
-				<div class="stat-desc">Gt CO2</div>
+				<div class="stat-desc">Gt CO₂e</div>
 			</div>
 
 			<div class="stat place-items-center">

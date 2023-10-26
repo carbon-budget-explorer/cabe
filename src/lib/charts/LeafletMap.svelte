@@ -109,7 +109,7 @@
 				on:mouseout={onmouseout}
 			/>
 		</LeafletMap>
-		<ColorLegend title={'Gt CO₂'} {...notypecheck({ scale: scale })} {scale} />
+		<ColorLegend title={'Gt CO₂e'} {...notypecheck({ scale: scale })} {scale} />
 	{/if}
 </div>
 

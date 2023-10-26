@@ -21,7 +21,7 @@ export const principles = {
 		color: '#decbe4'
 	},
 	GDR: {
-		label: 'Greenhouse development rights',
+		label: 'GHG development rights',
 		summary: 'Equalize per capita emissions across countries.',
 		color: '#fed9a6'
 	},

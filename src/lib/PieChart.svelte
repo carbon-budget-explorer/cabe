@@ -12,7 +12,7 @@
 	};
 	$: spec = {
 		$schema: 'https://vega.github.io/schema/vega-lite/v4.json',
-		description: `Total: ${used + remaining} Gt CO2 equivalent`,
+		description: `Total: ${used + remaining} Gt CO₂e equivalent`,
 		data: {
 			name: 'table'
 		},
