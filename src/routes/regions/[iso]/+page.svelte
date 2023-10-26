@@ -38,6 +38,31 @@
 	const tweenOptions = { duration: 1000, easing: cubicOut };
 	const tweenedEffortSharing = tweened(data.effortSharing, tweenOptions);
 	$: tweenedEffortSharing.set(data.effortSharing);
+
+	$: reductions2030 = Object.fromEntries(
+		Object.entries(data.effortSharing).map(([key, value]) => [
+			key,
+			(-(
+				value.GHG.find((d) => d.time === 2030)!.mean -
+				data.historicalCarbon.data.find((d) => d.time === 1990)!.value
+			) /
+				value.GHG.find((d) => d.time === 2021)!.mean) *
+				100
+		])
+	);
+	$: reductions2040 = Object.fromEntries(
+		Object.entries(data.effortSharing).map(([key, value]) => [
+			key,
+			(-(
+				value.GHG.find((d) => d.time === 2040)!.mean -
+				data.historicalCarbon.data.find((d) => d.time === 1990)!.value
+			) /
+				value.GHG.find((d) => d.time === 2021)!.mean) *
+				100
+		])
+	);
+
+	$: console.log(reductions2030);
 </script>
 
 <div class="flex h-full flex-row gap-4">
@@ -84,24 +109,32 @@
 						<div class="stat-desc">Gt CO₂e (cumulative)</div>
 					</div>
 				</div>
-				<div class="border-10 mb-2 flex w-full flex-row gap-4 p-2">
+				<div class="border-10 mb-2 flex w-full flex-row flex-wrap items-stretch gap-4 p-2">
 					{#each Object.entries(principles) as [id, { label, color }]}
-						<div class="flex-1 border-4 text-start shadow-lg" style={`border-color: ${color}`}>
-							<h3 class="h-20 px-2 text-center text-lg" style={`background-color: ${color}`}>
+						<div class="border-4 text-start shadow-lg" style={`border-color: ${color}`}>
+							<h3 class="px-2 text-center text-lg" style={`background-color: ${color}`}>
 								{label}
 								<a title="More information" target="_blank" rel="noopener" href={`/about#${id}`}
 									>ⓘ</a
 								>
 							</h3>
-							<div class="p-2">
-								<p>2030 reduction: X %</p>
-								<p>2040 reduction: X %</p>
+							<div class="stats shadow">
+								<div class="stat place-items-center">
+									<div class="stat-title">2030 reduction</div>
+									<div class="stat-value text-3xl">{reductions2030[id].toFixed(0)}%</div>
+									<div class="stat-desc">wrt 1990 emissions</div>
+								</div>
+								<div class="stat place-items-center">
+									<div class="stat-title">2040 reduction</div>
+									<div class="stat-value text-3xl">{reductions2040[id].toFixed(0)}%</div>
+									<div class="stat-desc">wrt 1990 emissions</div>
+								</div>
 							</div>
 						</div>
 					{/each}
 				</div>
 			</section>
-			<hr class="pb-2" />
+			<hr class="py-2" />
 			<section id="overview" class="relative h-[500px] grow">
 				<div id="overview-legend" class="absolute bottom-8 left-16 z-10">
 					<h1>Effort sharing principle</h1>
