@@ -89,9 +89,7 @@
 									{hoveredFeature.properties.NAME}
 								</div>
 								<div>
-									{hoveredMetric.value > 1_000
-										? `${(hoveredMetric.value / 1_000).toPrecision(3)} Gt CO₂e`
-										: `${hoveredMetric.value.toPrecision(3)} Mt CO₂e`}
+									{hoveredMetric.value.toPrecision(2)} tonnes CO₂e per capita
 								</div>
 							</div>
 						{:else}

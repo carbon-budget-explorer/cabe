@@ -148,6 +148,11 @@ ds_alloc_2050 = xr.open_dataset("data/xr_alloc_2050.nc")
 ds_alloc_FC = xr.open_dataset("data/xr_alloc_FC.nc")
 
 
+def population_map(year, scenario="SSP2"):
+    """Return population map as xarray data-array"""
+    return dsGlobal.Population.sel(Time=year, Scenario=scenario)
+
+
 @app.get("/map/<year>/GHG")
 def fullCenturyBudgetSpatial(year):
     """Get map of GHG by year"""
@@ -166,9 +171,14 @@ def fullCenturyBudgetSpatial(year):
     }
 
     return (
-        file_by_year[year][effortSharing]
-        .sel(**selection)
-        .mean(dim="TrajUnc")  # TODO: sel "Medium" instead of calculate mean?
+        (
+            file_by_year[year][effortSharing]
+            .sel(**selection)
+            .mean(
+                dim="TrajUnc"
+            )  # TODO: sel "Medium" instead of calculate mean?
+            / population_map(year=2021)
+        )
         .rename(Region="ISO")
         .to_series()
         .rename("value")

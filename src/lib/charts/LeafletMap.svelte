@@ -32,12 +32,9 @@
 
 	let tileLayer;
 
-	$: domain = [0, 5_000];
+	$: domain = [0, 15];
 	$: colormap = interpolatePuOr;
-	$: scale = scaleSequential()
-		.clamp(true)
-		.domain(domain) // 0.8 dampens sensitivy outliers
-		.interpolator(colormap); // TODO configurable colormap?
+	$: scale = scaleSequential().clamp(true).domain(domain).interpolator(colormap); // TODO configurable colormap?
 
 	function getColor(d: number) {
 		return scale(d);
@@ -109,7 +106,7 @@
 				on:mouseout={onmouseout}
 			/>
 		</LeafletMap>
-		<ColorLegend title={'Gt CO₂e'} {...notypecheck({ scale: scale })} {scale} />
+		<ColorLegend title={'tonnes CO₂e per capita'} {...notypecheck({ scale: scale })} {scale} />
 	{/if}
 </div>
 
