@@ -92,35 +92,18 @@
 						<div class="stat-desc">Gt CO₂ (cumulative)</div>
 					</div>
 				</div>
-				<div class="border-10 mb-2 flex flex-row gap-4 p-2">
+				<div class="border-10 mb-2 flex w-full flex-row gap-4 p-2">
 					{#each Object.entries(principles) as [id, { label, color }]}
-						<div
-							class="relative h-56 w-44 border-4 text-start shadow-lg"
-							style={`border-color: ${color}`}
-						>
-							<h3 class="h-20 px-2 text-lg" style={`background-color: ${color}`}>
+						<div class="flex-1 border-4 text-start shadow-lg" style={`border-color: ${color}`}>
+							<h3 class="h-20 px-2 text-center text-lg" style={`background-color: ${color}`}>
 								{label}
 								<a title="More information" target="_blank" rel="noopener" href={`/about#${id}`}
 									>ⓘ</a
 								>
 							</h3>
 							<div class="p-2">
-								<p>Ambition gap:</p>
-								<p
-									on:mouseenter={() => (hoveredAmbitionGap = id)}
-									on:mouseleave={() => (hoveredAmbitionGap = null)}
-									class="inline hover:bg-[#888] hover:bg-opacity-50"
-								>
-									{$tweenedEffortSharing[id].ambitionGap.toFixed(2)} Mt CO2
-								</p>
-								<p>Emission gap:</p>
-								<p
-									on:mouseenter={() => (hoveredEmissionGap = id)}
-									on:mouseleave={() => (hoveredEmissionGap = null)}
-									class="inline hover:bg-[#888] hover:bg-opacity-50"
-								>
-									{$tweenedEffortSharing[id].emissionGap.toFixed(2)} Mt CO2
-								</p>
+								<p>2030 reduction: X %</p>
+								<p>2040 reduction: X %</p>
 							</div>
 						</div>
 					{/each}
@@ -140,30 +123,6 @@
 								</label>
 							</li>
 						{/each}
-						<h1 class="pt-4">Reference pathways</h1>
-						<div>
-							<!-- TODO this checkbox group is also used in /global page, deduplicate -->
-							<label class="block">
-								<b style={`color: ${referenceColors.currentPolicy}`}>▬</b>
-								<input
-									class="mr-1"
-									type="checkbox"
-									value="currentPolicy"
-									bind:group={activeReference}
-								/>
-								Current policy</label
-							>
-							<label class="block">
-								<b style={`color: ${referenceColors.ndc}`}>▬</b>
-								<input class="mr-1" type="checkbox" value="ndc" bind:group={activeReference} />
-								Nationally determined contributions (NDCs)
-							</label>
-							<label class="block">
-								<b style={`color: ${referenceColors.netzero}`}>▬</b>
-								<input class="mr-1" type="checkbox" value="netzero" bind:group={activeReference} />
-								Net zero-scenarios
-							</label>
-						</div>
 					</ul>
 				</div>
 
@@ -207,53 +166,6 @@
 							</g>
 						{/if}
 					{/each}
-
-					{#if activeReference.includes('currentPolicy') || hoveredEmissionGap}
-						<g name="currentPolicy">
-							<Line
-								data={data.reference.currentPolicy}
-								x={'time'}
-								y={'mean'}
-								color={referenceColors.currentPolicy}
-							/>
-							<Area
-								data={data.reference.currentPolicy}
-								x={'time'}
-								y0={'min'}
-								y1={'max'}
-								color={referenceColors.currentPolicy}
-							/>
-						</g>
-					{/if}
-					{#if activeReference.includes('ndc') || hoveredAmbitionGap}
-						<g name="ndc">
-							<Line data={data.reference.ndc} x={'time'} y={'mean'} color={referenceColors.ndc} />
-							<Area
-								data={data.reference.ndc}
-								x={'time'}
-								y0={'min'}
-								y1={'max'}
-								color={referenceColors.ndc}
-							/>
-						</g>
-					{/if}
-					{#if activeReference.includes('netzero')}
-						<g name="netzero">
-							<Line
-								data={data.reference.netzero}
-								x={'time'}
-								y={'mean'}
-								color={referenceColors.netzero}
-							/>
-							<Area
-								data={data.reference.netzero}
-								x={'time'}
-								y0={'min'}
-								y1={'max'}
-								color={referenceColors.netzero}
-							/>
-						</g>
-					{/if}
 				</Pathway>
 			</section>
 			<section id="description" class="py-8">
