@@ -39,6 +39,7 @@
 	const tweenedEffortSharing = tweened(data.effortSharing, tweenOptions);
 	$: tweenedEffortSharing.set(data.effortSharing);
 
+	// TODO move calculations to server or web service?
 	$: reductions2030 = Object.fromEntries(
 		Object.entries(data.effortSharing).map(([key, value]) => [
 			key,
