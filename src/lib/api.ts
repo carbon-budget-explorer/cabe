@@ -9,7 +9,6 @@ export interface SpatialMetric {
 export interface PathWayQuery {
 	temperature: string;
 	exceedanceRisk: string;
-	nonCO2Mitigation: string;
 	negativeEmissions: string;
 }
 
@@ -59,16 +58,12 @@ export function pathwayQueryFromSearchParams(
 		searchParams.get('exceedanceRisk') ??
 		choices.exceedanceRisk[Math.floor(choices.exceedanceRisk.length / 2)];
 	// TODO when more choices are available use Medium==1 as default
-	const nonCO2Mitigation =
-		searchParams.get('nonCO2Mitigation') ??
-		choices.nonCO2Mitigation[Math.floor(choices.nonCO2Mitigation.length / 2)];
 	const negativeEmissions =
 		searchParams.get('negativeEmissions') ??
 		choices.negativeEmissions[Math.floor(choices.negativeEmissions.length / 2)];
 	return {
 		temperature,
 		exceedanceRisk,
-		nonCO2Mitigation,
 		negativeEmissions
 	};
 }
@@ -109,7 +104,7 @@ export async function pathwayCarbon(search: string, fetch?: any): Promise<Uncert
 }
 
 export async function historicalCarbon(
-	region = 'WORLD',
+	region = 'EARTH',
 	start = 1990,
 	end = 2021
 ): Promise<CertainTime[]> {
@@ -151,15 +146,18 @@ async function policyPathway(policy: string, Region: string): Promise<UncertainT
 	return getJSON(`/policyPathway/${policy}/${Region}`);
 }
 
-export async function currentPolicy(Region = 'WORLD'): Promise<UncertainTime[]> {
+// TODO: change "USA" back to "EARTH" or "WORLD" after new data update
+export async function currentPolicy(Region = 'USA'): Promise<UncertainTime[]> {
 	return await policyPathway('CurPol', Region);
 }
 
-export async function ndc(Region = 'WORLD'): Promise<UncertainTime[]> {
+// TODO: change "USA" back to "EARTH" or "WORLD" after new data update
+export async function ndc(Region = 'USA'): Promise<UncertainTime[]> {
 	return await policyPathway('NDC', Region);
 }
 
-export async function netzero(Region = 'WORLD'): Promise<UncertainTime[]> {
+// TODO: change "USA" back to "EARTH" or "WORLD" after new data update
+export async function netzero(Region = 'USA'): Promise<UncertainTime[]> {
 	return await policyPathway('NetZero', Region);
 }
 

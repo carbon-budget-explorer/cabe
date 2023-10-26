@@ -2,7 +2,6 @@
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import GlobalBudgetForm from '$lib/PathwayForm.svelte';
 
 	import type { PageData } from './$types';
 	import Pathway from '$lib/charts/Pathway.svelte';
