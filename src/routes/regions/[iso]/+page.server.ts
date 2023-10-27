@@ -5,7 +5,6 @@ import {
 	gdpOverTime,
 	historicalCarbon,
 	ndc,
-	netzero,
 	pathwayChoices,
 	populationOverTime
 } from '$lib/api';
@@ -20,11 +19,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	const choices = await pathwayChoices();
 
 	const hist = await historicalCarbon(iso, 1850, 2021);
-	const reference = {
-		currentPolicy: await currentPolicy(iso),
-		ndc: await ndc(iso),
-		netzero: await netzero(iso)
-	};
+	const reference = await ndc(iso)
 	const population = await populationOverTime(iso, 1850, 2100);
 	const gdp = await gdpOverTime(iso, 1850, 2100);
 	const details = {
@@ -43,7 +38,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	const indicators = {
 		ndcAmbition:
 			(-(
-				reference.ndc.find((d) => d.time === 2030)!.mean - hist.find((d) => d.time === 1990)!.value
+				reference.find((d) => d.time === 2030)!.mean - hist.find((d) => d.time === 1990)!.value
 			) /
 				hist.find((d) => d.time === 1990)!.value) *
 			100,
@@ -68,7 +63,6 @@ export const load: PageServerLoad = async ({ params }) => {
 			data: hist,
 			extent: extent(hist, (d) => d.value) as [number, number]
 		},
-		reference,
 		indicators,
 		details,
 		global
