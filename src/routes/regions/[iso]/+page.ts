@@ -1,6 +1,7 @@
 import type { PageLoad } from './$types';
 import { searchParam } from '$lib/searchparam';
 import {
+	effortSharingReductions,
 	effortSharings,
 	pathwayCarbon,
 	pathwayQueryFromSearchParams,
@@ -23,7 +24,9 @@ export const load: PageLoad = async ({ params, data, url, fetch }) => {
 	);
 
 	// TODO validate iso, check that file exists
+	// TODO make single api call
 	const effortSharing = await effortSharings(iso, url.search, fetch);
+	const reductions = await effortSharingReductions(iso, url.search, fetch);
 
 	const global = {
 		...data.global,
@@ -35,6 +38,7 @@ export const load: PageLoad = async ({ params, data, url, fetch }) => {
 		pathway,
 		initialEffortSharingName,
 		effortSharing,
+		reductions,
 		global
 	};
 };

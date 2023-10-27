@@ -32,31 +32,8 @@
 	const tweenOptions = { duration: 1000, easing: cubicOut };
 	const tweenedEffortSharing = tweened(data.effortSharing, tweenOptions);
 	$: tweenedEffortSharing.set(data.effortSharing);
-
-	// TODO move calculations to server or web service?
-	// TODO animate reductions
-	$: reductions2030 = Object.fromEntries(
-		Object.entries(data.effortSharing).map(([key, value]) => [
-			key,
-			(-(
-				value.find((d) => d.time === 2030)!.mean -
-				data.historicalCarbon.data.find((d) => d.time === 1990)!.value
-			) /
-				value.find((d) => d.time === 2021)!.mean) *
-				100
-		])
-	);
-	$: reductions2040 = Object.fromEntries(
-		Object.entries(data.effortSharing).map(([key, value]) => [
-			key,
-			(-(
-				value.find((d) => d.time === 2040)!.mean -
-				data.historicalCarbon.data.find((d) => d.time === 1990)!.value
-			) /
-				value.find((d) => d.time === 2021)!.mean) *
-				100
-		])
-	);
+	const tweenedReductions = tweened(data.reductions, tweenOptions);
+	$: tweenedReductions.set(data.reductions);
 </script>
 
 <div class="flex h-full flex-row gap-4">
@@ -98,7 +75,9 @@
 				<div class="border-10 stats mb-2 flex flex-row gap-10 p-2">
 					<div class="stat place-items-center bg-accent shadow-lg">
 						<div class="stat-title">NDC Ambition (2030)</div>
-						<div class="stat-value">{data.indicators.ndcAmbition.toFixed(0)}%</div>
+						<div class="stat-value">
+							{data.indicators.ndcAmbition === null ? '-' : data.indicators.ndcAmbition.toFixed(0)}%
+						</div>
 						<div class="stat-desc" title="With respect to emissions in 1990">
 							wrt 1990 emissions
 						</div>
@@ -126,14 +105,14 @@
 							<div class="stats shadow">
 								<div class="stat place-items-center">
 									<div class="stat-title">2030 reduction</div>
-									<div class="stat-value text-3xl">{reductions2030[id].toFixed(0)}%</div>
+									<div class="stat-value text-3xl">{$tweenedReductions[id][2030].toFixed(0)}%</div>
 									<div class="stat-desc" title="With respect to emissions in 1990">
 										wrt 1990 emissions
 									</div>
 								</div>
 								<div class="stat place-items-center">
 									<div class="stat-title">2040 reduction</div>
-									<div class="stat-value text-3xl">{reductions2040[id].toFixed(0)}%</div>
+									<div class="stat-value text-3xl">{$tweenedReductions[id][2040].toFixed(0)}%</div>
 									<div class="stat-desc" title="With respect to emissions in 1990">
 										wrt 1990 emissions
 									</div>
@@ -174,13 +153,7 @@
 						{#if activeEffortSharings[id]}
 							<g name={id}>
 								<Line data={$tweenedEffortSharing[id]} x={'time'} y={'mean'} {color} />
-								<Area
-									data={$tweenedEffortSharing[id]}
-									x={'time'}
-									y0={'min'}
-									y1={'max'}
-									{color}
-								/>
+								<Area data={$tweenedEffortSharing[id]} x={'time'} y0={'min'} y1={'max'} {color} />
 							</g>
 						{/if}
 					{/each}
