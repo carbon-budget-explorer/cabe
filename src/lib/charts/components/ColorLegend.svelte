@@ -64,6 +64,7 @@
 				fill="currentColor"
 				x={marginLeft - width + marginRight}
 				y={0}
+				transform="translate(-35, 250) rotate(270)"
 				text-anchor="start"
 				font-weight="bold">{title}</text
 			>

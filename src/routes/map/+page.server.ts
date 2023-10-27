@@ -26,9 +26,12 @@ export async function load({ url }: { url: URL }) {
 		'effortSharing',
 		'PCC'
 	);
+
+	const selectedAllocationTime = searchParam<string>(url, 'allocTime', '2021-2100');
+
 	let rawMetrics: SpatialMetric[] = [];
 	if (selectedEffortSharing !== undefined) {
-		rawMetrics = await fullCenturyBudgetSpatial(url.search);
+		rawMetrics = await fullCenturyBudgetSpatial(selectedAllocationTime, url.search);
 	}
 
 	const metrics = bordersDb.addNames(

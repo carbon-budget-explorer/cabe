@@ -32,12 +32,21 @@
 
 	let tileLayer;
 
-	$: domain = [0, 5_000];
+	$: domain = [
+		// Rounding to bigger digits by first dividing then multiplying by 10
+		Math.floor(
+			Object.values(metrics)
+				.map((d) => d.value)
+				.reduce((a, b) => (a < b ? a : b)) / 10
+		) * 10,
+		Math.ceil(
+			Object.values(metrics)
+				.map((d) => d.value)
+				.reduce((a, b) => (a > b ? a : b)) / 10
+		) * 10
+	];
 	$: colormap = interpolatePuOr;
-	$: scale = scaleSequential()
-		.clamp(true)
-		.domain(domain) // 0.8 dampens sensitivy outliers
-		.interpolator(colormap); // TODO configurable colormap?
+	$: scale = scaleSequential().clamp(true).domain(domain).interpolator(colormap); // TODO configurable colormap?
 
 	function getColor(d: number) {
 		return scale(d);
@@ -109,7 +118,7 @@
 				on:mouseout={onmouseout}
 			/>
 		</LeafletMap>
-		<ColorLegend title={'Gt CO₂'} {...notypecheck({ scale: scale })} {scale} />
+		<ColorLegend title={'tonnes CO₂e per capita'} {...notypecheck({ scale: scale })} {scale} />
 	{/if}
 </div>
 

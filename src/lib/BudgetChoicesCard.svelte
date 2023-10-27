@@ -18,14 +18,11 @@
 
 	let defaults = {
 		temperature: choices.temperature[Math.floor(choices.temperature.length / 2)],
-		nonCO2Mitigation: choices.nonCO2Mitigation[Math.floor(choices.nonCO2Mitigation.length / 2)],
 		exceedanceRisk: choices.exceedanceRisk[Math.floor(choices.exceedanceRisk.length / 2)]
 	};
 	let temperature: string = query.temperature || defaults.temperature;
-	let nonCO2Mitigation: string = query.nonCO2Mitigation || defaults.nonCO2Mitigation;
 	let exceedanceRisk: string = query.exceedanceRisk || defaults.exceedanceRisk;
 	$: onChange('temperature', temperature);
-	$: onChange('nonCO2Mitigation', nonCO2Mitigation);
 	$: onChange('exceedanceRisk', exceedanceRisk);
 </script>
 
@@ -37,7 +34,7 @@
 			<div class="stat place-items-center">
 				<div class="stat-title">Total</div>
 				<div class="stat-value">{($remainingBudgetCounter / 1_000).toFixed(0)}</div>
-				<div class="stat-desc">Gt CO2</div>
+				<div class="stat-desc">Gt CO₂e</div>
 			</div>
 
 			<div class="stat place-items-center">
@@ -67,14 +64,6 @@
 					bind:value={exceedanceRisk}
 					options={choices.exceedanceRisk.map((d) => Number(d))}
 					name="risk"
-				/>
-			</div>
-			<div>
-				<p>Assumption of non CO2 emissions to mitigate</p>
-				<CustomRange
-					bind:value={nonCO2Mitigation}
-					options={choices.nonCO2Mitigation.map((d) => Number(d))}
-					name="nonCO2"
 				/>
 			</div>
 		</div>

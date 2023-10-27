@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
+	import { clsx } from 'clsx';
 
 	import { page } from '$app/stores';
 	import Pathway from '$lib/charts/Pathway.svelte';
@@ -13,6 +14,13 @@
 		historicalCarbon: CertainTime[];
 		currentPolicy: UncertainTime[];
 	};
+
+	// Enable binding to allocationTime
+	export let allocationTime = '2021-2100';
+	const allocOptions = ['2021-2100', '2030', '2040']; // 2050
+	function updateAlloc(option: string) {
+		allocationTime = option;
+	}
 
 	const ipcc_green = '#82a56e';
 	const ipcc_red = '#f5331e';
@@ -36,6 +44,15 @@
 				<Area data={global.currentPolicy} x={'time'} y0={'min'} y1={'max'} color={ipcc_red} />
 			</Pathway>
 		</a>
-		<!-- TODO add button group to select 2030 or 2040 or full century allocation -->
+		{#if $page.url.pathname === '/map'}
+			<div class="flex w-full flex-row justify-items-stretch">
+				{#each allocOptions as option}
+					<button
+						class={clsx('btn flex-1', option === allocationTime && 'btn-primary')}
+						on:click={() => updateAlloc(option)}>{option}</button
+					>
+				{/each}
+			</div>
+		{/if}
 	</div>
 </div>

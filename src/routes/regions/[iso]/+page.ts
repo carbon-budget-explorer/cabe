@@ -27,21 +27,21 @@ export const load: PageLoad = async ({ params, data, url, fetch }) => {
 	const effortSharing = Object.fromEntries(
 		Object.keys(principles).map((principle) => {
 			const principleKey = principle as keyof typeof principles;
-			const CO2 = effortSharingData[principleKey];
+			const GHG = effortSharingData[principleKey];
 			let emissionGap = -1;
 			let ambitionGap = -1;
 			if (principleKey !== 'ECPC') {
 				emissionGap =
 					data.reference.currentPolicy.find((d) => d.time === 2030)!.mean -
-					CO2.find((d) => d.time === 2030)!.mean;
+					GHG.find((d) => d.time === 2030)!.mean;
 				ambitionGap =
 					data.reference.ndc.find((d) => d.time === 2030)!.mean -
-					CO2.find((d) => d.time === 2030)!.mean;
+					GHG.find((d) => d.time === 2030)!.mean;
 			}
 			return [
 				principleKey,
 				{
-					CO2,
+					GHG: GHG,
 					emissionGap,
 					ambitionGap
 				}

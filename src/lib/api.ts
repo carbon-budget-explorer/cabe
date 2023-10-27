@@ -9,7 +9,6 @@ export interface SpatialMetric {
 export interface PathWayQuery {
 	temperature: string;
 	exceedanceRisk: string;
-	nonCO2Mitigation: string;
 	negativeEmissions: string;
 }
 
@@ -59,16 +58,12 @@ export function pathwayQueryFromSearchParams(
 		searchParams.get('exceedanceRisk') ??
 		choices.exceedanceRisk[Math.floor(choices.exceedanceRisk.length / 2)];
 	// TODO when more choices are available use Medium==1 as default
-	const nonCO2Mitigation =
-		searchParams.get('nonCO2Mitigation') ??
-		choices.nonCO2Mitigation[Math.floor(choices.nonCO2Mitigation.length / 2)];
 	const negativeEmissions =
 		searchParams.get('negativeEmissions') ??
 		choices.negativeEmissions[Math.floor(choices.negativeEmissions.length / 2)];
 	return {
 		temperature,
 		exceedanceRisk,
-		nonCO2Mitigation,
 		negativeEmissions
 	};
 }
@@ -76,9 +71,9 @@ export function pathwayQueryFromSearchParams(
 export const API_URL = import.meta.env.CABE_API_URL ?? 'http://127.0.0.1:5000';
 
 async function getJSON(path: string, myfetch = fetch) {
-	let url = `${API_URL}/${path}`;
+	let url = `${API_URL}${path}`;
 	if (browser) {
-		url = `/api/${path}`;
+		url = `/api${path}`;
 	}
 	console.time(url);
 	const response = await myfetch(url);
@@ -109,7 +104,7 @@ export async function pathwayCarbon(search: string, fetch?: any): Promise<Uncert
 }
 
 export async function historicalCarbon(
-	region = 'WORLD',
+	region = 'EARTH',
 	start = 1990,
 	end = 2021
 ): Promise<CertainTime[]> {
@@ -139,27 +134,30 @@ export async function listRegions(): Promise<string[]> {
 }
 
 export async function fullCenturyBudgetSpatial(
+	allocationTime: string,
 	search: string
-	// effortSharing: keyof typeof principles
 	// Scenario = 'SSP2',
 	// Convergence_year = 2040
 ): Promise<SpatialMetric[]> {
-	return getJSON(`/fullCenturyBudgetSpatial${search}`);
+	return getJSON(`/map/${allocationTime}/GHG${search}`);
 }
 
 async function policyPathway(policy: string, Region: string): Promise<UncertainTime[]> {
 	return getJSON(`/policyPathway/${policy}/${Region}`);
 }
 
-export async function currentPolicy(Region = 'WORLD'): Promise<UncertainTime[]> {
+// TODO: change "USA" back to "EARTH" or "WORLD" after new data update
+export async function currentPolicy(Region = 'USA'): Promise<UncertainTime[]> {
 	return await policyPathway('CurPol', Region);
 }
 
-export async function ndc(Region = 'WORLD'): Promise<UncertainTime[]> {
+// TODO: change "USA" back to "EARTH" or "WORLD" after new data update
+export async function ndc(Region = 'USA'): Promise<UncertainTime[]> {
 	return await policyPathway('NDC', Region);
 }
 
-export async function netzero(Region = 'WORLD'): Promise<UncertainTime[]> {
+// TODO: change "USA" back to "EARTH" or "WORLD" after new data update
+export async function netzero(Region = 'USA'): Promise<UncertainTime[]> {
 	return await policyPathway('NetZero', Region);
 }
 

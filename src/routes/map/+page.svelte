@@ -53,6 +53,12 @@
 	}
 	$: changeEffortSharing(data.effortSharing);
 
+	let allocationTime = '2021-2100';
+	function updateAllocationTime(allocationTime: string) {
+		updateQueryParam('allocTime', allocationTime);
+	}
+	$: updateAllocationTime(allocationTime);
+
 	let hoveredFeature:
 		| GeoJSON.Feature<GeoJSON.GeometryObject, GeoJSON.GeoJsonProperties>
 		| undefined;
@@ -75,7 +81,7 @@
 			query={data.pathway.query.negativeEmissions}
 			onChange={updateQueryParam}
 		/>
-		<MiniPathwayCard global={data.global} />
+		<MiniPathwayCard global={data.global} bind:allocationTime />
 	</div>
 	<div class="flex grow flex-col">
 		<ShareTabs />
@@ -89,9 +95,7 @@
 									{hoveredFeature.properties.NAME}
 								</div>
 								<div>
-									{hoveredMetric.value > 1_000
-										? `${(hoveredMetric.value / 1_000).toPrecision(3)} Gt CO₂`
-										: `${hoveredMetric.value.toPrecision(3)} Mt CO₂`}
+									{hoveredMetric.value.toPrecision(2)} tonnes CO₂e per capita
 								</div>
 							</div>
 						{:else}

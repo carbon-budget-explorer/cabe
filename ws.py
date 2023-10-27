@@ -10,6 +10,7 @@ Run with
 
 """
 
+from typing import Literal
 import xarray as xr
 
 from flask import Flask, request
@@ -26,19 +27,20 @@ CORS(app)
 # Global data (xr_dataread.nc)
 dsGlobal = xr.open_dataset("data/xr_dataread.nc")
 
+
 @app.get("/pathwayCarbon")
 def pathwayCarbon():
     """Get global carbon pathway for a given selection.
 
     To test:
     production server:
-    http://127.0.0.1:8000/pathwayCarbon?nonCO2Mitigation=0.5&exceedanceRisk=0.5&negativeEmissions=0.5
+    http://127.0.0.1:8000/pathwayCarbon?exceedanceRisk=0.5&negativeEmissions=0.5
 
     dev server:
-    http://127.0.0.1:5000/pathwayCarbon?nonCO2Mitigation=0.5&exceedanceRisk=0.5&negativeEmissions=0.5
+    http://127.0.0.1:5000/pathwayCarbon?exceedanceRisk=0.5&negativeEmissions=0.5
     """
     df = (
-        dsGlobal.CO2_globe.sel(
+        dsGlobal.GHG_globe.sel(
             # TODO remove defaults
             # TODO use request.data instead of request.args?
             # args uses GET, data uses POST, GET is idempotent which is easier to cache so keep using args
@@ -61,7 +63,6 @@ def pathwayChoices():
     return {
         "temperature": dsGlobal.Temperature.values.tolist(),
         "exceedanceRisk": dsGlobal.Risk.values.tolist(),
-        "nonCO2Mitigation": dsGlobal.NonCO2.values.tolist(),
         "negativeEmissions": dsGlobal.NegEmis.values.tolist(),
     }
 
@@ -72,8 +73,9 @@ def pathwaySelection():
     return dict(
         Temperature=request.args.get("temperature", defaults["temperature"]),
         Risk=request.args.get("exceedanceRisk", defaults["exceedanceRisk"]),
-        NegEmis=request.args.get("negativeEmissions", defaults["negativeEmissions"]),
-        NonCO2=request.args.get("nonCO2Mitigation", defaults["nonCO2Mitigation"]),
+        NegEmis=request.args.get(
+            "negativeEmissions", defaults["negativeEmissions"]
+        ),
     )
 
 
@@ -84,9 +86,9 @@ def regions():
 
 @app.get("/pathwayStats")
 def pathwayStats():
-    used = dsGlobal.CO2_hist.sel(Region="WORLD").sum().values.tolist()
+    used = dsGlobal.GHG_hist.sel(Region="EARTH").sum().values.tolist()
     remaining = (
-        dsGlobal.CO2_globe.sel(
+        dsGlobal.GHG_globe.sel(
             TrajUnc="Medium",
             **pathwaySelection(),
         )
@@ -99,10 +101,10 @@ def pathwayStats():
 
 
 @app.get("/historicalCarbon/<region>")
-def historicalCarbon(region="WORLD"):
+def historicalCarbon(region="EARTH"):
     start = request.args.get("start")
     end = request.args.get("end")
-    df = dsGlobal.CO2_hist.sel(
+    df = dsGlobal.GHG_hist.sel(
         Region=region, Time=slice(start, end)
     ).to_pandas()
     df.index.rename("time", True)
@@ -141,32 +143,49 @@ def gdpOverTime(region):
 
 # Map data (xr_alloc_2030.nc etc)
 ds_alloc_2030 = xr.open_dataset("data/xr_alloc_2030.nc")
-# ds_alloc_2040 = xr.open_dataset("data/xr_alloc_2040.nc")
+ds_alloc_2040 = xr.open_dataset("data/xr_alloc_2040.nc")
+ds_alloc_2050 = xr.open_dataset("data/xr_alloc_2050.nc")
+ds_alloc_FC = xr.open_dataset("data/xr_alloc_FC.nc")
 
 
-@app.get("/fullCenturyBudgetSpatial")
-def fullCenturyBudgetSpatial():
+def population_map(year, scenario="SSP2"):
+    """Return population map as xarray data-array"""
+    return dsGlobal.Population.sel(Time=year, Scenario=scenario)
+
+
+@app.get("/map/<year>/GHG")
+def fullCenturyBudgetSpatial(year):
+    """Get map of GHG by year"""
     effortSharing = request.args.get("effortSharing", "PCC")
-    selection = dict(
-        **pathwaySelection()
-    )
+    selection = dict(**pathwaySelection())
     if effortSharing in ["PC", "PCC", "AP", "GDR", "ECPC"]:
         selection.update(Scenario="SSP2")
     if effortSharing == "PCC":
         selection.update(Convergence_year=2040)
 
-    # TODO make it possible to choose 2040
-    df = ds_alloc_2030[effortSharing].sel(**selection).to_pandas()
+    file_by_year = {
+        "2030": ds_alloc_2030,
+        "2040": ds_alloc_2040,
+        "2050": ds_alloc_2050,
+        "2021-2100": ds_alloc_FC,
+    }
 
-    # Taking mean over TrajUnc dimension
-    # TODO should we pin TrajUnc to a specific value? Or take max or min?
-    df = df.agg(func="mean", axis=1).dropna()  # Note: dropping nan values here
-
-    # Index is called Region and column is unnamed
-    df.index.rename("ISO", True)
-    df = df.reset_index()
-    df["value"] = df.pop(0)
-    return df.to_dict(orient="records")
+    return (
+        (
+            file_by_year[year][effortSharing]
+            .sel(**selection)
+            .mean(
+                dim="TrajUnc"
+            )  # TODO: sel "Medium" instead of calculate mean?
+            / population_map(year=2021)
+        )
+        .rename(Region="ISO")
+        .to_series()
+        .rename("value")
+        .dropna()  # Note: dropping NaN values here
+        .reset_index()
+        .to_dict(orient="records")
+    )
 
 
 # Reference pathway data (xr_policyscen.nc)
@@ -216,42 +235,35 @@ def effortSharing(ISO, principle):
         selection.update(Convergence_year=2040)
 
     ds = get_ds(ISO)[principle].sel(**selection)
-    if principle == "ECPC":
-        uncertainty = (
-            ds.to_pandas().agg(["mean", "min", "max"]).transpose().to_dict()
-        )
-        return [
-            {"time": 2100, **uncertainty},
-        ]
-    else:
-        df = ds.rename(Time="time").to_pandas()
-        if principle in ["GF", "PC"]:
-            # These effort sharing principles have Time dimension after TrajUnc dimension
-            # While all other principles have TrajUnc dimension after Time dimension
-            # Causing columns to be Time and TrajUnc to be rows in dataframe
-            # We want the opposite
-            # TODO order dimensions for each principle in same way, so this is not needed anymore
+    df = ds.rename(Time="time").to_pandas()
+    if principle in ["GF", "PC", "ECPC"]:
+        # These effort sharing principles have Time dimension after TrajUnc dimension
+        # While all other principles have TrajUnc dimension after Time dimension
+        # Causing columns to be Time and TrajUnc to be rows in dataframe
+        # We want the opposite
+        # TODO order dimensions for each principle in same way, so this is not needed anymore
 
-            df = df.transpose()
+        df = df.transpose()
 
-        return (
-            df.agg(["mean", "min", "max"], axis=1)
-            .reset_index()
-            .to_dict(orient="records")
-        )
+    return (
+        df.agg(["mean", "min", "max"], axis=1)
+        .reset_index()
+        .to_dict(orient="records")
+    )
+
 
 @app.get("/<ISO>/effortSharings")
 def effortSharings(ISO):
     """
-http://127.0.0.1:5000//USA/GF?exceedanceRisk=0.67&nonCO2Mitigation=0.2&negativeEmissions=0.4&effortSharing=PCC&temperature=1.8: 36.94ms
-http://127.0.0.1:5000//USA/PC?exceedanceRisk=0.67&nonCO2Mitigation=0.2&negativeEmissions=0.4&effortSharing=PCC&temperature=1.8: 38.556ms
-http://127.0.0.1:5000//USA/PCC?exceedanceRisk=0.67&nonCO2Mitigation=0.2&negativeEmissions=0.4&effortSharing=PCC&temperature=1.8: 37.553ms
-http://127.0.0.1:5000//USA/AP?exceedanceRisk=0.67&nonCO2Mitigation=0.2&negativeEmissions=0.4&effortSharing=PCC&temperature=1.8: 37.296ms
-http://127.0.0.1:5000//USA/GDR?exceedanceRisk=0.67&nonCO2Mitigation=0.2&negativeEmissions=0.4&effortSharing=PCC&temperature=1.8: 37.304ms
-http://127.0.0.1:5000//USA/ECPC?exceedanceRisk=0.67&nonCO2Mitigation=0.2&negativeEmissions=0.4&effortSharing=PCC&temperature=1.8: 10.238ms
-36.94 + 38.56 + 37.55 + 37.29 + 37.30 + 10.23 = 197.869
+    http://127.0.0.1:5000//USA/GF?exceedanceRisk=0.67&negativeEmissions=0.4&effortSharing=PCC&temperature=1.8: 36.94ms
+    http://127.0.0.1:5000//USA/PC?exceedanceRisk=0.67&negativeEmissions=0.4&effortSharing=PCC&temperature=1.8: 38.556ms
+    http://127.0.0.1:5000//USA/PCC?exceedanceRisk=0.67&negativeEmissions=0.4&effortSharing=PCC&temperature=1.8: 37.553ms
+    http://127.0.0.1:5000//USA/AP?exceedanceRisk=0.67&negativeEmissions=0.4&effortSharing=PCC&temperature=1.8: 37.296ms
+    http://127.0.0.1:5000//USA/GDR?exceedanceRisk=0.67&negativeEmissions=0.4&effortSharing=PCC&temperature=1.8: 37.304ms
+    http://127.0.0.1:5000//USA/ECPC?exceedanceRisk=0.67&negativeEmissions=0.4&effortSharing=PCC&temperature=1.8: 10.238ms
+    36.94 + 38.56 + 37.55 + 37.29 + 37.30 + 10.23 = 197.869
 
-http://127.0.0.1:5000//USA/effortSharings?exceedanceRisk=0.67&nonCO2Mitigation=0.2&negativeEmissions=0.4&effortSharing=PCC&temperature=1.8: 221.552ms
+    http://127.0.0.1:5000//USA/effortSharings?exceedanceRisk=0.67&negativeEmissions=0.4&effortSharing=PCC&temperature=1.8: 221.552ms
     """
     principles = ["PC", "PCC", "AP", "GDR", "ECPC", "GF"]
     return {k: effortSharing(ISO, k) for k in principles}
