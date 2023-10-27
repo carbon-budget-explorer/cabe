@@ -97,8 +97,8 @@
 								{hoveredMetric.value.toFixed(0)} tonnes CO₂e per capita
 							</div>
 						{:else}
-						<div>Click country in map or</div>
-						<details class="dropdown">
+							<div>Click country in map or</div>
+							<details class="dropdown">
 								<summary class="btn-ghost btn-sm btn w-60 font-normal">Pick country</summary>
 								<!-- TODO dont hardcode height and width -->
 								<div

@@ -104,7 +104,9 @@
 					<div class="stat place-items-center bg-accent shadow-lg">
 						<div class="stat-title">NDC Ambition (2030)</div>
 						<div class="stat-value">{data.indicators.ndcAmbition.toFixed(0)}%</div>
-						<div class="stat-desc">wrt 1990</div>
+						<div class="stat-desc" title="With respect to emissions in 1990">
+							wrt 1990 emissions
+						</div>
 					</div>
 
 					<div class="stat place-items-center bg-accent shadow-lg">
@@ -112,7 +114,9 @@
 						<div class="stat-value">
 							{(data.indicators.historicalCarbon / 1_000).toFixed()}
 						</div>
-						<div class="stat-desc">Gt CO₂e (cumulative)</div>
+						<div class="stat-desc" title="cumulative gigaton carbon dioxide equivalent">
+							Gt CO₂e (cumulative)
+						</div>
 					</div>
 				</div>
 				<div class="border-10 mb-2 flex w-full flex-row flex-wrap items-stretch gap-4 p-2">
@@ -128,12 +132,16 @@
 								<div class="stat place-items-center">
 									<div class="stat-title">2030 reduction</div>
 									<div class="stat-value text-3xl">{reductions2030[id].toFixed(0)}%</div>
-									<div class="stat-desc">wrt 1990 emissions</div>
+									<div class="stat-desc" title="With respect to emissions in 1990">
+										wrt 1990 emissions
+									</div>
 								</div>
 								<div class="stat place-items-center">
 									<div class="stat-title">2040 reduction</div>
 									<div class="stat-value text-3xl">{reductions2040[id].toFixed(0)}%</div>
-									<div class="stat-desc">wrt 1990 emissions</div>
+									<div class="stat-desc" title="With respect to emissions in 1990">
+										wrt 1990 emissions
+									</div>
 								</div>
 							</div>
 						</div>
@@ -229,7 +237,7 @@
 							<Line data={data.historicalCarbon.data} x={'time'} y={'value'} color="black" />
 						</Pathway>
 					</div>
-					<p>in Mt CO₂e</p>
+					<p title="Megaton carbon dioxide equivalent">in Mt CO₂e</p>
 				</div>
 				<div>
 					<h2 class="text-xl" id="hist-emis">policy costs ????</h2>
