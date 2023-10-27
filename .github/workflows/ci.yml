@@ -109,3 +109,17 @@ jobs:
         run: npm run download:borders
       - name: ⚙️  Build
         run: npm run build
+  python:
+    name: 🐍 Python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: ⎔ Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+      - name: 📥 Install deps
+        run: pip install -r requirements.txt
+      - name: 🐍 Syntax check
+        run: python -m py_compile ws.py
+      # TODO add mypy, ruff, black checks
