@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-test('index page has expected h1', async ({ page }) => {
+test('index page has expected link', async ({ page }) => {
 	await page.goto('/');
 	await expect(
-		page.getByRole('heading', { name: 'Welcome to Carbon Budget Explorer' })
+		page.getByRole('link', { name: /Construct your pathway/ })
 	).toBeVisible();
 });
