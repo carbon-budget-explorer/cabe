@@ -10,7 +10,6 @@ Run with
 
 """
 
-from typing import Literal
 import xarray as xr
 
 from flask import Flask, request
