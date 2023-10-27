@@ -3,7 +3,7 @@
 	export const prerender = true;
 </script>
 
-<main class="grid h-full grid-cols-2 content-around gap-20 p-40 bg-base-100 ">
+<main class="grid h-full grid-cols-2 content-around gap-20 bg-base-100 p-40">
 	<div class="flex flex-row">
 		<img src={logo} class="h-full" alt="Logo for Carbon Budget Explorer" />
 		<div class="text-6xl font-bold">
@@ -12,10 +12,7 @@
 			<div>Explorer</div>
 		</div>
 	</div>
-	<a
-		class="btn btn-primary btn-lg rounded-lg self-center"
-		href="/global"
-	>
+	<a class="btn-primary btn-lg btn self-center rounded-lg" href="/global">
 		Construct your pathway &raquo;
 	</a>
 
