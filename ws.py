@@ -10,10 +10,10 @@ Run with
 
 """
 
-from typing import Literal
 import xarray as xr
+import numpy as np
 
-from flask import Flask, request
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -22,7 +22,7 @@ CORS(app)
 # TODO improve endpoint names
 # TODO use class-based views for a reusable nc-file viewer?
 # TODO write tests with dummy data
-# TODO validate inputs? Must if ws is public
+# TODO validate inputs? Must if ws is public, and now it is due to src/routes/api/\[...path\]/+server.ts
 
 # Global data (xr_dataread.nc)
 dsGlobal = xr.open_dataset("data/xr_dataread.nc")
@@ -96,8 +96,30 @@ def pathwayStats():
         .values.tolist()
     )
     total = used + remaining
+    # TODO fix this hardcoded 37, should be global emissions in 2021
+    relative = remaining / 37
 
-    return {"total": total, "used": used, "remaining": remaining}
+    # Calculate gaps
+    # TODO gaps is not needed on non-global pages, so dont compute if there
+    gap_index = 2030
+    pathway = dsGlobal.GHG_globe.sel(Time=gap_index, TrajUnc="Medium",
+            **pathwaySelection()).mean().values + 0
+    # TODO: change "USA" back to "EARTH" or "WORLD" after new data update
+    curPol = ds_policyscen.CurPol.sel(Region="USA", Time=gap_index).mean().values + 0
+    # TODO: change "USA" back to "EARTH" or "WORLD" after new data update
+    ndc = ds_policyscen.NDC.sel(Region="USA", Time=gap_index).mean().values + 0
+    gaps = {
+        "index": gap_index,
+        "budget": pathway,
+        "curPol": curPol,
+        "ndc": ndc,
+        "emission": curPol - pathway,
+        "ambition": ndc - pathway,
+    }
+
+    return {"total": total, "used": used, "remaining": remaining,
+            "relative": relative, "gaps": gaps
+            }
 
 
 @app.get("/historicalCarbon/<region>")
@@ -194,12 +216,17 @@ ds_policyscen = xr.open_dataset("data/xr_policyscen.nc")
 
 @app.get("/policyPathway/<policy>/<region>")
 def policyPathway(policy, region):
+    assert policy in {"CurPol", "NDC", "NetZero"}
     policy_ds = (
         ds_policyscen[policy]
         .sel(Region=region, Time=slice(2021, 2100))
         .drop("Region")
-        .groupby("Time")
     )
+    # Not all countries have data for all policies, so return None if no data
+    if policy_ds.isnull().all():
+        return jsonify(None)
+
+    policy_ds = policy_ds.groupby("Time")
 
     # TODO precompute mean, min and max
     # instead of calculating them on the fly each time
@@ -213,6 +240,27 @@ def policyPathway(policy, region):
     df.index.rename("time", True)
     return df.reset_index().to_dict(orient="records")
 
+
+def ndcAmbition(region):
+    ndc2030 = ds_policyscen.NDC.sel(Region=region, Time=2030).mean().values.tolist()
+    if np.isnan(ndc2030):
+        return None
+    hist1990 = dsGlobal.GHG_hist.sel(Region=region, Time=1990).values.tolist()
+    return -(ndc2030 - hist1990) / hist1990 * 100
+
+def historicalCarbonIndicator(region, start, end):
+    return dsGlobal.GHG_hist.sel(Region=region, Time=slice(start, end)).sum().values.tolist()
+
+
+@app.get("/indicators/<region>")
+def indicators(region):
+    start = request.args.get("start", 1850)
+    end = request.args.get("end", 2100)
+    data = {
+        "ndcAmbition": ndcAmbition(region),
+        "historicalCarbon": historicalCarbonIndicator(region, start, end)
+    }
+    return data
 
 # Country-specific data (xr_alloc_<ISO>.nc)
 
@@ -251,6 +299,7 @@ def effortSharing(ISO, principle):
         .to_dict(orient="records")
     )
 
+principles = {"PC", "PCC", "AP", "GDR", "ECPC", "GF"}
 
 @app.get("/<ISO>/effortSharings")
 def effortSharings(ISO):
@@ -265,5 +314,29 @@ def effortSharings(ISO):
 
     http://127.0.0.1:5000//USA/effortSharings?exceedanceRisk=0.67&negativeEmissions=0.4&effortSharing=PCC&temperature=1.8: 221.552ms
     """
-    principles = ["PC", "PCC", "AP", "GDR", "ECPC", "GF"]
     return {k: effortSharing(ISO, k) for k in principles}
+
+@app.get("/<ISO>/effortSharingReductions")
+def effortSharingReductions(ISO):
+    periods = (2030,2040)
+    selection = dict(
+        **pathwaySelection(),
+        Time=periods,
+    )
+
+    hist = dsGlobal.GHG_hist.sel(Region=ISO, Time=1990).values + 0
+
+    reductions = {}
+    for principle in principles:
+        pselection = selection.copy()
+        if principle in ["PC", "PCC", "AP", "GDR", "ECPC"]:
+            pselection.update(Scenario="SSP2")
+        if principle == "PCC":
+            pselection.update(Convergence_year=2040)
+        reductions[principle] = {}
+        for period in periods:
+            pselection.update(Time=period)
+            es = get_ds(ISO)[principle].sel(**pselection).mean().values + 0
+            reductions[principle][period] = -(es - hist) / hist * 100
+
+    return reductions

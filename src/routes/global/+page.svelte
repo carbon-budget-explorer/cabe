@@ -44,7 +44,6 @@
 		netzero: false
 	};
 
-	let gapIndex = data.result.ndc.map((d) => d.time).indexOf(2030);
 	let ambitionGapHover = false;
 	let emissionGapHover = false;
 
@@ -53,17 +52,17 @@
 	const tweenOptions = { duration: 1000, easing: cubicOut };
 	const pathwayCarbonTweened = tweened(data.result.pathwayCarbon, tweenOptions);
 	$: pathwayCarbonTweened.set(data.result.pathwayCarbon);
-	const emissionGapTweened = tweened(data.result.emissionGap, tweenOptions);
-	$: emissionGapTweened.set(data.result.emissionGap);
-	const ambitionGapTweened = tweened(data.result.ambitionGap, tweenOptions);
-	$: ambitionGapTweened.set(data.result.ambitionGap);
+	const emissionGapTweened = tweened(data.result.stats.gaps.emission, tweenOptions);
+	$: emissionGapTweened.set(data.result.stats.gaps.emission);
+	const ambitionGapTweened = tweened(data.result.stats.gaps.ambition, tweenOptions);
+	$: ambitionGapTweened.set(data.result.stats.gaps.ambition);
 </script>
 
 <div class="flex h-full gap-4">
 	<div id="sidebar" class="flex h-full max-w-[25%] flex-col gap-4">
 		<BudgetChoicesCard
-			total={data.result.pathwayStats.total}
-			remaining={data.result.pathwayStats.remaining}
+			total={data.result.stats.total}
+			remaining={data.result.stats.remaining}
 			choices={data.pathway.choices}
 			query={data.pathway.query}
 			onChange={updateQueryParam}
@@ -86,7 +85,7 @@
 					<div class="stat place-items-center">
 						<div class="stat-title">Emission gap</div>
 						<div class="stat-value">{($emissionGapTweened / 1_000).toFixed(0)}</div>
-						<div class="stat-desc">Gt CO₂e</div>
+						<div class="stat-desc" title="Gigaton carbon dioxide equivalent">Gt CO₂e</div>
 						<button
 							class="btn-sm btn mt-2"
 							on:mouseenter={toggleEmissionGap}
@@ -99,7 +98,7 @@
 					<div class="stat place-items-center">
 						<div class="stat-title">Amibition gap</div>
 						<div class="stat-value">{($ambitionGapTweened / 1_000).toFixed(0)}</div>
-						<div class="stat-desc">Gt CO₂e</div>
+						<div class="stat-desc" title="Gigaton carbon dioxide equivalent">Gt CO₂e</div>
 						<button
 							class="btn-sm btn mt-2"
 							on:mouseenter={toggleAmbitionGap}
@@ -139,16 +138,16 @@
 
 				{#if ambitionGapHover}
 					<Gap
-						x={2030}
-						y0={data.result.ndc[gapIndex].mean}
-						y1={$pathwayCarbonTweened.find((d) => d.time === 2030)?.mean || 0}
+						x={data.result.stats.gaps.index}
+						y0={data.result.stats.gaps.ndc}
+						y1={data.result.stats.gaps.budget}
 					/>
 				{/if}
 				{#if emissionGapHover}
 					<Gap
-						x={2030}
-						y0={data.result.currentPolicy[gapIndex].mean}
-						y1={$pathwayCarbonTweened.find((d) => d.time === 2030)?.mean || 0}
+						x={data.result.stats.gaps.index}
+						y0={data.result.stats.gaps.curPol}
+						y1={data.result.stats.gaps.budget}
 					/>
 				{/if}
 

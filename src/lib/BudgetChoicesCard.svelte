@@ -34,7 +34,7 @@
 			<div class="stat place-items-center">
 				<div class="stat-title">Total</div>
 				<div class="stat-value">{($remainingBudgetCounter / 1_000).toFixed(0)}</div>
-				<div class="stat-desc">Gt CO₂e</div>
+				<div class="stat-desc" title="Gigaton carbon dioxide equivalent">Gt CO₂e</div>
 			</div>
 
 			<div class="stat place-items-center">

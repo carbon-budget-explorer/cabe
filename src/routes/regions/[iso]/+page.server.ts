@@ -4,8 +4,8 @@ import {
 	currentPolicy,
 	gdpOverTime,
 	historicalCarbon,
+	indicators,
 	ndc,
-	netzero,
 	pathwayChoices,
 	populationOverTime
 } from '$lib/api';
@@ -20,11 +20,6 @@ export const load: PageServerLoad = async ({ params }) => {
 	const choices = await pathwayChoices();
 
 	const hist = await historicalCarbon(iso, 1850, 2021);
-	const reference = {
-		currentPolicy: await currentPolicy(iso),
-		ndc: await ndc(iso),
-		netzero: await netzero(iso)
-	};
 	const population = await populationOverTime(iso, 1850, 2100);
 	const gdp = await gdpOverTime(iso, 1850, 2100);
 	const details = {
@@ -40,15 +35,11 @@ export const load: PageServerLoad = async ({ params }) => {
 
 	const name = borders.labels.get(iso) || iso;
 	const iso2 = borders.iso3to2.get(iso) || iso;
-	const indicators = {
-		ndcAmbition:
-			(-(
-				reference.ndc.find((d) => d.time === 2030)!.mean - hist.find((d) => d.time === 1990)!.value
-			) /
-				hist.find((d) => d.time === 1990)!.value) *
-			100,
-		historicalCarbon: hist.map((d) => d.value).reduce((a, b) => a + b, 0)
-	};
+	const indicators_ = await indicators(iso);
+	if (indicators_.ndcAmbition !== null) {
+		// Country has historical ndc and probably also curpol and netzero
+		// TODO fetch ndc, curpol, netzero and plot
+	}
 
 	const global = {
 		historicalCarbon: await historicalCarbon(),
@@ -68,8 +59,7 @@ export const load: PageServerLoad = async ({ params }) => {
 			data: hist,
 			extent: extent(hist, (d) => d.value) as [number, number]
 		},
-		reference,
-		indicators,
+		indicators: indicators_,
 		details,
 		global
 	};

@@ -1,12 +1,13 @@
 import type { PageLoad } from './$types';
 import { searchParam } from '$lib/searchparam';
 import {
+	effortSharingReductions,
 	effortSharings,
 	pathwayCarbon,
 	pathwayQueryFromSearchParams,
 	pathwayStats
 } from '$lib/api';
-import { principles } from '$lib/principles';
+import type { principles } from '$lib/principles';
 
 export const load: PageLoad = async ({ params, data, url, fetch }) => {
 	const iso = params.iso;
@@ -23,31 +24,9 @@ export const load: PageLoad = async ({ params, data, url, fetch }) => {
 	);
 
 	// TODO validate iso, check that file exists
-	const effortSharingData = await effortSharings(iso, url.search, fetch);
-	const effortSharing = Object.fromEntries(
-		Object.keys(principles).map((principle) => {
-			const principleKey = principle as keyof typeof principles;
-			const GHG = effortSharingData[principleKey];
-			let emissionGap = -1;
-			let ambitionGap = -1;
-			if (principleKey !== 'ECPC') {
-				emissionGap =
-					data.reference.currentPolicy.find((d) => d.time === 2030)!.mean -
-					GHG.find((d) => d.time === 2030)!.mean;
-				ambitionGap =
-					data.reference.ndc.find((d) => d.time === 2030)!.mean -
-					GHG.find((d) => d.time === 2030)!.mean;
-			}
-			return [
-				principleKey,
-				{
-					GHG: GHG,
-					emissionGap,
-					ambitionGap
-				}
-			];
-		})
-	);
+	// TODO make single api call
+	const effortSharing = await effortSharings(iso, url.search, fetch);
+	const reductions = await effortSharingReductions(iso, url.search, fetch);
 
 	const global = {
 		...data.global,
@@ -59,6 +38,7 @@ export const load: PageLoad = async ({ params, data, url, fetch }) => {
 		pathway,
 		initialEffortSharingName,
 		effortSharing,
+		reductions,
 		global
 	};
 };

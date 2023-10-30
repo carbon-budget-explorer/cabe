@@ -8,7 +8,6 @@
 	import Line from '$lib/charts/components/Line.svelte';
 	import Area from '$lib/charts/components/Area.svelte';
 	import { principles } from '$lib/principles';
-	import Gap from '$lib/charts/components/Gap.svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { tweened } from 'svelte/motion';
 	import BudgetChoicesCard from '$lib/BudgetChoicesCard.svelte';
@@ -29,39 +28,12 @@
 		Object.keys(principles).map((id) => [id, id === data.initialEffortSharingName])
 	);
 
-	// Gap hover
-	let gapIndex = data.reference.ndc.map((d) => d.time).indexOf(2030);
-	let hoveredAmbitionGap: string | null = null;
-	let hoveredEmissionGap: string | null = null;
-
 	// Transitions
 	const tweenOptions = { duration: 1000, easing: cubicOut };
 	const tweenedEffortSharing = tweened(data.effortSharing, tweenOptions);
 	$: tweenedEffortSharing.set(data.effortSharing);
-
-	// TODO move calculations to server or web service?
-	$: reductions2030 = Object.fromEntries(
-		Object.entries(data.effortSharing).map(([key, value]) => [
-			key,
-			(-(
-				value.GHG.find((d) => d.time === 2030)!.mean -
-				data.historicalCarbon.data.find((d) => d.time === 1990)!.value
-			) /
-				value.GHG.find((d) => d.time === 2021)!.mean) *
-				100
-		])
-	);
-	$: reductions2040 = Object.fromEntries(
-		Object.entries(data.effortSharing).map(([key, value]) => [
-			key,
-			(-(
-				value.GHG.find((d) => d.time === 2040)!.mean -
-				data.historicalCarbon.data.find((d) => d.time === 1990)!.value
-			) /
-				value.GHG.find((d) => d.time === 2021)!.mean) *
-				100
-		])
-	);
+	const tweenedReductions = tweened(data.reductions, tweenOptions);
+	$: tweenedReductions.set(data.reductions);
 </script>
 
 <div class="flex h-full flex-row gap-4">
@@ -103,8 +75,12 @@
 				<div class="border-10 stats mb-2 flex flex-row gap-10 p-2">
 					<div class="stat place-items-center bg-accent shadow-lg">
 						<div class="stat-title">NDC Ambition (2030)</div>
-						<div class="stat-value">{data.indicators.ndcAmbition.toFixed(0)}%</div>
-						<div class="stat-desc">wrt 1990</div>
+						<div class="stat-value">
+							{data.indicators.ndcAmbition === null ? '-' : data.indicators.ndcAmbition.toFixed(0)}%
+						</div>
+						<div class="stat-desc" title="With respect to emissions in 1990">
+							wrt 1990 emissions
+						</div>
 					</div>
 
 					<div class="stat place-items-center bg-accent shadow-lg">
@@ -112,7 +88,9 @@
 						<div class="stat-value">
 							{(data.indicators.historicalCarbon / 1_000).toFixed()}
 						</div>
-						<div class="stat-desc">Gt CO₂e (cumulative)</div>
+						<div class="stat-desc" title="cumulative gigaton carbon dioxide equivalent">
+							Gt CO₂e (cumulative)
+						</div>
 					</div>
 				</div>
 				<div class="border-10 mb-2 flex w-full flex-row flex-wrap items-stretch gap-4 p-2">
@@ -127,13 +105,17 @@
 							<div class="stats shadow">
 								<div class="stat place-items-center">
 									<div class="stat-title">2030 reduction</div>
-									<div class="stat-value text-3xl">{reductions2030[id].toFixed(0)}%</div>
-									<div class="stat-desc">wrt 1990 emissions</div>
+									<div class="stat-value text-3xl">{$tweenedReductions[id][2030].toFixed(0)}%</div>
+									<div class="stat-desc" title="With respect to emissions in 1990">
+										wrt 1990 emissions
+									</div>
 								</div>
 								<div class="stat place-items-center">
 									<div class="stat-title">2040 reduction</div>
-									<div class="stat-value text-3xl">{reductions2040[id].toFixed(0)}%</div>
-									<div class="stat-desc">wrt 1990 emissions</div>
+									<div class="stat-value text-3xl">{$tweenedReductions[id][2040].toFixed(0)}%</div>
+									<div class="stat-desc" title="With respect to emissions in 1990">
+										wrt 1990 emissions
+									</div>
 								</div>
 							</div>
 						</div>
@@ -168,32 +150,10 @@
 						color="black"
 					/>
 					{#each Object.entries(principles) as [id, { color }]}
-						{#if activeEffortSharings[id] || hoveredAmbitionGap === id || hoveredEmissionGap === id}
+						{#if activeEffortSharings[id]}
 							<g name={id}>
-								<Line data={$tweenedEffortSharing[id].GHG} x={'time'} y={'mean'} {color} />
-								<Area
-									data={$tweenedEffortSharing[id].GHG}
-									x={'time'}
-									y0={'min'}
-									y1={'max'}
-									{color}
-								/>
-								{#if activeEffortSharings[id] && hoveredAmbitionGap}
-									<Gap
-										x={2030}
-										y0={data.reference.ndc[gapIndex].mean}
-										y1={$tweenedEffortSharing[hoveredAmbitionGap].GHG.find((d) => d.time === 2030)
-											?.mean || 0}
-									/>
-								{/if}
-								{#if activeEffortSharings[id] && hoveredEmissionGap}
-									<Gap
-										x={2030}
-										y0={data.reference.currentPolicy[gapIndex].mean}
-										y1={$tweenedEffortSharing[hoveredEmissionGap].GHG.find((d) => d.time === 2030)
-											?.mean || 0}
-									/>
-								{/if}
+								<Line data={$tweenedEffortSharing[id]} x={'time'} y={'mean'} {color} />
+								<Area data={$tweenedEffortSharing[id]} x={'time'} y0={'min'} y1={'max'} {color} />
 							</g>
 						{/if}
 					{/each}
@@ -229,8 +189,9 @@
 							<Line data={data.historicalCarbon.data} x={'time'} y={'value'} color="black" />
 						</Pathway>
 					</div>
-					<p>in Mt CO₂e</p>
+					<p title="Megaton carbon dioxide equivalent">in Mt CO₂e</p>
 				</div>
+				<!-- TODO plot current policy, NDC, netzero if country has it over time. Only have data for few countries/regions -->
 				<div>
 					<h2 class="text-xl" id="hist-emis">policy costs ????</h2>
 					<div class="h-64">

@@ -88,19 +88,18 @@
 		<div class="flex h-full max-h-full w-full flex-row gap-2">
 			<div class="flex grow flex-col">
 				<div class="relative h-full w-full">
-					<div class="absolute left-0 top-0 z-[500] h-12 w-80 rounded-br-md bg-white p-2 shadow">
+					<div class="absolute left-0 top-0 z-[500] h-16 w-64 rounded-br-md bg-white p-2 shadow">
 						{#if hoveredFeature && hoveredFeature.properties && hoveredMetric}
-							<div class="flex flex-row justify-between pt-1">
-								<div>
-									{hoveredFeature.properties.NAME}
-								</div>
-								<div>
-									{hoveredMetric.value.toPrecision(2)} tonnes CO₂e per capita
-								</div>
+							<div>
+								{hoveredFeature.properties.NAME}
+							</div>
+							<div>
+								{hoveredMetric.value.toFixed(0)} tonnes CO₂e per capita
 							</div>
 						{:else}
+							<div>Click country in map or</div>
 							<details class="dropdown">
-								<summary class="btn-ghost btn-sm btn w-72 font-normal">Pick country</summary>
+								<summary class="btn-ghost btn-sm btn w-60 font-normal">Pick country</summary>
 								<!-- TODO dont hardcode height and width -->
 								<div
 									class="compact card dropdown-content rounded-box z-[1] h-[600px] w-[900px] overflow-y-scroll bg-base-100 shadow"
