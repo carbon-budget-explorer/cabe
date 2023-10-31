@@ -18,7 +18,7 @@
 </script>
 
 <label>
-	<div class="flox-row flex gap-2">
+	<div class="flex flex-row gap-2">
 		<input
 			type="range"
 			class="range range-accent range-xs"
@@ -29,8 +29,14 @@
 			value={valIndex}
 			on:change={updateValue}
 		/>
-		<div class="badge- badge">
-			{value}
-		</div>
+	</div>
+	<div class="flex w-full justify-between px-2 text-xs">
+		<!-- TODO make low/high settable to numbers/strings -->
+		<span>low</span>
+		<span>high</span>
+	</div>
+	<!-- TODO make value show up at place of slider? -->
+	<div class="badge- badge">
+		{value}
 	</div>
 </label>
