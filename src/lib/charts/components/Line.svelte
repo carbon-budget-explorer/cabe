@@ -4,7 +4,7 @@
  -->
 <script lang="ts">
 	import type { ScaleLinear } from 'd3';
-	import { getContext } from 'svelte';
+	import { createEventDispatcher, getContext } from 'svelte';
 	import type { Readable } from 'svelte/store';
 
 	const { xScale, yScale } = getContext<{
@@ -26,15 +26,26 @@
 				return $xScale(d[x]) + ',' + $yScale(d[y]);
 			})
 			.join('L');
+
+	const dispatch = createEventDispatcher();
 </script>
 
-<path class="path-line" d={path} stroke={color} />
+<path
+	class="path-line"
+	d={path}
+	stroke={color}
+	on:mouseover={(e) => dispatch('mouseover', { e })}
+	on:focus={(e) => dispatch('mouseover', { e })}
+	on:mouseout={(e) => dispatch('mouseout')}
+	on:blur={(e) => dispatch('mouseout')}
+	role="tooltip"
+/>
 
 <style>
 	.path-line {
 		fill: none;
 		stroke-linejoin: round;
 		stroke-linecap: round;
-		stroke-width: 2;
+		stroke-width: 4;
 	}
 </style>

@@ -5,7 +5,7 @@
 <script lang="ts">
 	import type { ScaleLinear } from 'd3';
 	import { area, curveLinear } from 'd3-shape';
-	import { getContext } from 'svelte';
+	import { createEventDispatcher, getContext } from 'svelte';
 	import type { Readable } from 'svelte/store';
 
 	const { xScale, yScale } = getContext<{
@@ -26,9 +26,20 @@
 		.y0((d) => $yScale(d[y0]))
 		.curve(curveLinear);
 	$: path = shade(data);
+
+	const dispatch = createEventDispatcher();
 </script>
 
-<path class="path-area" d={path} fill={color} />
+<path
+	class="path-area"
+	d={path}
+	fill={color}
+	on:mouseover={(e) => dispatch('mouseover', { e })}
+	on:focus={(e) => dispatch('mouseover', { e })}
+	on:mouseout={(e) => dispatch('mouseout')}
+	on:blur={(e) => dispatch('mouseout')}
+	role="tooltip"
+/>
 
 <style>
 	.path-area {

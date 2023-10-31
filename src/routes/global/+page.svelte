@@ -56,6 +56,8 @@
 	$: emissionGapTweened.set(data.result.stats.gaps.emission);
 	const ambitionGapTweened = tweened(data.result.stats.gaps.ambition, tweenOptions);
 	$: ambitionGapTweened.set(data.result.stats.gaps.ambition);
+
+	let evt = {};
 </script>
 
 <div class="flex gap-4">
@@ -134,8 +136,15 @@
 	<div class="flex grow flex-col">
 		<ShareTabs />
 		<div class="relative grow bg-base-100 p-4 shadow-lg">
-			<Pathway>
-				<Line data={data.result.historicalCarbon} x={'time'} y={'value'} color="black" />
+			<Pathway {evt}>
+				<Line
+					data={data.result.historicalCarbon}
+					x={'time'}
+					y={'value'}
+					color="black"
+					on:mouseover={(e) => (evt = e)}
+					on:mouseout={(e) => (evt = e)}
+				/>
 				{#if policyPathwayToggles.current || emissionGapHover}
 					<Line data={data.result.currentPolicy} x={'time'} y={'mean'} color={ipcc_red} />
 					<Area
@@ -144,15 +153,33 @@
 						y0={'min'}
 						y1={'max'}
 						color={ipcc_red}
+						on:mouseover={(e) => (evt = e)}
+						on:mouseout={(e) => (evt = e)}
 					/>
 				{/if}
 				{#if policyPathwayToggles.ndc || ambitionGapHover}
 					<Line data={data.result.ndc} x={'time'} y={'mean'} color={ipcc_blue} />
-					<Area data={data.result.ndc} x={'time'} y0={'min'} y1={'max'} color={ipcc_blue} />
+					<Area
+						data={data.result.ndc}
+						x={'time'}
+						y0={'min'}
+						y1={'max'}
+						color={ipcc_blue}
+						on:mouseover={(e) => (evt = e)}
+						on:mouseout={(e) => (evt = e)}
+					/>
 				{/if}
 				{#if policyPathwayToggles.netzero}
 					<Line data={data.result.netzero} x={'time'} y={'mean'} color={ipcc_purple} />
-					<Area data={data.result.netzero} x={'time'} y0={'min'} y1={'max'} color={ipcc_purple} />
+					<Area
+						data={data.result.netzero}
+						x={'time'}
+						y0={'min'}
+						y1={'max'}
+						color={ipcc_purple}
+						on:mouseover={(e) => (evt = e)}
+						on:mouseout={(e) => (evt = e)}
+					/>
 				{/if}
 
 				{#if ambitionGapHover}
@@ -171,7 +198,15 @@
 				{/if}
 
 				<Line data={$pathwayCarbonTweened} x={'time'} y={'mean'} color={ipcc_green} />
-				<Area data={$pathwayCarbonTweened} x={'time'} y0={'min'} y1={'max'} color={ipcc_green} />
+				<Area
+					data={$pathwayCarbonTweened}
+					x={'time'}
+					y0={'min'}
+					y1={'max'}
+					color={ipcc_green}
+					on:mouseover={(e) => (evt = e)}
+					on:mouseout={(e) => (evt = e)}
+				/>
 			</Pathway>
 		</div>
 	</div>
