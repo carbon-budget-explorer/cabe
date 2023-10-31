@@ -102,12 +102,21 @@ def pathwayStats():
     # Calculate gaps
     # TODO gaps is not needed on non-global pages, so dont compute if there
     gap_index = 2030
-    pathway = dsGlobal.GHG_globe.sel(Time=gap_index, TrajUnc="Medium",
-            **pathwaySelection()).mean().values + 0
-    # TODO: change "USA" back to "EARTH" or "WORLD" after new data update
-    curPol = ds_policyscen.CurPol.sel(Region="USA", Time=gap_index).mean().values + 0
-    # TODO: change "USA" back to "EARTH" or "WORLD" after new data update
-    ndc = ds_policyscen.NDC.sel(Region="USA", Time=gap_index).mean().values + 0
+    pathway = (
+        dsGlobal.GHG_globe.sel(
+            Time=gap_index, TrajUnc="Medium", **pathwaySelection()
+        )
+        .mean()
+        .values
+        + 0
+    )
+    curPol = (
+        ds_policyscen.CurPol.sel(Region="EARTH", Time=gap_index).mean().values
+        + 0
+    )
+    ndc = (
+        ds_policyscen.NDC.sel(Region="EARTH", Time=gap_index).mean().values + 0
+    )
     gaps = {
         "index": gap_index,
         "budget": pathway,
@@ -117,9 +126,13 @@ def pathwayStats():
         "ambition": ndc - pathway,
     }
 
-    return {"total": total, "used": used, "remaining": remaining,
-            "relative": relative, "gaps": gaps
-            }
+    return {
+        "total": total,
+        "used": used,
+        "remaining": remaining,
+        "relative": relative,
+        "gaps": gaps,
+    }
 
 
 @app.get("/historicalCarbon/<region>")
@@ -242,14 +255,21 @@ def policyPathway(policy, region):
 
 
 def ndcAmbition(region):
-    ndc2030 = ds_policyscen.NDC.sel(Region=region, Time=2030).mean().values.tolist()
+    ndc2030 = (
+        ds_policyscen.NDC.sel(Region=region, Time=2030).mean().values.tolist()
+    )
     if np.isnan(ndc2030):
         return None
     hist1990 = dsGlobal.GHG_hist.sel(Region=region, Time=1990).values.tolist()
     return -(ndc2030 - hist1990) / hist1990 * 100
 
+
 def historicalCarbonIndicator(region, start, end):
-    return dsGlobal.GHG_hist.sel(Region=region, Time=slice(start, end)).sum().values.tolist()
+    return (
+        dsGlobal.GHG_hist.sel(Region=region, Time=slice(start, end))
+        .sum()
+        .values.tolist()
+    )
 
 
 @app.get("/indicators/<region>")
@@ -258,9 +278,10 @@ def indicators(region):
     end = request.args.get("end", 2100)
     data = {
         "ndcAmbition": ndcAmbition(region),
-        "historicalCarbon": historicalCarbonIndicator(region, start, end)
+        "historicalCarbon": historicalCarbonIndicator(region, start, end),
     }
     return data
+
 
 # Country-specific data (xr_alloc_<ISO>.nc)
 
@@ -299,7 +320,9 @@ def effortSharing(ISO, principle):
         .to_dict(orient="records")
     )
 
+
 principles = {"PC", "PCC", "AP", "GDR", "ECPC", "GF"}
+
 
 @app.get("/<ISO>/effortSharings")
 def effortSharings(ISO):
@@ -316,9 +339,10 @@ def effortSharings(ISO):
     """
     return {k: effortSharing(ISO, k) for k in principles}
 
+
 @app.get("/<ISO>/effortSharingReductions")
 def effortSharingReductions(ISO):
-    periods = (2030,2040)
+    periods = (2030, 2040)
     selection = dict(
         **pathwaySelection(),
         Time=periods,
