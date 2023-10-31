@@ -155,18 +155,15 @@ async function policyPathway(policy: string, Region: string): Promise<UncertainT
 	return getJSON(`/policyPathway/${policy}/${Region}`);
 }
 
-// TODO: change "USA" back to "EARTH" or "WORLD" after new data update
-export async function currentPolicy(Region = 'USA'): Promise<UncertainTime[]> {
+export async function currentPolicy(Region = 'EARTH'): Promise<UncertainTime[]> {
 	return await policyPathway('CurPol', Region);
 }
 
-// TODO: change "USA" back to "EARTH" or "WORLD" after new data update
-export async function ndc(Region = 'USA'): Promise<UncertainTime[]> {
+export async function ndc(Region = 'EARTH'): Promise<UncertainTime[]> {
 	return await policyPathway('NDC', Region);
 }
 
-// TODO: change "USA" back to "EARTH" or "WORLD" after new data update
-export async function netzero(Region = 'USA'): Promise<UncertainTime[]> {
+export async function netzero(Region = 'EARTH'): Promise<UncertainTime[]> {
 	return await policyPathway('NetZero', Region);
 }
 
