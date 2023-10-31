@@ -30,7 +30,7 @@
 	$: pathwayCarbonTweened.set(global.pathwayCarbon);
 </script>
 
-<div class="card-compact card flex-1 bg-base-100 shadow-xl">
+<div class="card card-compact flex-1 bg-base-100 shadow-xl">
 	<div class="card-body">
 		<a class="block h-full w-full" href={`/global${$page.url.search}`}>
 			<!-- TODO on x-axis have less or no ticks, now they are overlapping and unreadable -->

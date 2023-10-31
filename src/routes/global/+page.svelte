@@ -39,7 +39,7 @@
 	}
 
 	let policyPathwayToggles = {
-		current: true,
+		current: false,
 		ndc: false,
 		netzero: false
 	};
@@ -58,50 +58,86 @@
 	$: ambitionGapTweened.set(data.result.stats.gaps.ambition);
 </script>
 
-<div class="flex h-full gap-4">
-	<div id="sidebar" class="flex h-full max-w-[25%] flex-col gap-4">
+<!-- <p class="p-4">
+	We start with the temperature target that you want to achieve, because this determines how many
+	emissions we can distribute among countries at all – we call this amount of emissions the “”. Less
+	ambitious targets (for example, 2.2°C) of course allows for more emissions: the global carbon
+	budget is larger than when aiming for highly ambitious targets such as 1.5°C temperature rise. The
+	risk of exceeding the temperature target is also relevant to the budget. It is a consequence of
+	‘climate uncertainty’: the fact that we cannot fully predict how much temperature rise is
+	associated with a certain level of emissions. If you want to take less risk, it means that your
+	budget also needs to be on the more ‘safe’ side. From the budget, we proceed to the pathway that
+	is associated with it. The curvature of the pathway is determined by a number of things, but most
+	importantly (which you are allowed to choose here): negative emissions. More negative emissions
+	means that you can compensate in the latter half of the century for some more emissions in the
+	first half. Find out yourself! When you are ready, click on “World map with shares” to start
+	looking into distributing these global results by country.
+</p> -->
+
+<div class="flex gap-4">
+	<div id="sidebar" class="flex h-full max-w-[25%] flex-col justify-between gap-4">
 		<GlobalBudgetCard total={data.result.stats.total} remaining={data.result.stats.remaining} />
 		<GlobalQueryCard
 			choices={data.pathway.choices}
 			query={data.pathway.query}
 			onChange={updateQueryParam}
 		/>
-		<div class="card card-compact flex-1 bg-base-100 shadow-xl">
+		<div class="card card-compact bg-base-100 shadow-xl">
 			<div class="card-body">
-				<h2 class="card-title">Metrics</h2>
-
+				<h2 class="card-title">Reference pathways</h2>
+				<p>Compare your pathway to the following reference pathways:</p>
+				<ul>
+					<li>
+						<label>
+							<b style={`color: ${ipcc_red}`}>▬</b>
+							<input type="checkbox" bind:checked={policyPathwayToggles.current} />{' '}Current
+							policy</label
+						>
+					</li>
+					<li>
+						<label>
+							<b style={`color: ${ipcc_blue}`}>▬</b>
+							<input type="checkbox" bind:checked={policyPathwayToggles.ndc} />{' '}Nationally
+							determined contributions (NDCs)</label
+						>
+					</li>
+					<li>
+						<label>
+							<b style={`color: ${ipcc_purple}`}>▬</b>
+							<input type="checkbox" bind:checked={policyPathwayToggles.netzero} />{' '}Net
+							zero-scenarios</label
+						>
+					</li>
+				</ul>
 				<p>
-					These metrics show the difference between your scenario and the current policy or
-					nationally determined contributions.
+					The emission gap is the difference between your scenario and the current policy. The
+					ambition gap is the difference between your scenario and the NDCs. Hover below to show on
+					graph.
 				</p>
+			</div>
+		</div>
+		<div class="stats shadow">
+			<div
+				role="tooltip"
+				class="stat place-items-center"
+				on:mouseenter={toggleEmissionGap}
+				on:mouseleave={toggleEmissionGap}
+			>
+				<div class="stat-title">Emission gap in 2030</div>
+				<div class="stat-value">{($emissionGapTweened / 1_000).toFixed(0)}</div>
+				<div class="stat-desc" title="Gigaton carbon dioxide equivalent">Gt CO₂e</div>
+			</div>
 
-				<div class="stats shadow">
-					<div class="stat place-items-center">
-						<div class="stat-title">Emission gap</div>
-						<div class="stat-value">{($emissionGapTweened / 1_000).toFixed(0)}</div>
-						<div class="stat-desc" title="Gigaton carbon dioxide equivalent">Gt CO₂e</div>
-						<button
-							class="btn-sm btn mt-2"
-							on:mouseenter={toggleEmissionGap}
-							on:mouseleave={toggleEmissionGap}
-						>
-							view
-						</button>
-					</div>
-
-					<div class="stat place-items-center">
-						<div class="stat-title">Amibition gap</div>
-						<div class="stat-value">{($ambitionGapTweened / 1_000).toFixed(0)}</div>
-						<div class="stat-desc" title="Gigaton carbon dioxide equivalent">Gt CO₂e</div>
-						<button
-							class="btn-sm btn mt-2"
-							on:mouseenter={toggleAmbitionGap}
-							on:mouseleave={toggleAmbitionGap}
-						>
-							view
-						</button>
-					</div>
-				</div>
+			<div
+				role="tooltip"
+				class="stat place-items-center"
+				on:mouseenter={toggleAmbitionGap}
+				on:mouseleave={toggleAmbitionGap}
+			>
+				<div class="stat-title">Ambition gap in 2030</div>
+				<div class="stat-value">{($ambitionGapTweened / 1_000).toFixed(0)}</div>
+				<div class="stat-desc" title="Gigaton carbon dioxide equivalent">Gt CO₂e</div>
+				<p class="text-xs" />
 			</div>
 		</div>
 	</div>
@@ -148,37 +184,6 @@
 				<Line data={$pathwayCarbonTweened} x={'time'} y={'mean'} color={ipcc_green} />
 				<Area data={$pathwayCarbonTweened} x={'time'} y0={'min'} y1={'max'} color={ipcc_green} />
 			</Pathway>
-
-			<div class="absolute bottom-20 left-24">
-				<label>
-					<b style={`color: ${ipcc_green}`}>▬</b>
-					<input type="checkbox" checked disabled />{' '}Your pathway</label
-				>
-				<h1 class="pb-2 pt-4 text-xl">Reference pathways</h1>
-				<ul>
-					<li>
-						<label>
-							<b style={`color: ${ipcc_red}`}>▬</b>
-							<input type="checkbox" bind:checked={policyPathwayToggles.current} />{' '}Current
-							policy</label
-						>
-					</li>
-					<li>
-						<label>
-							<b style={`color: ${ipcc_blue}`}>▬</b>
-							<input type="checkbox" bind:checked={policyPathwayToggles.ndc} />{' '}Nationally
-							determined contributions (NDCs)</label
-						>
-					</li>
-					<li>
-						<label>
-							<b style={`color: ${ipcc_purple}`}>▬</b>
-							<input type="checkbox" bind:checked={policyPathwayToggles.netzero} />{' '}Net
-							zero-scenarios</label
-						>
-					</li>
-				</ul>
-			</div>
 		</div>
 	</div>
 </div>
