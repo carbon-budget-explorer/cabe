@@ -4,7 +4,7 @@
 	import AxisY from './components/AxisY.svelte';
 
 	export let xDomain: [number, number] = [1990, 2100];
-	export let yDomain: [number, number] = [0, 60_000];
+	export let yDomain: [number, number] = [0, 60];
 </script>
 
 <div class="h-full w-full overflow-clip pb-5 pl-12 pr-5 pt-1">

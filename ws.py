@@ -40,12 +40,15 @@ def pathwayCarbon():
     http://127.0.0.1:5000/pathwayCarbon?exceedanceRisk=0.5&negativeEmissions=0.5
     """
     df = (
-        dsGlobal.GHG_globe.sel(
-            # TODO remove defaults
-            # TODO use request.data instead of request.args?
-            # args uses GET, data uses POST, GET is idempotent which is easier to cache so keep using args
-            **pathwaySelection(),
-            Time=slice(2021, 2100),
+        (
+            dsGlobal.GHG_globe.sel(
+                # TODO remove defaults
+                # TODO use request.data instead of request.args?
+                # args uses GET, data uses POST, GET is idempotent which is easier to cache so keep using args
+                **pathwaySelection(),
+                Time=slice(2021, 2100),
+            )
+            / 1000  # global GHG in Gt CO2e
         )
         .rename({"Time": "time"})
         .to_pandas()
@@ -142,6 +145,10 @@ def historicalCarbon(region="EARTH"):
     df = dsGlobal.GHG_hist.sel(
         Region=region, Time=slice(start, end)
     ).to_pandas()
+
+    if region == "EARTH":
+        df /= 1000  # global GHG in Gt CO2e
+
     df.index.rename("time", True)
     df = df.reset_index()
     df["value"] = df.pop(0)
@@ -250,6 +257,10 @@ def policyPathway(policy, region):
             policy_ds.max(["Model"]).rename("max"),
         ]
     ).to_pandas()
+
+    if region == "EARTH":
+        df /= 1000  # global GHG in Gt CO2e
+
     df.index.rename("time", True)
     return df.reset_index().to_dict(orient="records")
 
