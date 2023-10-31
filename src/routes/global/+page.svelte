@@ -58,22 +58,6 @@
 	$: ambitionGapTweened.set(data.result.stats.gaps.ambition);
 </script>
 
-<!-- <p class="p-4">
-	We start with the temperature target that you want to achieve, because this determines how many
-	emissions we can distribute among countries at all – we call this amount of emissions the “”. Less
-	ambitious targets (for example, 2.2°C) of course allows for more emissions: the global carbon
-	budget is larger than when aiming for highly ambitious targets such as 1.5°C temperature rise. The
-	risk of exceeding the temperature target is also relevant to the budget. It is a consequence of
-	‘climate uncertainty’: the fact that we cannot fully predict how much temperature rise is
-	associated with a certain level of emissions. If you want to take less risk, it means that your
-	budget also needs to be on the more ‘safe’ side. From the budget, we proceed to the pathway that
-	is associated with it. The curvature of the pathway is determined by a number of things, but most
-	importantly (which you are allowed to choose here): negative emissions. More negative emissions
-	means that you can compensate in the latter half of the century for some more emissions in the
-	first half. Find out yourself! When you are ready, click on “World map with shares” to start
-	looking into distributing these global results by country.
-</p> -->
-
 <div class="flex gap-4">
 	<div id="sidebar" class="flex h-full max-w-[25%] flex-col justify-between gap-4">
 		<GlobalBudgetCard total={data.result.stats.total} remaining={data.result.stats.remaining} />
@@ -82,11 +66,11 @@
 			query={data.pathway.query}
 			onChange={updateQueryParam}
 		/>
-		<div class="card card-compact bg-base-100 shadow-xl">
+		<div class="card card-compact prose bg-base-100 shadow-xl">
 			<div class="card-body">
-				<h2 class="card-title">Reference pathways</h2>
+				<h2 class="not-prose card-title">Reference pathways</h2>
 				<p>Compare your pathway to the following reference pathways:</p>
-				<ul>
+				<ul class="not-prose">
 					<li>
 						<label>
 							<b style={`color: ${ipcc_red}`}>▬</b>
@@ -110,30 +94,35 @@
 					</li>
 				</ul>
 				<p>
-					The emission gap is the difference between your scenario and the current policy. The
-					ambition gap is the difference between your scenario and the NDCs. Hover below to show on
-					graph.
+					The difference between your pathway and the reference pathways is characterized by the <span
+						class="tooltip"
+						role="tooltip"
+						on:mouseenter={toggleEmissionGap}
+						on:mouseleave={toggleEmissionGap}
+						data-tip="The emission gap is the difference between your scenario and the current policy."
+						>emission 🛈</span
+					>
+					and
+					<span
+						class="tooltip"
+						role="tooltip"
+						on:mouseenter={toggleAmbitionGap}
+						on:mouseleave={toggleAmbitionGap}
+						data-tip="The ambition gap is the
+				difference between your scenario and the NDCs.">ambition 🛈</span
+					>
+					gaps.
 				</p>
 			</div>
 		</div>
-		<div class="stats shadow">
-			<div
-				role="tooltip"
-				class="stat place-items-center"
-				on:mouseenter={toggleEmissionGap}
-				on:mouseleave={toggleEmissionGap}
-			>
+		<div class="stats shadow-xl">
+			<div class="stat tooltip place-items-center">
 				<div class="stat-title">Emission gap in 2030</div>
 				<div class="stat-value">{($emissionGapTweened / 1_000).toFixed(0)}</div>
 				<div class="stat-desc" title="Gigaton carbon dioxide equivalent">Gt CO₂e</div>
 			</div>
 
-			<div
-				role="tooltip"
-				class="stat place-items-center"
-				on:mouseenter={toggleAmbitionGap}
-				on:mouseleave={toggleAmbitionGap}
-			>
+			<div class="stat place-items-center">
 				<div class="stat-title">Ambition gap in 2030</div>
 				<div class="stat-value">{($ambitionGapTweened / 1_000).toFixed(0)}</div>
 				<div class="stat-desc" title="Gigaton carbon dioxide equivalent">Gt CO₂e</div>

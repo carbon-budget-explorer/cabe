@@ -21,6 +21,7 @@
 	<div class="flox-row flex gap-2">
 		<input
 			type="range"
+			class="range range-accent range-xs"
 			{name}
 			min="0"
 			max={len - 1}
