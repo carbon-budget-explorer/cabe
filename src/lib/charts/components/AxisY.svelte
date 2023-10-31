@@ -22,7 +22,7 @@
 	export let ticks = 4;
 
 	/** @type {Number} [xTick=0] - How far over to position the text marker. */
-	export let xTick = 0;
+	export let xTick = -5;
 
 	/** @type {Number} [yTick=0] - How far up and down to position the text marker. */
 	export let yTick = 0;
@@ -83,7 +83,7 @@
 
 <style>
 	.tick {
-		font-size: 0.725em;
+		font-size: 1rem;
 		font-weight: 200;
 	}
 
