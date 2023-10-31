@@ -10,9 +10,9 @@
 	import { principles } from '$lib/principles';
 	import { cubicOut } from 'svelte/easing';
 	import { tweened } from 'svelte/motion';
-	import BudgetChoicesCard from '$lib/BudgetChoicesCard.svelte';
-	import NegativeEmissionChoiceCard from '$lib/NegativeEmissionChoiceCard.svelte';
 	import MiniPathwayCard from '$lib/MiniPathwayCard.svelte';
+	import GlobalBudgetCard from '$lib/GlobalBudgetCard.svelte';
+	import GlobalQueryCard from '$lib/GlobalQueryCard.svelte';
 
 	export let data: PageData;
 
@@ -38,16 +38,10 @@
 
 <div class="flex h-full flex-row gap-4">
 	<div id="sidebar" class="flex h-full max-w-[25%] flex-col gap-4">
-		<BudgetChoicesCard
-			total={data.pathway.stats.total}
-			remaining={data.pathway.stats.remaining}
+		<GlobalBudgetCard total={data.pathway.stats.total} remaining={data.pathway.stats.remaining} />
+		<GlobalQueryCard
 			choices={data.pathway.choices}
 			query={data.pathway.query}
-			onChange={updateQueryParam}
-		/>
-		<NegativeEmissionChoiceCard
-			choices={data.pathway.choices.negativeEmissions}
-			query={data.pathway.query.negativeEmissions}
 			onChange={updateQueryParam}
 		/>
 		<MiniPathwayCard global={data.global} />

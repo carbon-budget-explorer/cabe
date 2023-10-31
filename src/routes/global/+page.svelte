@@ -5,8 +5,6 @@
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 
-	import NegativeEmissionChoiceCard from '$lib/NegativeEmissionChoiceCard.svelte';
-	import BudgetChoicesCard from '$lib/BudgetChoicesCard.svelte';
 	import ShareTabs from '$lib/ShareTabs.svelte';
 	import Pathway from '$lib/charts/Pathway.svelte';
 	import Line from '$lib/charts/components/Line.svelte';
@@ -14,6 +12,8 @@
 	import Gap from '$lib/charts/components/Gap.svelte';
 
 	import type { PageData } from '../global/$types';
+	import GlobalBudgetCard from '$lib/GlobalBudgetCard.svelte';
+	import GlobalQueryCard from '$lib/GlobalQueryCard.svelte';
 
 	export let data: PageData;
 
@@ -60,19 +60,13 @@
 
 <div class="flex h-full gap-4">
 	<div id="sidebar" class="flex h-full max-w-[25%] flex-col gap-4">
-		<BudgetChoicesCard
-			total={data.result.stats.total}
-			remaining={data.result.stats.remaining}
+		<GlobalBudgetCard total={data.result.stats.total} remaining={data.result.stats.remaining} />
+		<GlobalQueryCard
 			choices={data.pathway.choices}
 			query={data.pathway.query}
 			onChange={updateQueryParam}
 		/>
-		<NegativeEmissionChoiceCard
-			choices={data.pathway.choices.negativeEmissions}
-			query={data.pathway.query.negativeEmissions}
-			onChange={updateQueryParam}
-		/>
-		<div class="card-compact card flex-1 bg-base-100 shadow-xl">
+		<div class="card card-compact flex-1 bg-base-100 shadow-xl">
 			<div class="card-body">
 				<h2 class="card-title">Metrics</h2>
 

@@ -7,12 +7,12 @@
 	import { page } from '$app/stores';
 	import LeafletMap from '$lib/charts/LeafletMap.svelte';
 	import { principles } from '$lib/principles';
-	import BudgetChoicesCard from '$lib/BudgetChoicesCard.svelte';
-	import NegativeEmissionChoiceCard from '$lib/NegativeEmissionChoiceCard.svelte';
 	import ShareTabs from '$lib/ShareTabs.svelte';
 	import MiniPathwayCard from '$lib/MiniPathwayCard.svelte';
 
 	import type { PageData } from './$types';
+	import GlobalQueryCard from '$lib/GlobalQueryCard.svelte';
+	import GlobalBudgetCard from '$lib/GlobalBudgetCard.svelte';
 
 	export let data: PageData;
 
@@ -69,16 +69,10 @@
 
 <div class="flex h-full gap-4">
 	<div id="sidebar" class="flex h-full max-w-[25%] flex-col gap-4">
-		<BudgetChoicesCard
-			total={data.pathway.stats.total}
-			remaining={data.pathway.stats.remaining}
+		<GlobalBudgetCard total={data.pathway.stats.total} remaining={data.pathway.stats.remaining} />
+		<GlobalQueryCard
 			choices={data.pathway.choices}
 			query={data.pathway.query}
-			onChange={updateQueryParam}
-		/>
-		<NegativeEmissionChoiceCard
-			choices={data.pathway.choices.negativeEmissions}
-			query={data.pathway.query.negativeEmissions}
 			onChange={updateQueryParam}
 		/>
 		<MiniPathwayCard global={data.global} bind:allocationTime />
