@@ -43,7 +43,7 @@
 	}}
 	on:mouseout={(e) => dispatch('mouseout', { e })}
 	on:focus={(e) => dispatch('mouseover', { e })}
-	on:blur={(e) => dispatch('mouseout')}
+	on:blur={() => dispatch('mouseout')}
 	role="tooltip"
 />
 

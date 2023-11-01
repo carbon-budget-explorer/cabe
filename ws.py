@@ -23,6 +23,7 @@ CORS(app)
 # TODO use class-based views for a reusable nc-file viewer?
 # TODO write tests with dummy data
 # TODO validate inputs? Must if ws is public, and now it is due to src/routes/api/\[...path\]/+server.ts
+# TODO make data/ configurable
 
 # Global data (xr_dataread.nc)
 dsGlobal = xr.open_dataset("data/xr_dataread.nc")
@@ -319,9 +320,13 @@ def indicators(region):
 
 # Country-specific data (xr_alloc_<ISO>.nc)
 
+available_regions = set([r.lstrip('data/xr_alloc_').rstrip('.nc') for r in  glob.glob("data/xr_alloc_*.nc")])
 
 def get_ds(ISO):
-    return xr.open_dataset(f"data/xr_alloc_{ISO}.nc")
+    if ISO not in available_regions:
+        raise ValueError(f"ISO {ISO} not found")
+    fn = f"data/xr_alloc_{ISO}.nc"
+    return xr.open_dataset(fn)
 
 
 @app.get("/<ISO>/<principle>")

@@ -45,8 +45,8 @@
 	on:mouseover={hover}
 	on:mousemove={hover}
 	on:focus={(e) => dispatch('mouseover', { e })}
-	on:mouseout={(e) => dispatch('mouseout')}
-	on:blur={(e) => dispatch('mouseout')}
+	on:mouseout={() => dispatch('mouseout')}
+	on:blur={() => dispatch('mouseout')}
 	role="tooltip"
 />
 

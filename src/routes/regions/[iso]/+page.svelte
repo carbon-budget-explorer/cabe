@@ -14,7 +14,6 @@
 	import GlobalBudgetCard from '$lib/GlobalBudgetCard.svelte';
 	import GlobalQueryCard from '$lib/GlobalQueryCard.svelte';
 	import type { ComponentEvents, SvelteComponent } from 'svelte';
-	import { indicators } from '$lib/api';
 	import NdcRange from '$lib/charts/components/NdcRange.svelte';
 
 	export let data: PageData;

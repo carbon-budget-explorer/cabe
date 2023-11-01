@@ -9,7 +9,7 @@ import {
 	pathwayQueryFromSearchParams,
 	pathwayStats
 } from '$lib/api';
-import type { BudgetSpatial, SpatialMetric } from '$lib/api';
+import type { BudgetSpatial } from '$lib/api';
 import type { principles } from '$lib/principles';
 
 export async function load({ url }: { url: URL }) {

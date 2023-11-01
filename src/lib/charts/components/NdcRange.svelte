@@ -34,10 +34,10 @@
 		y2={$yScale(y0)}
 		stroke={color}
 		on:mouseover={hover}
-		on:focus={(e) => dispatch('mouseover')}
-		on:mouseout={(e) => dispatch('mouseout')}
-		on:blur={(e) => dispatch('mouseout')}
-		on:mouseout={(e) => dispatch('mouseout')}
+		on:focus={() => dispatch('mouseover')}
+		on:mouseout={() => dispatch('mouseout')}
+		on:blur={() => dispatch('mouseout')}
+		on:mouseout={() => dispatch('mouseout')}
 		role="tooltip"
 	/>
 	<circle
@@ -47,10 +47,10 @@
 		stroke={color}
 		fill={color}
 		on:mouseover={hover}
-		on:focus={(e) => dispatch('mouseover')}
-		on:mouseout={(e) => dispatch('mouseout')}
+		on:focus={() => dispatch('mouseover')}
+		on:mouseout={() => dispatch('mouseout')}
 		on:blur={(e) => dispatch('mouseout')}
-		on:mouseout={(e) => dispatch('mouseout')}
+		on:mouseout={() => dispatch('mouseout')}
 		role="tooltip"
 	/>
 	<circle
@@ -60,10 +60,10 @@
 		stroke={color}
 		fill={color}
 		on:mouseover={hover}
-		on:focus={(e) => dispatch('mouseover')}
-		on:mouseout={(e) => dispatch('mouseout')}
-		on:blur={(e) => dispatch('mouseout')}
-		on:mouseout={(e) => dispatch('mouseout')}
+		on:focus={() => dispatch('mouseover')}
+		on:mouseout={() => dispatch('mouseout')}
+		on:blur={() => dispatch('mouseout')}
+		on:mouseout={() => dispatch('mouseout')}
 		role="tooltip"
 	/>
 </g>
