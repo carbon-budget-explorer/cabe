@@ -76,8 +76,8 @@
 			query={data.pathway.query}
 			onChange={updateQueryParam}
 		/>
-		<MiniPathwayCard global={data.global}  />
-		<AllocationCard bind:allocationTime/>
+		<MiniPathwayCard global={data.global} />
+		<AllocationCard bind:allocationTime />
 	</div>
 	<div class="flex grow flex-col">
 		<ShareTabs />

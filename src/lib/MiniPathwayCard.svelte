@@ -14,7 +14,7 @@
 		currentPolicy: UncertainTime[];
 	};
 
-    const ipcc_green = '#82a56e';
+	const ipcc_green = '#82a56e';
 	const ipcc_red = '#f5331e';
 
 	const tweenOptions = { duration: 1000, easing: cubicOut };

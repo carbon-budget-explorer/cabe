@@ -12,6 +12,6 @@
 	<a
 		href={`/map${$page.url.search}`}
 		class={clsx('tab-lifted tab tab-lg', $page.url.pathname === '/map' && 'tab-active')}
-		>Country shares</a
+		>World map with shares</a
 	>
 </div>

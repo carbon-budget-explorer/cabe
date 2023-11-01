@@ -11,11 +11,11 @@
 	}
 </script>
 
-<div class="card-compact card bg-base-100 shadow-xl">
+<div class="card card-compact bg-base-100 shadow-xl">
 	<div class="card-body">
-        <p>Allocation period or time.</p>
+		<p>Allocation period or time.</p>
 		{#if $page.url.pathname === '/map'}
-			<div class="flex w-full flex-row justify-items-stretch btn-group">
+			<div class="btn-group flex w-full flex-row justify-items-stretch">
 				{#each allocOptions as option}
 					<button
 						class={clsx('btn flex-1', option === allocationTime && 'btn-primary')}
