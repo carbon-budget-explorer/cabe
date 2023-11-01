@@ -62,7 +62,7 @@
 
 	function hoverEffortSharing(id: string) {
 		return hoverBuilder(
-			(row) => `${id} in ${row.time} was on average ${row.mean.toFixed(0)} Mt CO₂e`
+			(row) => `${id} in ${row.time} is on average ${row.mean.toFixed(0)} Mt CO₂e`
 		);
 	}
 </script>
