@@ -9,6 +9,7 @@
 	import { principles } from '$lib/principles';
 	import ShareTabs from '$lib/ShareTabs.svelte';
 	import MiniPathwayCard from '$lib/MiniPathwayCard.svelte';
+	import AllocationCard from '$lib/AllocationCard.svelte';
 
 	import type { PageData } from './$types';
 	import GlobalQueryCard from '$lib/GlobalQueryCard.svelte';
@@ -75,7 +76,8 @@
 			query={data.pathway.query}
 			onChange={updateQueryParam}
 		/>
-		<MiniPathwayCard global={data.global} bind:allocationTime />
+		<MiniPathwayCard global={data.global}  />
+		<AllocationCard bind:allocationTime/>
 	</div>
 	<div class="flex grow flex-col">
 		<ShareTabs />
