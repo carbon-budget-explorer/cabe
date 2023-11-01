@@ -12,8 +12,8 @@
 	export let metrics: NamedSpatialMetric[];
 
 	const mapOptions: MapOptions = {
-		center: [10, 0],
-		zoom: 1,
+		center: [40, 0],
+		zoom: 2,
 		minZoom: 2,
 		zoomControl: false
 		// TODO when open street map is not shown render less gray background
