@@ -20,6 +20,8 @@
 	const tweenOptions = { duration: 1000, easing: cubicOut };
 	const pathwayCarbonTweened = tweened(global.pathwayCarbon, tweenOptions);
 	$: pathwayCarbonTweened.set(global.pathwayCarbon);
+
+	// TODO add tooltips for each area
 </script>
 
 <div class="card-compact card flex-1 bg-base-100 shadow-xl">

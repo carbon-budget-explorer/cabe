@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { LeafletMap, GeoJSON, TileLayer } from 'svelte-leafletjs?client';
+	// import {CRS} from 'leaflet?client'
 	import type { BordersCollection } from '$lib/server/db/borders';
 	import type { NamedSpatialMetric } from '$lib/server/db/utils';
 	import 'leaflet/dist/leaflet.css';
@@ -19,6 +20,9 @@
 		zoomControl: false
 		// TODO when open street map is not shown render less gray background
 	};
+	if (browser) {
+		// mapOptions.crs = CRS.EPSG4326
+	}
 
 	const tileUrl = 'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.{ext}';
 	const tileLayerOptions = {
