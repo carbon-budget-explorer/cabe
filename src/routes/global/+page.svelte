@@ -68,7 +68,7 @@
 			query={data.pathway.query}
 			onChange={updateQueryParam}
 		/>
-		<div class="card card-compact prose bg-base-100 shadow-xl">
+		<div class="card-compact card prose bg-base-100 shadow-xl">
 			<div class="card-body">
 				<h2 class="not-prose card-title">Reference pathways</h2>
 				<p>Compare your pathway to the following reference pathways:</p>
@@ -120,13 +120,13 @@
 		<div class="stats shadow-xl">
 			<div class="stat tooltip place-items-center">
 				<div class="stat-title">Emission gap in 2030</div>
-				<div class="stat-value">{($emissionGapTweened / 1_000).toFixed(0)}</div>
+				<div class="stat-value">{$emissionGapTweened.toFixed(0)}</div>
 				<div class="stat-desc" title="Gigaton carbon dioxide equivalent">Gt CO₂e</div>
 			</div>
 
 			<div class="stat place-items-center">
 				<div class="stat-title">Ambition gap in 2030</div>
-				<div class="stat-value">{($ambitionGapTweened / 1_000).toFixed(0)}</div>
+				<div class="stat-value">{$ambitionGapTweened.toFixed(0)}</div>
 				<div class="stat-desc" title="Gigaton carbon dioxide equivalent">Gt CO₂e</div>
 				<p class="text-xs" />
 			</div>

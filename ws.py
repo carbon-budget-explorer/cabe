@@ -120,15 +120,15 @@ def pathwayStats():
     ndc = (
         ds_policyscen.NDC.sel(Region="EARTH", Time=gap_index).mean().values + 0
     )
+    
     gaps = {
         "index": gap_index,
-        "budget": pathway,
-        "curPol": curPol,
-        "ndc": ndc,
-        "emission": curPol - pathway,
-        "ambition": ndc - pathway,
+        "budget": pathway /1000,
+        "curPol": curPol /1000,
+        "ndc": ndc /1000,
+        "emission": (curPol - pathway) /1000,
+        "ambition": (ndc - pathway) / 1000,
     }
-
     return {
         "total": total,
         "used": used,
