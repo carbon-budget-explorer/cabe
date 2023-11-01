@@ -9,12 +9,12 @@ Run with
     gunicorn -w 4 'ws:app'
 
 """
-
-import xarray as xr
-import numpy as np
+from glob import glob
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+import numpy as np
+import xarray as xr
 
 app = Flask(__name__)
 CORS(app)
@@ -320,7 +320,7 @@ def indicators(region):
 
 # Country-specific data (xr_alloc_<ISO>.nc)
 
-available_regions = set([r.lstrip('data/xr_alloc_').rstrip('.nc') for r in  glob.glob("data/xr_alloc_*.nc")])
+available_regions = set([r.lstrip('data/xr_alloc_').rstrip('.nc') for r in glob("data/xr_alloc_*.nc")])
 
 def get_ds(ISO):
     if ISO not in available_regions:
