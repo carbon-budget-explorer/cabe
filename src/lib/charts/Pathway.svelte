@@ -8,10 +8,6 @@
 	export let xDomain: [number, number] = [1990, 2100];
 	export let yDomain: [number, number] = [0, 60];
 	export let evt: ComponentEvents<SvelteComponent> = {};
-
-	// TODO pass on title/label/data(?) from event source to tooltip
-	let hideTooltip = false;
-	let tooltiptext = 'test';
 </script>
 
 <div class="h-full w-full overflow-clip pb-5 pl-12 pr-5 pt-1">
@@ -22,11 +18,11 @@
 			<slot />
 		</Svg>
 		<Html pointerEvents={false}>
-			<!-- {#if hideTooltip !== true} -->
+			{#if evt?.detail?.msg}
 			<Tooltip {evt}>
-				{tooltiptext}
+				{evt.detail.msg}				
 			</Tooltip>
-			<!-- {/if} -->
+			{/if}
 		</Html>
 	</LayerCake>
 </div>

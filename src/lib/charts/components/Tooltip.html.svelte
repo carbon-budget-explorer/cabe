@@ -10,8 +10,6 @@
 
 	export let evt: ComponentEvents<SvelteComponent> = {};
 	export let offset = -5;
-
-	$: console.log(evt);
 </script>
 
 {#if evt.detail}

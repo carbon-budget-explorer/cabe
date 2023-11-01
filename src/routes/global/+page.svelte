@@ -14,6 +14,7 @@
 	import type { PageData } from '../global/$types';
 	import GlobalBudgetCard from '$lib/GlobalBudgetCard.svelte';
 	import GlobalQueryCard from '$lib/GlobalQueryCard.svelte';
+	import type { ComponentEvents, SvelteComponent } from 'svelte';
 
 	export let data: PageData;
 
@@ -38,6 +39,34 @@
 		emissionGapHover = !emissionGapHover;
 	}
 
+	let evt = {};
+	function hoverBuilder(tmpl: (row: any) => string) {
+		return function (e: ComponentEvents<SvelteComponent>) {
+			const row = e.detail.row;
+			if (row === undefined) {
+				return;
+			}
+			e.detail.msg = tmpl(row);
+			evt = e;
+		};
+	}
+	const hoverHistoricalCarbon = hoverBuilder(
+		(row) => `Historical emission in ${row.time} was ${row.value.toFixed(0)} Gt CO₂e`
+	);
+	const hoverPathway = hoverBuilder(
+		(row) => `Global budget in ${row.time} was on average ${row.mean.toFixed(0)} Gt CO₂e`
+	);
+	const hoverCurrentPolicy = hoverBuilder(
+		(row) => `Current policy in ${row.time} was on average ${row.mean.toFixed(0)} Gt CO₂e`
+	);
+	const hoverNdc = hoverBuilder(
+		(row) => `NDCs in ${row.time} was on average ${row.mean.toFixed(0)} Gt CO₂e`
+	);
+	const hoverNetzero = hoverBuilder(
+		(row) => `Net zero-scenarios in ${row.time} was on average ${row.mean.toFixed(0)} Gt CO₂e`
+	);
+	// When series overlap the top most series will react to mouse events
+
 	let policyPathwayToggles = {
 		current: false,
 		ndc: false,
@@ -57,7 +86,7 @@
 	const ambitionGapTweened = tweened(data.result.stats.gaps.ambition, tweenOptions);
 	$: ambitionGapTweened.set(data.result.stats.gaps.ambition);
 
-	let evt = {};
+	
 </script>
 
 <div class="flex gap-4">
@@ -68,7 +97,7 @@
 			query={data.pathway.query}
 			onChange={updateQueryParam}
 		/>
-		<div class="card-compact card prose bg-base-100 shadow-xl">
+		<div class="card card-compact prose bg-base-100 shadow-xl">
 			<div class="card-body">
 				<h2 class="not-prose card-title">Reference pathways</h2>
 				<p>Compare your pathway to the following reference pathways:</p>
@@ -142,7 +171,7 @@
 					x={'time'}
 					y={'value'}
 					color="black"
-					on:mouseover={(e) => (evt = e)}
+					on:mouseover={hoverHistoricalCarbon}
 					on:mouseout={(e) => (evt = e)}
 				/>
 				{#if policyPathwayToggles.current || emissionGapHover}
@@ -153,7 +182,7 @@
 						y0={'min'}
 						y1={'max'}
 						color={ipcc_red}
-						on:mouseover={(e) => (evt = e)}
+						on:mouseover={hoverCurrentPolicy}
 						on:mouseout={(e) => (evt = e)}
 					/>
 				{/if}
@@ -165,7 +194,7 @@
 						y0={'min'}
 						y1={'max'}
 						color={ipcc_blue}
-						on:mouseover={(e) => (evt = e)}
+						on:mouseover={hoverNdc}
 						on:mouseout={(e) => (evt = e)}
 					/>
 				{/if}
@@ -177,7 +206,7 @@
 						y0={'min'}
 						y1={'max'}
 						color={ipcc_purple}
-						on:mouseover={(e) => (evt = e)}
+						on:mouseover={hoverNetzero}
 						on:mouseout={(e) => (evt = e)}
 					/>
 				{/if}
@@ -204,7 +233,7 @@
 					y0={'min'}
 					y1={'max'}
 					color={ipcc_green}
-					on:mouseover={(e) => (evt = e)}
+					on:mouseover={hoverPathway}
 					on:mouseout={(e) => (evt = e)}
 				/>
 			</Pathway>

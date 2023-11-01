@@ -13,6 +13,7 @@
 	import MiniPathwayCard from '$lib/MiniPathwayCard.svelte';
 	import GlobalBudgetCard from '$lib/GlobalBudgetCard.svelte';
 	import GlobalQueryCard from '$lib/GlobalQueryCard.svelte';
+	import type { ComponentEvents, SvelteComponent } from 'svelte';
 
 	export let data: PageData;
 
@@ -34,6 +35,26 @@
 	$: tweenedEffortSharing.set(data.effortSharing);
 	const tweenedReductions = tweened(data.reductions, tweenOptions);
 	$: tweenedReductions.set(data.reductions);
+
+	// Hover effort sharing
+	let evt = {};
+	function hoverBuilder(tmpl: (row: any) => string) {
+		return function (e: ComponentEvents<SvelteComponent>) {
+			const row = e.detail.row;
+			if (row === undefined) {
+				return;
+			}
+			e.detail.msg = tmpl(row);
+			evt = e;
+		};
+	}
+	const hoverHistoricalCarbon = hoverBuilder(
+		(row) => `Historical emission in ${row.time} was ${row.value.toFixed(0)} Gt CO₂e`
+	);
+
+	function hoverEffortSharing(id: string) {
+		return hoverBuilder((row) => `${id} in ${row.time} was on average ${row.mean.toFixed(0)} Mt CO₂e`);
+	}
 </script>
 
 <div class="flex h-full flex-row gap-4">
@@ -136,18 +157,29 @@
 				<!-- TODO compute smarter extent -->
 				<Pathway
 					yDomain={[data.historicalCarbon.extent[1] * -0.2, data.historicalCarbon.extent[1]]}
+					{evt}
 				>
 					<Line
 						data={data.historicalCarbon.data.filter((d) => d.time >= 1990)}
 						x={'time'}
 						y={'value'}
 						color="black"
+						on:mouseover={hoverHistoricalCarbon}
+						on:mouseout={(e) => (evt = e)}						
 					/>
-					{#each Object.entries(principles) as [id, { color }]}
+					{#each Object.entries(principles) as [id, { color, label }]}
 						{#if activeEffortSharings[id]}
 							<g name={id}>
 								<Line data={$tweenedEffortSharing[id]} x={'time'} y={'mean'} {color} />
-								<Area data={$tweenedEffortSharing[id]} x={'time'} y0={'min'} y1={'max'} {color} />
+								<Area
+									data={$tweenedEffortSharing[id]}
+									x={'time'}
+									y0={'min'}
+									y1={'max'}
+									{color}
+									on:mouseover={hoverEffortSharing(label)}
+									on:mouseout={(e) => (evt = e)}
+								/>
 							</g>
 						{/if}
 					{/each}

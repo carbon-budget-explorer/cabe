@@ -3,7 +3,7 @@
   Generates an SVG area shape using the `area` function from [d3-shape](https://github.com/d3/d3-shape).
  -->
 <script lang="ts">
-	import type { ScaleLinear } from 'd3';
+	import { bisector, type ScaleLinear } from 'd3';
 	import { createEventDispatcher, getContext } from 'svelte';
 	import type { Readable } from 'svelte/store';
 
@@ -28,15 +28,21 @@
 			.join('L');
 
 	const dispatch = createEventDispatcher();
+	const finder = bisector((d: typeof data[number]) => d[x])
 </script>
 
 <path
 	class="path-line"
 	d={path}
 	stroke={color}
-	on:mouseover={(e) => dispatch('mouseover', { e })}
+	on:mouseover={(e) => {
+		const ox = $xScale.invert(e.offsetX)
+		// find entry in data which is closest to ox
+		const i = finder.center(data, ox)
+		return dispatch('mouseover', {e, row: data[i] })
+		}}
+	on:mouseout={(e) => dispatch('mouseout', {e})}
 	on:focus={(e) => dispatch('mouseover', { e })}
-	on:mouseout={(e) => dispatch('mouseout')}
 	on:blur={(e) => dispatch('mouseout')}
 	role="tooltip"
 />
