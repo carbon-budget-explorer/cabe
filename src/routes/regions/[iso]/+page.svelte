@@ -64,6 +64,10 @@
 			(row) => `${id} in ${row.time} is on average ${row.mean.toFixed(0)} Mt CO₂e`
 		);
 	}
+
+	const blankFlag =
+		'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480"%3E%3C/svg%3E';
+	let regionFlag = `https://flagcdn.com/${data.info.iso2?.toLowerCase()}.svg`;
 </script>
 
 <div class="flex h-full flex-row gap-4">
@@ -87,9 +91,12 @@
 				>
 			</a>
 			<img
-				src={`https://flagcdn.com/${data.info.iso2?.toLowerCase()}.svg`}
+				src={regionFlag}
 				class="h-8"
 				alt={data.info.name}
+				on:error={() => {
+					regionFlag = blankFlag;
+				}}
 			/>
 			<h1 class="text-3xl font-bold">{data.info.name}</h1>
 		</div>
@@ -129,14 +136,22 @@
 							<div class="stats shadow">
 								<div class="stat place-items-center">
 									<div class="stat-title">2030 reduction</div>
-									<div class="stat-value text-3xl">{$tweenedReductions[id][2030].toFixed(0)}%</div>
+									<div class="stat-value text-3xl">
+										{$tweenedReductions[id][2030] === null
+											? '-'
+											: $tweenedReductions[id][2030].toFixed(0)}%
+									</div>
 									<div class="stat-desc" title="With respect to emissions in 1990">
 										wrt 1990 emissions
 									</div>
 								</div>
 								<div class="stat place-items-center">
 									<div class="stat-title">2040 reduction</div>
-									<div class="stat-value text-3xl">{$tweenedReductions[id][2040].toFixed(0)}%</div>
+									<div class="stat-value text-3xl">
+										{$tweenedReductions[id][2040] === null
+											? '-'
+											: $tweenedReductions[id][2040].toFixed(0)}%
+									</div>
 									<div class="stat-desc" title="With respect to emissions in 1990">
 										wrt 1990 emissions
 									</div>

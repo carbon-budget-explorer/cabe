@@ -1,6 +1,5 @@
-import { borders } from '$lib/server/db/data';
 import type { PageServerLoad } from './$types';
-import { currentPolicy, historicalCarbon, indicators, pathwayChoices } from '$lib/api';
+import { currentPolicy, historicalCarbon, indicators, pathwayChoices, regionInfo } from '$lib/api';
 import { extent } from 'd3';
 
 // TODO figure out when pathway query in url.searchparams is changed
@@ -10,10 +9,8 @@ export const load: PageServerLoad = async ({ params }) => {
 	const iso = params.iso;
 
 	const choices = await pathwayChoices();
-
+	const info = await regionInfo(iso);
 	const hist = await historicalCarbon(iso, 1850, 2021);
-	const name = borders.labels.get(iso) || iso;
-	const iso2 = borders.iso3to2.get(iso) || iso;
 	const indicators_ = await indicators(iso);
 	if (indicators_.ndcAmbition !== null) {
 		// Country has historical ndc and probably also curpol and netzero
@@ -26,11 +23,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	};
 
 	const r = {
-		info: {
-			iso,
-			iso2,
-			name
-		},
+		info,
 		pathway: {
 			choices
 		},

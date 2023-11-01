@@ -2,19 +2,18 @@
 	import { LeafletMap, GeoJSON, TileLayer } from 'svelte-leafletjs?client';
 	// import {CRS} from 'leaflet?client'
 	import type { BordersCollection } from '$lib/server/db/borders';
-	import type { NamedSpatialMetric } from '$lib/server/db/utils';
 	import 'leaflet/dist/leaflet.css';
 	import { browser } from '$app/environment';
 	import type { GeoJSONOptions, MapOptions } from 'leaflet';
 	import { interpolateViridis, scaleSequential } from 'd3';
 	import ColorLegend from './components/ColorLegend.svelte';
-	import type { BudgetSpatial } from '$lib/api';
+	import type { BudgetSpatial, SpatialMetric } from '$lib/api';
 
 	export let borders: BordersCollection;
-	export let metrics: BudgetSpatial<NamedSpatialMetric>;
+	export let metrics: BudgetSpatial<SpatialMetric>;
 
 	const mapOptions: MapOptions = {
-		center: [40, 0],
+		center: [10, 0],
 		zoom: 2,
 		minZoom: 2,
 		zoomControl: false
@@ -47,7 +46,7 @@
 
 	function getMetric(
 		feature: GeoJSON.Feature<GeoJSON.GeometryObject, GeoJSON.GeoJsonProperties>,
-		metrics: NamedSpatialMetric[]
+		metrics: SpatialMetric[]
 	) {
 		return metrics.find((m) => m.ISO === feature.properties!.ISO_A3_EH);
 	}

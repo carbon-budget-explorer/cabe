@@ -10,6 +10,8 @@ Run with
 
 """
 from glob import glob
+from json import loads
+from pathlib import Path
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -81,9 +83,91 @@ def pathwaySelection():
     )
 
 
+available_region_files = set(
+    [r.lstrip("data/xr_alloc_").rstrip(".nc") for r in glob("data/xr_alloc_*.nc")]
+)
+
+def build_regions():
+    countries_geojson = {}
+    for g in loads(Path("data/ne_110m_admin_0_countries.geojson").read_text())["features"]:
+        ps = g["properties"]
+        countries_geojson[ps["ISO_A3_EH"]] = {
+            "name": ps["NAME"],
+            "iso2": ps["ISO_A2_EH"],
+            "iso3": ps["ISO_A3_EH"],
+        }
+
+    # TODO store this in nc file
+    additional_regions = {
+        "MDV": {"iso2": "MV", "iso3": "MDV", "name": "Maldives"},
+        "MLT": {"iso2": "MT", "iso3": "MLT", "name": "Malta"},
+        "STP": {"iso2": "ST", "iso3": "STP", "name": "São Tomé and Príncipe"},
+        "MUS": {"iso2": "MU", "iso3": "MUS", "name": "Mauritius"},
+        "PLW": {"iso2": "PW", "iso3": "PLW", "name": "Palau"},
+        "ATG": {"iso2": "AG", "iso3": "ATG", "name": "Antigua and Barbuda"},
+        "BRB": {"iso2": "BB", "iso3": "BRB", "name": "Barbados"},
+        "Northern America": {
+            "iso2": None,
+            "iso3": "Northern America",
+            "name": "Northern America",
+        },
+        "VCT": {"iso2": "VC", "iso3": "VCT", "name": "Saint Vincent and the Grenadines"},
+        "EU": {"iso2": "EU", "iso3": "EU", "name": "European Union"},
+        "CPV": {"iso2": "CV", "iso3": "CPV", "name": "Cape Verde"},
+        "BHR": {"iso2": "BH", "iso3": "BHR", "name": "Bahrain"},
+        "SIDS": {"iso2": None, "iso3": "SIDS", "name": "Small Island Developing States"},
+        "KNA": {"iso2": "KN", "iso3": "KNA", "name": "Saint Kitts and Nevis"},
+        "MCO": {"iso2": "MC", "iso3": "MCO", "name": "Monaco"},
+        "TON": {"iso2": "TO", "iso3": "TON", "name": "Tonga"},
+        "Umbrella": {"iso2": None, "iso3": "Umbrella", "name": "Umbrella"},
+        "COM": {"iso2": "KM", "iso3": "COM", "name": "Comoros"},
+        "KIR": {"iso2": "KI", "iso3": "KIR", "name": "Kiribati"},
+        "GRD": {"iso2": "GD", "iso3": "GRD", "name": "Grenada"},
+        "EARTH": {"iso2": None, "iso3": "EARTH", "name": "Earth"},
+        "SYC": {"iso2": "SC", "iso3": "SYC", "name": "Seychelles"},
+        "NRU": {"iso2": "NR", "iso3": "NRU", "name": "Nauru"},
+        "WSM": {"iso2": "WS", "iso3": "WSM", "name": "Samoa"},
+        "AND": {"iso2": "AD", "iso3": "AND", "name": "Andorra"},
+        "Australasia": {"iso2": None, "iso3": "Australasia", "name": "Australasia"},
+        "DMA": {"iso2": "DM", "iso3": "DMA", "name": "Dominica"},
+        "SGP": {"iso2": "SG", "iso3": "SGP", "name": "Singapore"},
+        "TUV": {"iso2": "TV", "iso3": "TUV", "name": "Tuvalu"},
+        "LIE": {"iso2": "LI", "iso3": "LIE", "name": "Liechtenstein"},
+        "SMR": {"iso2": "SM", "iso3": "SMR", "name": "San Marino"},
+        "LCA": {"iso2": "LC", "iso3": "LCA", "name": "Saint Lucia"},
+        "MHL": {"iso2": "MH", "iso3": "MHL", "name": "Marshall Islands"},
+        "G7": {"iso2": None, "iso3": "G7", "name": "Group of Seven (G7)"},
+        "VAT": {"iso2": "VA", "iso3": "VAT", "name": "Vatican City"},
+        "African Group": {"iso2": None, "iso3": "African Group", "name": "African Group"},
+        "FSM": {"iso2": "FM", "iso3": "FSM", "name": "Micronesia"},
+        "G20": {"iso2": None, "iso3": "G20", "name": "Group of 20 (G20)"},
+        "LDC": {"iso2": None, "iso3": "LDC", "name": "Least developed countries"},
+        "NIU": {"iso2": "NU", "iso3": "NIU", "name": "Niue"},
+        "COK": {"iso2": "CK", "iso3": "COK", "name": "Cook Islands"},
+    }
+
+    global_regions = set(dsGlobal.Region.values.tolist())
+    data = []
+    for region in global_regions:
+        if region in available_region_files and region in global_regions:
+            if region in countries_geojson:
+                data.append(countries_geojson[region])
+            else:
+                data.append(additional_regions[region])
+    return sorted(data, key=lambda x: x["name"])
+
+available_regions = build_regions()
+
 @app.get("/regions")
 def regions():
-    return dsGlobal.Region.values.tolist()
+    return available_regions
+
+@app.get("/regions/<region>")
+def region(region):
+    for r in available_regions:
+        if r["iso3"] == region:
+            return r
+    raise ValueError(f"Region {region} not found")
 
 
 @app.get("/pathwayStats")
@@ -320,10 +404,10 @@ def indicators(region):
 
 # Country-specific data (xr_alloc_<ISO>.nc)
 
-available_regions = set([r.lstrip('data/xr_alloc_').rstrip('.nc') for r in glob("data/xr_alloc_*.nc")])
+
 
 def get_ds(ISO):
-    if ISO not in available_regions:
+    if ISO not in available_region_files:
         raise ValueError(f"ISO {ISO} not found")
     fn = f"data/xr_alloc_{ISO}.nc"
     return xr.open_dataset(fn)
@@ -354,7 +438,7 @@ def effortSharing(ISO, principle):
         df = df.transpose()
 
     return (
-        df.agg(["mean", "min", "max"], axis=1).reset_index().to_dict(orient="records")
+        df.agg(["mean", "min", "max"], axis=1).reset_index().dropna().to_dict(orient="records")
     )
 
 
@@ -398,6 +482,9 @@ def effortSharingReductions(ISO):
         for period in periods:
             pselection.update(Time=period)
             es = get_ds(ISO)[principle].sel(**pselection).mean().values + 0
-            reductions[principle][period] = -(es - hist) / hist * 100
+            if np.isnan(es):
+                reductions[principle][period] = None
+            else:
+                reductions[principle][period] = -(es - hist) / hist * 100
 
     return reductions

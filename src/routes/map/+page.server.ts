@@ -4,6 +4,7 @@ import {
 	currentPolicy,
 	fullCenturyBudgetSpatial,
 	historicalCarbon,
+	listRegions,
 	pathwayCarbon,
 	pathwayChoices,
 	pathwayQueryFromSearchParams,
@@ -37,12 +38,9 @@ export async function load({ url }: { url: URL }) {
 		rawMetrics = await fullCenturyBudgetSpatial(selectedAllocationTime, url.search);
 	}
 
+	const regions = await listRegions();
 	const metrics = {
-		data: bordersDb.addNames(
-			rawMetrics.data.filter(
-				(d) => !Number.isNaN(d.value) && d.value !== null && d.value !== undefined
-			)
-		),
+		data: rawMetrics.data,
 		domain: rawMetrics.domain
 	};
 
@@ -57,6 +55,7 @@ export async function load({ url }: { url: URL }) {
 		effortSharing: selectedEffortSharing,
 		metrics,
 		borders: bordersDb.geojson,
+		regions,
 		global
 	};
 	return data;

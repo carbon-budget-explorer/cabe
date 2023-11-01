@@ -138,8 +138,18 @@ export async function gdpOverTime(
 	return getJSON(`/gdpOverTime/${region}?start=${start}&end=${end}`);
 }
 
-export async function listRegions(): Promise<string[]> {
+export interface Region {
+	iso2: string;
+	iso3: string;
+	name: string;
+}
+
+export async function listRegions(): Promise<Region[]> {
 	return getJSON(`/regions`);
+}
+
+export async function regionInfo(ISO: string): Promise<Region> {
+	return getJSON(`/regions/${ISO}`);
 }
 
 export interface BudgetSpatial<T = SpatialMetric> {

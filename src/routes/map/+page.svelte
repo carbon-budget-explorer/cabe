@@ -14,6 +14,7 @@
 	import type { PageData } from './$types';
 	import GlobalQueryCard from '$lib/GlobalQueryCard.svelte';
 	import GlobalBudgetCard from '$lib/GlobalBudgetCard.svelte';
+	import RegionList from '$lib/RegionList.svelte';
 
 	export let data: PageData;
 
@@ -101,12 +102,8 @@
 									class="compact card dropdown-content rounded-box z-[1] h-[600px] w-[900px] overflow-y-scroll bg-base-100 shadow"
 								>
 									<!-- TODO add filter input box to make it easier to find country -->
-									<div class="card-body grid grid-flow-row grid-cols-5">
-										{#each data.metrics.data as region}
-											<a href={`/regions/${region.ISO}${$page.url.search}`}>
-												{region.name}
-											</a>
-										{/each}
+									<div class="card-body">
+										<RegionList regions={data.regions} />
 									</div>
 								</div>
 							</details>
