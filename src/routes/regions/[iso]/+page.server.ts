@@ -1,14 +1,6 @@
 import { borders } from '$lib/server/db/data';
 import type { PageServerLoad } from './$types';
-import {
-	currentPolicy,
-	gdpOverTime,
-	historicalCarbon,
-	indicators,
-	ndc,
-	pathwayChoices,
-	populationOverTime
-} from '$lib/api';
+import { currentPolicy, historicalCarbon, indicators, pathwayChoices } from '$lib/api';
 import { extent } from 'd3';
 
 // TODO figure out when pathway query in url.searchparams is changed
@@ -20,19 +12,6 @@ export const load: PageServerLoad = async ({ params }) => {
 	const choices = await pathwayChoices();
 
 	const hist = await historicalCarbon(iso, 1850, 2021);
-	const population = await populationOverTime(iso, 1850, 2100);
-	const gdp = await gdpOverTime(iso, 1850, 2100);
-	const details = {
-		gdp: {
-			data: gdp,
-			extent: extent(gdp, (d) => d.value) as [number, number]
-		},
-		population: {
-			data: population,
-			extent: extent(population, (d) => d.value) as [number, number]
-		}
-	};
-
 	const name = borders.labels.get(iso) || iso;
 	const iso2 = borders.iso3to2.get(iso) || iso;
 	const indicators_ = await indicators(iso);
@@ -60,7 +39,6 @@ export const load: PageServerLoad = async ({ params }) => {
 			extent: extent(hist, (d) => d.value) as [number, number]
 		},
 		indicators: indicators_,
-		details,
 		global
 	};
 	return r;

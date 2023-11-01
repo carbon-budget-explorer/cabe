@@ -187,46 +187,6 @@
 					{/each}
 				</Pathway>
 			</section>
-			<section id="description" class="py-8">
-				<p>Some text about country carbon budget and plans.</p>
-
-				<p>Ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl eget.</p>
-			</section>
-			<section id="details">
-				<!-- TODO use same x-axis for all charts? -->
-				<div>
-					<h2 class="text-xl" id="pop">Population</h2>
-					<div class="h-64">
-						<Pathway yDomain={data.details.population.extent} xDomain={[1940, 2100]}>
-							<Line data={data.details.population.data} x={'time'} y={'value'} color="black" />
-						</Pathway>
-					</div>
-				</div>
-				<div>
-					<h2 class="text-xl" id="gdp">Gross domestic product (GDP)</h2>
-					<div class="h-64">
-						<Pathway yDomain={data.details.gdp.extent} xDomain={[1940, 2100]}>
-							<Line data={data.details.gdp.data} x={'time'} y={'value'} color="black" />
-						</Pathway>
-					</div>
-				</div>
-				<div>
-					<h2 class="text-xl" id="hist-emis">Historical emissions</h2>
-					<div class="h-64">
-						<Pathway yDomain={data.historicalCarbon.extent} xDomain={[1850, 2021]}>
-							<Line data={data.historicalCarbon.data} x={'time'} y={'value'} color="black" />
-						</Pathway>
-					</div>
-					<p title="Megaton carbon dioxide equivalent">in Mt CO₂e</p>
-				</div>
-				<!-- TODO plot current policy, NDC, netzero if country has it over time. Only have data for few countries/regions -->
-				<div>
-					<h2 class="text-xl" id="hist-emis">policy costs ????</h2>
-					<div class="h-64">
-						Ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl eget.
-					</div>
-				</div>
-			</section>
 		</div>
 	</div>
 </div>
