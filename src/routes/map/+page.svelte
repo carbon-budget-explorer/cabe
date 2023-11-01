@@ -64,7 +64,7 @@
 		| GeoJSON.Feature<GeoJSON.GeometryObject, GeoJSON.GeoJsonProperties>
 		| undefined;
 	$: hoveredMetric = hoveredFeature
-		? data.metrics.find((m) => m.ISO === hoveredFeature!.properties!.ISO_A3_EH)
+		? data.metrics.data.find((m) => m.ISO === hoveredFeature!.properties!.ISO_A3_EH)
 		: undefined;
 </script>
 
@@ -102,7 +102,7 @@
 								>
 									<!-- TODO add filter input box to make it easier to find country -->
 									<div class="card-body grid grid-flow-row grid-cols-5">
-										{#each data.metrics as region}
+										{#each data.metrics.data as region}
 											<a href={`/regions/${region.ISO}${$page.url.search}`}>
 												{region.name}
 											</a>

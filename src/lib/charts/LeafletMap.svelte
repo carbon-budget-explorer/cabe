@@ -7,9 +7,10 @@
 	import type { GeoJSONOptions, MapOptions } from 'leaflet';
 	import { interpolateViridis, scaleSequential } from 'd3';
 	import ColorLegend from './components/ColorLegend.svelte';
+	import type { BudgetSpatial } from '$lib/api';
 
 	export let borders: BordersCollection;
-	export let metrics: NamedSpatialMetric[];
+	export let metrics: BudgetSpatial<NamedSpatialMetric>;
 
 	const mapOptions: MapOptions = {
 		center: [40, 0],
@@ -32,20 +33,7 @@
 
 	let tileLayer;
 
-	$: domain = [
-		// Rounding to bigger digits by first dividing then multiplying by 10
-		Math.floor(
-			Object.values(metrics)
-				.map((d) => d.value)
-				.reduce((a, b) => (a < b ? a : b)) / 10
-		) * 10,
-		Math.ceil(
-			Object.values(metrics)
-				.map((d) => d.value)
-				.reduce((a, b) => (a > b ? a : b)) / 10
-		) * 10
-	];
-	$: scale = scaleSequential().clamp(true).domain(domain).interpolator(interpolateViridis); // TODO configurable colormap?
+	$: scale = scaleSequential().clamp(true).domain(metrics.domain).interpolator(interpolateViridis); // TODO configurable colormap?
 
 	function getColor(d: number) {
 		return scale(d);
@@ -65,7 +53,7 @@
 			if (geoJsonFeature === undefined) {
 				return {};
 			}
-			const value = getMetric(geoJsonFeature, metrics)?.value;
+			const value = getMetric(geoJsonFeature, metrics.data)?.value;
 			const defaultOptions = { fillColor: 'grey', color: 'darkgrey', weight: 1 };
 			if (value === undefined) {
 				return defaultOptions;

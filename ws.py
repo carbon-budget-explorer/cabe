@@ -76,9 +76,7 @@ def pathwaySelection():
     return dict(
         Temperature=request.args.get("temperature", defaults["temperature"]),
         Risk=request.args.get("exceedanceRisk", defaults["exceedanceRisk"]),
-        NegEmis=request.args.get(
-            "negativeEmissions", defaults["negativeEmissions"]
-        ),
+        NegEmis=request.args.get("negativeEmissions", defaults["negativeEmissions"]),
     )
 
 
@@ -106,27 +104,20 @@ def pathwayStats():
     # TODO gaps is not needed on non-global pages, so dont compute if there
     gap_index = 2030
     pathway = (
-        dsGlobal.GHG_globe.sel(
-            Time=gap_index, TrajUnc="Medium", **pathwaySelection()
-        )
+        dsGlobal.GHG_globe.sel(Time=gap_index, TrajUnc="Medium", **pathwaySelection())
         .mean()
         .values
         + 0
     )
-    curPol = (
-        ds_policyscen.CurPol.sel(Region="EARTH", Time=gap_index).mean().values
-        + 0
-    )
-    ndc = (
-        ds_policyscen.NDC.sel(Region="EARTH", Time=gap_index).mean().values + 0
-    )
-    
+    curPol = ds_policyscen.CurPol.sel(Region="EARTH", Time=gap_index).mean().values + 0
+    ndc = ds_policyscen.NDC.sel(Region="EARTH", Time=gap_index).mean().values + 0
+
     gaps = {
         "index": gap_index,
-        "budget": pathway /1000,
-        "curPol": curPol /1000,
-        "ndc": ndc /1000,
-        "emission": (curPol - pathway) /1000,
+        "budget": pathway / 1000,
+        "curPol": curPol / 1000,
+        "ndc": ndc / 1000,
+        "emission": (curPol - pathway) / 1000,
         "ambition": (ndc - pathway) / 1000,
     }
     return {
@@ -142,9 +133,7 @@ def pathwayStats():
 def historicalCarbon(region="EARTH"):
     start = request.args.get("start")
     end = request.args.get("end")
-    df = dsGlobal.GHG_hist.sel(
-        Region=region, Time=slice(start, end)
-    ).to_pandas()
+    df = dsGlobal.GHG_hist.sel(Region=region, Time=slice(start, end)).to_pandas()
 
     if region == "EARTH":
         df /= 1000  # global GHG in Gt CO2e
@@ -212,13 +201,11 @@ def fullCenturyBudgetSpatial(year):
         "2021-2100": ds_alloc_FC,
     }
 
-    return (
+    df = (
         (
             file_by_year[year][effortSharing]
             .sel(**selection)
-            .mean(
-                dim="TrajUnc"
-            )  # TODO: sel "Medium" instead of calculate mean?
+            .mean(dim="TrajUnc")  # TODO: sel "Medium" instead of calculate mean?
             / population_map(year=2021)
         )
         .rename(Region="ISO")
@@ -226,8 +213,42 @@ def fullCenturyBudgetSpatial(year):
         .rename("value")
         .dropna()  # Note: dropping NaN values here
         .reset_index()
-        .to_dict(orient="records")
     )
+    rows = df.to_dict(orient="records")
+
+    domain = [
+        min(rows, key=lambda x: x["value"])["value"],
+        max(rows, key=lambda x: x["value"])["value"],
+    ]
+    # Floating randomness make plot look weird for pc
+    # [222.999999322, 223.00000067800002]
+    # added fudge factor
+    if effortSharing == "PC" or (effortSharing == "PCC" and year == "2040"):
+        domain = [
+            domain[0] - 1,
+            domain[1] + 1,
+        ]
+
+    # TODO calculate domain from all principles
+    # ECPC is much bigger then other principles, so looks weird
+    # domainds = file_by_year[year].sel(
+    #     Scenario="SSP2",
+    #     Convergence_year=2040,
+    #     **pathwaySelection())
+    # domain_std = domainds.std()
+    # domain_mean = domainds.mean()
+    # sigma = 1
+    # raw_domain = [
+    #     domain_mean - (sigma * domain_std),
+    #     domain_mean + (sigma * domain_std),
+    # ]
+    # domain = [
+    #     min([v.values.tolist() for v in raw_domain[0].values()]),
+    #     max([v.values.tolist() for v in raw_domain[1].values()])
+    # ]
+    # print(domain)
+
+    return {"data": rows, "domain": domain}
 
 
 # Reference pathway data (xr_policyscen.nc)
@@ -238,9 +259,7 @@ ds_policyscen = xr.open_dataset("data/xr_policyscen.nc")
 def policyPathway(policy, region):
     assert policy in {"CurPol", "NDC", "NetZero"}
     policy_ds = (
-        ds_policyscen[policy]
-        .sel(Region=region, Time=slice(2021, 2100))
-        .drop("Region")
+        ds_policyscen[policy].sel(Region=region, Time=slice(2021, 2100)).drop("Region")
     )
     # Not all countries have data for all policies, so return None if no data
     if policy_ds.isnull().all():
@@ -266,9 +285,7 @@ def policyPathway(policy, region):
 
 
 def ndcAmbition(region):
-    ndc2030 = (
-        ds_policyscen.NDC.sel(Region=region, Time=2030).mean().values.tolist()
-    )
+    ndc2030 = ds_policyscen.NDC.sel(Region=region, Time=2030).mean().values.tolist()
     if np.isnan(ndc2030):
         return None
     hist1990 = dsGlobal.GHG_hist.sel(Region=region, Time=1990).values.tolist()
@@ -326,9 +343,7 @@ def effortSharing(ISO, principle):
         df = df.transpose()
 
     return (
-        df.agg(["mean", "min", "max"], axis=1)
-        .reset_index()
-        .to_dict(orient="records")
+        df.agg(["mean", "min", "max"], axis=1).reset_index().to_dict(orient="records")
     )
 
 

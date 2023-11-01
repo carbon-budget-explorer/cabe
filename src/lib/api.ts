@@ -142,12 +142,17 @@ export async function listRegions(): Promise<string[]> {
 	return getJSON(`/regions`);
 }
 
+export interface BudgetSpatial<T = SpatialMetric> {
+	data: T[];
+	domain: [number, number];
+}
+
 export async function fullCenturyBudgetSpatial(
 	allocationTime: string,
 	search: string
 	// Scenario = 'SSP2',
 	// Convergence_year = 2040
-): Promise<SpatialMetric[]> {
+): Promise<BudgetSpatial> {
 	return getJSON(`/map/${allocationTime}/GHG${search}`);
 }
 
