@@ -54,16 +54,16 @@
 		(row) => `Historical emission in ${row.time} was ${row.value.toFixed(0)} Gt CO₂e`
 	);
 	const hoverPathway = hoverBuilder(
-		(row) => `Global budget in ${row.time} was on average ${row.mean.toFixed(0)} Gt CO₂e`
+		(row) => `Global budget in ${row.time} is on avery ${row.mean.toFixed(0)} Gt CO₂e`
 	);
 	const hoverCurrentPolicy = hoverBuilder(
-		(row) => `Current policy in ${row.time} was on average ${row.mean.toFixed(0)} Gt CO₂e`
+		(row) => `Current policy in ${row.time} is on average ${row.mean.toFixed(0)} Gt CO₂e`
 	);
 	const hoverNdc = hoverBuilder(
-		(row) => `NDCs in ${row.time} was on average ${row.mean.toFixed(0)} Gt CO₂e`
+		(row) => `NDCs in ${row.time} is on average ${row.mean.toFixed(0)} Gt CO₂e`
 	);
 	const hoverNetzero = hoverBuilder(
-		(row) => `Net zero-scenarios in ${row.time} was on average ${row.mean.toFixed(0)} Gt CO₂e`
+		(row) => `Net zero-scenarios in ${row.time} is on average ${row.mean.toFixed(0)} Gt CO₂e`
 	);
 	// When series overlap the top most series will react to mouse events
 
@@ -163,7 +163,7 @@
 	<div class="flex grow flex-col">
 		<ShareTabs />
 		<div class="relative grow bg-base-100 p-4 shadow-lg">
-			<Pathway {evt}>
+			<Pathway {evt} yAxisTtle="Greenhouse gas emissions (Gt CO₂e/year)">
 				<Line
 					data={data.result.historicalCarbon}
 					x={'time'}

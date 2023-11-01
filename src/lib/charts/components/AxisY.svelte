@@ -5,7 +5,7 @@
 <script>
 	import { getContext } from 'svelte';
 
-	const { padding, xRange, yScale } = getContext('LayerCake');
+	const { padding, xRange, yScale, height } = getContext('LayerCake');
 
 	/** @type {Boolean} [gridlines=true] - Extend lines from the ticks into the chart space */
 	export let gridlines = true;
@@ -36,6 +36,8 @@
 	/** @type {String} [textAnchor='start'] The CSS `text-anchor` passed to the label. This is automatically set to "end" if the scale has a bandwidth method, like in ordinal scales. */
 	export let textAnchor = 'start';
 
+	export let title = '';
+
 	$: isBandwidth = typeof $yScale.bandwidth === 'function';
 
 	$: tickVals = Array.isArray(ticks)
@@ -45,6 +47,7 @@
 		: typeof ticks === 'function'
 		? ticks($yScale.ticks())
 		: $yScale.ticks(ticks);
+
 </script>
 
 <g class="axis y-axis" transform="translate({-$padding.left}, 0)">
@@ -79,6 +82,18 @@
 			>
 		</g>
 	{/each}
+	{#if title}
+		<text
+			class="tick"
+			transform="rotate(-90)"
+			y={-50}
+			x={(0 - $height) / 2}
+			dy="1em"
+			style="text-anchor: middle;"
+		>
+			{title}
+		</text>
+	{/if}
 </g>
 
 <style>
