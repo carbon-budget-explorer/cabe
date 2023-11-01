@@ -17,8 +17,8 @@
 	export let y1: number;
 	export let width = 2;
 
-	// TODO use color of ndc series on global page
-	export let color = '#5bb0c6';
+	// TODO use color of ndc series on global page?
+	export let color = 'black';
 	const dispatch = createEventDispatcher();
 
 	function hover(e: ComponentEvents<SvelteComponent>) {
@@ -26,7 +26,7 @@
 	}
 </script>
 
-<g>
+<g id="ndc">
 	<line
 		x1={$xScale(x)}
 		x2={$xScale(x)}
@@ -70,6 +70,7 @@
 
 <style>
 	line {
+		fill: none;
 		stroke-width: 2;
 	}
 </style>
