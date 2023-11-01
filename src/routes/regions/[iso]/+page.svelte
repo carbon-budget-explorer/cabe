@@ -53,7 +53,9 @@
 	);
 
 	function hoverEffortSharing(id: string) {
-		return hoverBuilder((row) => `${id} in ${row.time} was on average ${row.mean.toFixed(0)} Mt CO₂e`);
+		return hoverBuilder(
+			(row) => `${id} in ${row.time} was on average ${row.mean.toFixed(0)} Mt CO₂e`
+		);
 	}
 </script>
 
@@ -165,7 +167,7 @@
 						y={'value'}
 						color="black"
 						on:mouseover={hoverHistoricalCarbon}
-						on:mouseout={(e) => (evt = e)}						
+						on:mouseout={(e) => (evt = e)}
 					/>
 					{#each Object.entries(principles) as [id, { color, label }]}
 						{#if activeEffortSharings[id]}

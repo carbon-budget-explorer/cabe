@@ -28,7 +28,7 @@
 			.join('L');
 
 	const dispatch = createEventDispatcher();
-	const finder = bisector((d: typeof data[number]) => d[x])
+	const finder = bisector((d: (typeof data)[number]) => d[x]);
 </script>
 
 <path
@@ -36,12 +36,12 @@
 	d={path}
 	stroke={color}
 	on:mouseover={(e) => {
-		const ox = $xScale.invert(e.offsetX)
+		const ox = $xScale.invert(e.offsetX);
 		// find entry in data which is closest to ox
-		const i = finder.center(data, ox)
-		return dispatch('mouseover', {e, row: data[i] })
-		}}
-	on:mouseout={(e) => dispatch('mouseout', {e})}
+		const i = finder.center(data, ox);
+		return dispatch('mouseover', { e, row: data[i] });
+	}}
+	on:mouseout={(e) => dispatch('mouseout', { e })}
 	on:focus={(e) => dispatch('mouseover', { e })}
 	on:blur={(e) => dispatch('mouseout')}
 	role="tooltip"

@@ -19,9 +19,9 @@
 		</Svg>
 		<Html pointerEvents={false}>
 			{#if evt?.detail?.msg}
-			<Tooltip {evt}>
-				{evt.detail.msg}				
-			</Tooltip>
+				<Tooltip {evt}>
+					{evt.detail.msg}
+				</Tooltip>
 			{/if}
 		</Html>
 	</LayerCake>

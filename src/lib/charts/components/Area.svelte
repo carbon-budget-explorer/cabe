@@ -28,13 +28,13 @@
 	$: path = shade(data);
 
 	const dispatch = createEventDispatcher();
-	const finder = bisector((d: typeof data[number]) => d[x])
+	const finder = bisector((d: (typeof data)[number]) => d[x]);
 
 	function hover(e: ComponentEvents<SvelteComponent>) {
-		const ox = $xScale.invert(e.offsetX)
+		const ox = $xScale.invert(e.offsetX);
 		// find entry in data which is closest to ox
-		const i = finder.center(data, ox)
-		return dispatch('mouseover', {e, row: data[i] })
+		const i = finder.center(data, ox);
+		return dispatch('mouseover', { e, row: data[i] });
 	}
 </script>
 
