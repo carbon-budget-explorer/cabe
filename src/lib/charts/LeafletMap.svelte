@@ -5,7 +5,7 @@
 	import 'leaflet/dist/leaflet.css';
 	import { browser } from '$app/environment';
 	import type { GeoJSONOptions, MapOptions } from 'leaflet';
-	import { interpolatePuOr, scaleSequential } from 'd3';
+	import { interpolateViridis, scaleSequential } from 'd3';
 	import ColorLegend from './components/ColorLegend.svelte';
 
 	export let borders: BordersCollection;
@@ -45,8 +45,7 @@
 				.reduce((a, b) => (a > b ? a : b)) / 10
 		) * 10
 	];
-	$: colormap = interpolatePuOr;
-	$: scale = scaleSequential().clamp(true).domain(domain).interpolator(colormap); // TODO configurable colormap?
+	$: scale = scaleSequential().clamp(true).domain(domain).interpolator(interpolateViridis); // TODO configurable colormap?
 
 	function getColor(d: number) {
 		return scale(d);
