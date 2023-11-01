@@ -175,6 +175,7 @@ export async function netzero(Region = 'EARTH'): Promise<UncertainTime[]> {
 export async function indicators(ISO: string): Promise<{
 	ndcAmbition: number | null;
 	historicalCarbon: number;
+	ndc: Record<number, [number, number]>;
 }> {
 	return getJSON(`/indicators/${ISO}`);
 }

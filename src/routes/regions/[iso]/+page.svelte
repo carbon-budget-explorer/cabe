@@ -14,6 +14,8 @@
 	import GlobalBudgetCard from '$lib/GlobalBudgetCard.svelte';
 	import GlobalQueryCard from '$lib/GlobalQueryCard.svelte';
 	import type { ComponentEvents, SvelteComponent } from 'svelte';
+	import { indicators } from '$lib/api';
+	import NdcRange from '$lib/charts/components/NdcRange.svelte';
 
 	export let data: PageData;
 
@@ -50,6 +52,12 @@
 	}
 	const hoverHistoricalCarbon = hoverBuilder(
 		(row) => `Historical emission in ${row.time} was ${row.value.toFixed(0)} Gt CO₂e`
+	);
+	const hoverNdc = hoverBuilder(
+		(row) =>
+			`Nationally determined contribution at ${row.time} ranges from ${row.max.toFixed(
+				0
+			)} to ${row.min.toFixed(0)} Gt CO₂e`
 	);
 
 	function hoverEffortSharing(id: string) {
@@ -169,6 +177,15 @@
 						on:mouseover={hoverHistoricalCarbon}
 						on:mouseout={(e) => (evt = e)}
 					/>
+					{#each Object.entries(data.indicators.ndc) as [year, range]}
+						<NdcRange
+							x={parseInt(year)}
+							y0={range[0]}
+							y1={range[1]}
+							on:mouseover={hoverNdc}
+							on:mouseout={(e) => (evt = e)}
+						/>
+					{/each}
 					{#each Object.entries(principles) as [id, { color, label }]}
 						{#if activeEffortSharings[id]}
 							<g name={id}>

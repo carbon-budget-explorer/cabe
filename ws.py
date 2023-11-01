@@ -285,7 +285,7 @@ def policyPathway(policy, region):
 
 
 def ndcAmbition(region):
-    ndc2030 = ds_policyscen.NDC.sel(Region=region, Time=2030).mean().values.tolist()
+    ndc2030 = dsGlobal.GHG_ndc.sel(Region=region, Time=2030).mean().values.tolist()
     if np.isnan(ndc2030):
         return None
     hist1990 = dsGlobal.GHG_hist.sel(Region=region, Time=1990).values.tolist()
@@ -300,6 +300,11 @@ def historicalCarbonIndicator(region, start, end):
     )
 
 
+def ndcRange(region, period=2030):
+    ds = dsGlobal.GHG_ndc.sel(Region=region, Time=period)
+    return {period: [ds.min().values.tolist(), ds.max().values.tolist()]}
+
+
 @app.get("/indicators/<region>")
 def indicators(region):
     start = request.args.get("start", 1850)
@@ -307,6 +312,7 @@ def indicators(region):
     data = {
         "ndcAmbition": ndcAmbition(region),
         "historicalCarbon": historicalCarbonIndicator(region, start, end),
+        "ndc": ndcRange(region),
     }
     return data
 
