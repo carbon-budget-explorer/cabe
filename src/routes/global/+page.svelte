@@ -54,7 +54,7 @@
 		(row) => `Historical emission in ${row.time} was ${row.value.toFixed(0)} Gt CO₂e`
 	);
 	const hoverPathway = hoverBuilder(
-		(row) => `Global budget in ${row.time} is on avery ${row.mean.toFixed(0)} Gt CO₂e`
+		(row) => `Your selected global pathway emission in ${row.time} is on average ${row.mean.toFixed(0)} Gt CO₂e`
 	);
 	const hoverCurrentPolicy = hoverBuilder(
 		(row) => `Current policy in ${row.time} is on average ${row.mean.toFixed(0)} Gt CO₂e`
