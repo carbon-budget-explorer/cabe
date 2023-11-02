@@ -1,8 +1,6 @@
-import { borders } from '$lib/server/db/data';
-import { listRegions } from '$lib/server/db/models';
+import { listRegions } from '$lib/api';
 
 export async function load() {
-	const regionIsos = listRegions();
-	const regions = borders.addNames(regionIsos.map((ISO) => ({ ISO })));
+	const regions = await listRegions();
 	return { regions };
 }
