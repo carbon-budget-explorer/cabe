@@ -1,23 +1,27 @@
 <script lang="ts">
 	import { LeafletMap, GeoJSON, TileLayer } from 'svelte-leafletjs?client';
+	// import {CRS} from 'leaflet?client'
 	import type { BordersCollection } from '$lib/server/db/borders';
-	import type { NamedSpatialMetric } from '$lib/server/db/utils';
 	import 'leaflet/dist/leaflet.css';
 	import { browser } from '$app/environment';
 	import type { GeoJSONOptions, MapOptions } from 'leaflet';
-	import { interpolatePuOr, scaleSequential } from 'd3';
+	import { interpolateViridis, scaleSequential } from 'd3';
 	import ColorLegend from './components/ColorLegend.svelte';
+	import type { BudgetSpatial, SpatialMetric } from '$lib/api';
 
 	export let borders: BordersCollection;
-	export let metrics: NamedSpatialMetric[];
+	export let metrics: BudgetSpatial<SpatialMetric>;
 
 	const mapOptions: MapOptions = {
 		center: [10, 0],
-		zoom: 1,
+		zoom: 2,
 		minZoom: 2,
 		zoomControl: false
 		// TODO when open street map is not shown render less gray background
 	};
+	if (browser) {
+		// mapOptions.crs = CRS.EPSG4326
+	}
 
 	const tileUrl = 'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.{ext}';
 	const tileLayerOptions = {
@@ -32,21 +36,7 @@
 
 	let tileLayer;
 
-	$: domain = [
-		// Rounding to bigger digits by first dividing then multiplying by 10
-		Math.floor(
-			Object.values(metrics)
-				.map((d) => d.value)
-				.reduce((a, b) => (a < b ? a : b)) / 10
-		) * 10,
-		Math.ceil(
-			Object.values(metrics)
-				.map((d) => d.value)
-				.reduce((a, b) => (a > b ? a : b)) / 10
-		) * 10
-	];
-	$: colormap = interpolatePuOr;
-	$: scale = scaleSequential().clamp(true).domain(domain).interpolator(colormap); // TODO configurable colormap?
+	$: scale = scaleSequential().clamp(true).domain(metrics.domain).interpolator(interpolateViridis); // TODO configurable colormap?
 
 	function getColor(d: number) {
 		return scale(d);
@@ -56,7 +46,7 @@
 
 	function getMetric(
 		feature: GeoJSON.Feature<GeoJSON.GeometryObject, GeoJSON.GeoJsonProperties>,
-		metrics: NamedSpatialMetric[]
+		metrics: SpatialMetric[]
 	) {
 		return metrics.find((m) => m.ISO === feature.properties!.ISO_A3_EH);
 	}
@@ -66,7 +56,7 @@
 			if (geoJsonFeature === undefined) {
 				return {};
 			}
-			const value = getMetric(geoJsonFeature, metrics)?.value;
+			const value = getMetric(geoJsonFeature, metrics.data)?.value;
 			const defaultOptions = { fillColor: 'grey', color: 'darkgrey', weight: 1 };
 			if (value === undefined) {
 				return defaultOptions;

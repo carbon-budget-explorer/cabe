@@ -7,12 +7,14 @@
 	import { page } from '$app/stores';
 	import LeafletMap from '$lib/charts/LeafletMap.svelte';
 	import { principles } from '$lib/principles';
-	import BudgetChoicesCard from '$lib/BudgetChoicesCard.svelte';
-	import NegativeEmissionChoiceCard from '$lib/NegativeEmissionChoiceCard.svelte';
 	import ShareTabs from '$lib/ShareTabs.svelte';
 	import MiniPathwayCard from '$lib/MiniPathwayCard.svelte';
+	import AllocationCard from '$lib/AllocationCard.svelte';
 
 	import type { PageData } from './$types';
+	import GlobalQueryCard from '$lib/GlobalQueryCard.svelte';
+	import GlobalBudgetCard from '$lib/GlobalBudgetCard.svelte';
+	import RegionList from '$lib/RegionList.svelte';
 
 	export let data: PageData;
 
@@ -63,25 +65,20 @@
 		| GeoJSON.Feature<GeoJSON.GeometryObject, GeoJSON.GeoJsonProperties>
 		| undefined;
 	$: hoveredMetric = hoveredFeature
-		? data.metrics.find((m) => m.ISO === hoveredFeature!.properties!.ISO_A3_EH)
+		? data.metrics.data.find((m) => m.ISO === hoveredFeature!.properties!.ISO_A3_EH)
 		: undefined;
 </script>
 
 <div class="flex h-full gap-4">
 	<div id="sidebar" class="flex h-full max-w-[25%] flex-col gap-4">
-		<BudgetChoicesCard
-			total={data.pathway.stats.total}
-			remaining={data.pathway.stats.remaining}
+		<GlobalBudgetCard total={data.pathway.stats.total} remaining={data.pathway.stats.remaining} />
+		<GlobalQueryCard
 			choices={data.pathway.choices}
 			query={data.pathway.query}
 			onChange={updateQueryParam}
 		/>
-		<NegativeEmissionChoiceCard
-			choices={data.pathway.choices.negativeEmissions}
-			query={data.pathway.query.negativeEmissions}
-			onChange={updateQueryParam}
-		/>
-		<MiniPathwayCard global={data.global} bind:allocationTime />
+		<MiniPathwayCard global={data.global} />
+		<AllocationCard bind:allocationTime />
 	</div>
 	<div class="flex grow flex-col">
 		<ShareTabs />
@@ -105,12 +102,8 @@
 									class="compact card dropdown-content rounded-box z-[1] h-[600px] w-[900px] overflow-y-scroll bg-base-100 shadow"
 								>
 									<!-- TODO add filter input box to make it easier to find country -->
-									<div class="card-body grid grid-flow-row grid-cols-5">
-										{#each data.metrics as region}
-											<a href={`/regions/${region.ISO}${$page.url.search}`}>
-												{region.name}
-											</a>
-										{/each}
+									<div class="card-body">
+										<RegionList regions={data.regions} />
 									</div>
 								</div>
 							</details>

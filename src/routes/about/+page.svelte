@@ -2,91 +2,36 @@
 	export const prerender = true;
 </script>
 
-<div class="card-compact card flex-1 bg-base-100 shadow-xl">
-	<div class="card-body">
-		<h1 class="card-title">About explorer</h1>
-
+<div class="flex gap-4">
+	<div class="prose bg-base-100 p-4 shadow-xl">
+		<h2>Science</h2>
+		<h3>Global carbon budget</h3>
 		<p>
-			This is a prototype of a tool to explore the implications of different principles for sharing
-			the global carbon budget.
+			The global carbon budget numbers are taken from Forster et al. (2023,
+			https://essd.copernicus.org/articles/15/2295/2023/), who summarize updates of the WGI and
+			WGIII reports of the IPCC, and updates of climate emulators. This paper directly reports CO2
+			budgets, but also the implied paths on non-CO2. The latter is used, augmented with information
+			on cost-optimal global pathways from the AR6 database, to infer yearly total greenhouse gas
+			emissions over the coming century.
 		</p>
+		<h3>Effort-sharing methods</h3>
+		<p>
+			Links to Van der Berg et al. and Robiou. Picture of allocations.
+			<img src="/paper_preview.png" alt="paper preview" />
+		</p>
+	</div>
 
-		<p>...</p>
+	<div class="prose bg-base-100 p-4 shadow-xl">
+		<h2>More information</h2>
+		<p>Paper / pre-print link</p>
+		<p>Something on the code / Github</p>
+	</div>
 
-		<!-- TODO review or replace Co-pilot generated text below -->
-		<section class="pb-4">
-			<h2 class="text-2xl">Effort sharing principles</h2>
-
-			<p>
-				There are many different principles that can be used to divide up the global carbon budget
-				between countries and regions.
-			</p>
-		</section>
-
-		<section class="pb-4">
-			<h3 id="GF" class="text-xl"><a href="#GF">Grandfathering</a></h3>
-
-			<p>
-				Grandfathering is the principle that countries should be allowed to emit in the future in
-				proportion to their historical emissions. This principle is often used to argue that
-				developed countries should have higher emissions than developing countries.
-			</p>
-		</section>
-
-		<section class="pb-4">
-			<h3 id="PC" class="text-xl"><a href="#PC">Per capita</a></h3>
-
-			<p>
-				The per capita principle is the idea that each person should have an equal right to emit
-				greenhouse gases. This principle is often used to argue that developed countries should have
-				lower emissions than developing countries.
-			</p>
-		</section>
-
-		<section class="pb-4">
-			<h3 id="PCC" class="text-xl"><a href="#PCC">Per capita convergence</a></h3>
-
-			<p>
-				The per capita convergence principle is the idea that each person should have an equal right
-				to emit greenhouse gases, and that countries should converge to equal per capita emissions
-				over time. This principle is often used to argue that developed countries should have lower
-				emissions than developing countries, but that developing countries should also reduce their
-				emissions over time.
-			</p>
-		</section>
-
-		<section class="pb-4">
-			<h3 id="AP" class="text-xl"><a href="#AP">Ability to pay</a></h3>
-
-			<p>
-				The ability to pay principle is the idea that countries should be allowed to emit in
-				proportion to their ability to pay for mitigation. This principle is often used to argue
-				that developed countries should have higher emissions than developing countries.
-			</p>
-		</section>
-
-		<section class="pb-4">
-			<h3 id="GDR" class="text-xl"><a href="#GDR">Greenhouse development rights</a></h3>
-
-			<p>
-				The greenhouse development rights principle is the idea that each person should have an
-				equal right to emit greenhouse gases, and that countries should converge to equal per capita
-				emissions over time. This principle is often used to argue that developed countries should
-				have lower emissions than developing countries, but that developing countries should also
-				reduce their emissions over time.
-			</p>
-		</section>
-
-		<section class="pb-4">
-			<h3 id="ECPC" class="text-xl"><a href="#ECPC">Equal cumulative per capita</a></h3>
-
-			<p>
-				The equal cumulative per capita principle is the idea that each person should have an equal
-				right to emit greenhouse gases, and that countries should converge to equal cumulative per
-				capita emissions over time. This principle is often used to argue that developed countries
-				should have lower emissions than developing countries, but that developing countries should
-				also reduce their emissions over time.
-			</p>
-		</section>
+	<div class="prose bg-base-100 p-4 shadow-xl">
+		<h2>Contact</h2>
+		<p>
+			For more information you can contact the lead author of the scientific research on fair shares
+			dr. Mark Dekker at mark.dekker@pbl.nl
+		</p>
 	</div>
 </div>

@@ -4,12 +4,13 @@ import {
 	currentPolicy,
 	fullCenturyBudgetSpatial,
 	historicalCarbon,
+	listRegions,
 	pathwayCarbon,
 	pathwayChoices,
 	pathwayQueryFromSearchParams,
 	pathwayStats
 } from '$lib/api';
-import type { SpatialMetric } from '$lib/api';
+import type { BudgetSpatial } from '$lib/api';
 import type { principles } from '$lib/principles';
 
 export async function load({ url }: { url: URL }) {
@@ -29,14 +30,19 @@ export async function load({ url }: { url: URL }) {
 
 	const selectedAllocationTime = searchParam<string>(url, 'allocTime', '2021-2100');
 
-	let rawMetrics: SpatialMetric[] = [];
+	let rawMetrics: BudgetSpatial = {
+		data: [],
+		domain: [0, 1]
+	};
 	if (selectedEffortSharing !== undefined) {
 		rawMetrics = await fullCenturyBudgetSpatial(selectedAllocationTime, url.search);
 	}
 
-	const metrics = bordersDb.addNames(
-		rawMetrics.filter((d) => !Number.isNaN(d.value) && d.value !== null && d.value !== undefined)
-	);
+	const regions = await listRegions();
+	const metrics = {
+		data: rawMetrics.data,
+		domain: rawMetrics.domain
+	};
 
 	const global = {
 		historicalCarbon: await historicalCarbon(),
@@ -49,6 +55,7 @@ export async function load({ url }: { url: URL }) {
 		effortSharing: selectedEffortSharing,
 		metrics,
 		borders: bordersDb.geojson,
+		regions,
 		global
 	};
 	return data;

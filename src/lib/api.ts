@@ -138,8 +138,23 @@ export async function gdpOverTime(
 	return getJSON(`/gdpOverTime/${region}?start=${start}&end=${end}`);
 }
 
-export async function listRegions(): Promise<string[]> {
+export interface Region {
+	iso2: string;
+	iso3: string;
+	name: string;
+}
+
+export async function listRegions(): Promise<Region[]> {
 	return getJSON(`/regions`);
+}
+
+export async function regionInfo(ISO: string): Promise<Region> {
+	return getJSON(`/regions/${ISO}`);
+}
+
+export interface BudgetSpatial<T = SpatialMetric> {
+	data: T[];
+	domain: [number, number];
 }
 
 export async function fullCenturyBudgetSpatial(
@@ -147,7 +162,7 @@ export async function fullCenturyBudgetSpatial(
 	search: string
 	// Scenario = 'SSP2',
 	// Convergence_year = 2040
-): Promise<SpatialMetric[]> {
+): Promise<BudgetSpatial> {
 	return getJSON(`/map/${allocationTime}/GHG${search}`);
 }
 
@@ -170,6 +185,7 @@ export async function netzero(Region = 'EARTH'): Promise<UncertainTime[]> {
 export async function indicators(ISO: string): Promise<{
 	ndcAmbition: number | null;
 	historicalCarbon: number;
+	ndc: Record<number, [number, number]>;
 }> {
 	return getJSON(`/indicators/${ISO}`);
 }

@@ -10,9 +10,11 @@
 	import { principles } from '$lib/principles';
 	import { cubicOut } from 'svelte/easing';
 	import { tweened } from 'svelte/motion';
-	import BudgetChoicesCard from '$lib/BudgetChoicesCard.svelte';
-	import NegativeEmissionChoiceCard from '$lib/NegativeEmissionChoiceCard.svelte';
 	import MiniPathwayCard from '$lib/MiniPathwayCard.svelte';
+	import GlobalBudgetCard from '$lib/GlobalBudgetCard.svelte';
+	import GlobalQueryCard from '$lib/GlobalQueryCard.svelte';
+	import type { ComponentEvents, SvelteComponent } from 'svelte';
+	import NdcRange from '$lib/charts/components/NdcRange.svelte';
 
 	export let data: PageData;
 
@@ -34,20 +36,46 @@
 	$: tweenedEffortSharing.set(data.effortSharing);
 	const tweenedReductions = tweened(data.reductions, tweenOptions);
 	$: tweenedReductions.set(data.reductions);
+
+	// Hover effort sharing
+	let evt = {};
+	function hoverBuilder(tmpl: (row: any) => string) {
+		return function (e: ComponentEvents<SvelteComponent>) {
+			const row = e.detail.row;
+			if (row === undefined) {
+				return;
+			}
+			e.detail.msg = tmpl(row);
+			evt = e;
+		};
+	}
+	const hoverHistoricalCarbon = hoverBuilder(
+		(row) => `Historical emission in ${row.time} was ${row.value.toFixed(0)} Gt CO₂e`
+	);
+	const hoverNdc = hoverBuilder(
+		(row) =>
+			`Nationally determined contribution at ${row.time} ranges from ${row.max.toFixed(
+				0
+			)} to ${row.min.toFixed(0)} Gt CO₂e`
+	);
+
+	function hoverEffortSharing(id: string) {
+		return hoverBuilder(
+			(row) => `${id} in ${row.time} is on average ${row.mean.toFixed(0)} Mt CO₂e`
+		);
+	}
+
+	const blankFlag =
+		'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480"%3E%3C/svg%3E';
+	let regionFlag = `https://flagcdn.com/${data.info.iso2?.toLowerCase()}.svg`;
 </script>
 
 <div class="flex h-full flex-row gap-4">
 	<div id="sidebar" class="flex h-full max-w-[25%] flex-col gap-4">
-		<BudgetChoicesCard
-			total={data.pathway.stats.total}
-			remaining={data.pathway.stats.remaining}
+		<GlobalBudgetCard total={data.pathway.stats.total} remaining={data.pathway.stats.remaining} />
+		<GlobalQueryCard
 			choices={data.pathway.choices}
 			query={data.pathway.query}
-			onChange={updateQueryParam}
-		/>
-		<NegativeEmissionChoiceCard
-			choices={data.pathway.choices.negativeEmissions}
-			query={data.pathway.query.negativeEmissions}
 			onChange={updateQueryParam}
 		/>
 		<MiniPathwayCard global={data.global} />
@@ -63,9 +91,12 @@
 				>
 			</a>
 			<img
-				src={`https://flagcdn.com/${data.info.iso2?.toLowerCase()}.svg`}
+				src={regionFlag}
 				class="h-8"
 				alt={data.info.name}
+				on:error={() => {
+					regionFlag = blankFlag;
+				}}
 			/>
 			<h1 class="text-3xl font-bold">{data.info.name}</h1>
 		</div>
@@ -105,14 +136,22 @@
 							<div class="stats shadow">
 								<div class="stat place-items-center">
 									<div class="stat-title">2030 reduction</div>
-									<div class="stat-value text-3xl">{$tweenedReductions[id][2030].toFixed(0)}%</div>
+									<div class="stat-value text-3xl">
+										{$tweenedReductions[id][2030] === null
+											? '-'
+											: $tweenedReductions[id][2030].toFixed(0)}%
+									</div>
 									<div class="stat-desc" title="With respect to emissions in 1990">
 										wrt 1990 emissions
 									</div>
 								</div>
 								<div class="stat place-items-center">
 									<div class="stat-title">2040 reduction</div>
-									<div class="stat-value text-3xl">{$tweenedReductions[id][2040].toFixed(0)}%</div>
+									<div class="stat-value text-3xl">
+										{$tweenedReductions[id][2040] === null
+											? '-'
+											: $tweenedReductions[id][2040].toFixed(0)}%
+									</div>
 									<div class="stat-desc" title="With respect to emissions in 1990">
 										wrt 1990 emissions
 									</div>
@@ -142,62 +181,42 @@
 				<!-- TODO compute smarter extent -->
 				<Pathway
 					yDomain={[data.historicalCarbon.extent[1] * -0.2, data.historicalCarbon.extent[1]]}
+					{evt}
 				>
 					<Line
 						data={data.historicalCarbon.data.filter((d) => d.time >= 1990)}
 						x={'time'}
 						y={'value'}
 						color="black"
+						on:mouseover={hoverHistoricalCarbon}
+						on:mouseout={(e) => (evt = e)}
 					/>
-					{#each Object.entries(principles) as [id, { color }]}
+					{#each Object.entries(data.indicators.ndc) as [year, range]}
+						<NdcRange
+							x={parseInt(year)}
+							y0={range[0]}
+							y1={range[1]}
+							on:mouseover={hoverNdc}
+							on:mouseout={(e) => (evt = e)}
+						/>
+					{/each}
+					{#each Object.entries(principles) as [id, { color, label }]}
 						{#if activeEffortSharings[id]}
 							<g name={id}>
 								<Line data={$tweenedEffortSharing[id]} x={'time'} y={'mean'} {color} />
-								<Area data={$tweenedEffortSharing[id]} x={'time'} y0={'min'} y1={'max'} {color} />
+								<Area
+									data={$tweenedEffortSharing[id]}
+									x={'time'}
+									y0={'min'}
+									y1={'max'}
+									{color}
+									on:mouseover={hoverEffortSharing(label)}
+									on:mouseout={(e) => (evt = e)}
+								/>
 							</g>
 						{/if}
 					{/each}
 				</Pathway>
-			</section>
-			<section id="description" class="py-8">
-				<p>Some text about country carbon budget and plans.</p>
-
-				<p>Ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl eget.</p>
-			</section>
-			<section id="details">
-				<!-- TODO use same x-axis for all charts? -->
-				<div>
-					<h2 class="text-xl" id="pop">Population</h2>
-					<div class="h-64">
-						<Pathway yDomain={data.details.population.extent} xDomain={[1940, 2100]}>
-							<Line data={data.details.population.data} x={'time'} y={'value'} color="black" />
-						</Pathway>
-					</div>
-				</div>
-				<div>
-					<h2 class="text-xl" id="gdp">Gross domestic product (GDP)</h2>
-					<div class="h-64">
-						<Pathway yDomain={data.details.gdp.extent} xDomain={[1940, 2100]}>
-							<Line data={data.details.gdp.data} x={'time'} y={'value'} color="black" />
-						</Pathway>
-					</div>
-				</div>
-				<div>
-					<h2 class="text-xl" id="hist-emis">Historical emissions</h2>
-					<div class="h-64">
-						<Pathway yDomain={data.historicalCarbon.extent} xDomain={[1850, 2021]}>
-							<Line data={data.historicalCarbon.data} x={'time'} y={'value'} color="black" />
-						</Pathway>
-					</div>
-					<p title="Megaton carbon dioxide equivalent">in Mt CO₂e</p>
-				</div>
-				<!-- TODO plot current policy, NDC, netzero if country has it over time. Only have data for few countries/regions -->
-				<div>
-					<h2 class="text-xl" id="hist-emis">policy costs ????</h2>
-					<div class="h-64">
-						Ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl eget.
-					</div>
-				</div>
 			</section>
 		</div>
 	</div>
