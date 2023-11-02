@@ -5,7 +5,7 @@
 	import 'leaflet/dist/leaflet.css';
 	import { browser } from '$app/environment';
 	import type { GeoJSONOptions, MapOptions } from 'leaflet';
-	import { interpolateRgbBasis, interpolateViridis, interpolateYlGnBu, scaleSequential } from 'd3';
+	import { interpolateYlGnBu, scaleSequential } from 'd3';
 	import ColorLegend from './components/ColorLegend.svelte';
 	import type { BudgetSpatial, SpatialMetric } from '$lib/api';
 
@@ -44,22 +44,6 @@
 		return colors;
 	}
 
-	const scheme = new Array(3)
-		.concat(
-			'ffffd9edf8b1c7e9b47fcdbb41b6c41d91c0225ea8253494081d58',
-			'ffffd9edf8b1c7e9b47fcdbb41b6c41d91c0225ea80c2c84',
-			'ffffccc7e9b47fcdbb41b6c41d91c0225ea80c2c84',
-			'ffffccc7e9b47fcdbb41b6c42c7fb8253494',
-			'ffffcca1dab441b6c42c7fb8253494',
-			'ffffcca1dab441b6c4225ea8',
-			'edf8b17fcdbb2c7fb8'
-		)
-		.map(colors);
-	console.log(scheme);
-
-	const ramp = (scheme: any) => interpolateRgbBasis(scheme[scheme.length - 1]);
-	// const interpolator = ramp(scheme);
-	// const interpolator = interpolateViridis
 	const interpolator = interpolateYlGnBu;
 	$: scale = scaleSequential().clamp(true).domain(metrics.domain).interpolator(interpolator); // TODO configurable colormap?
 
