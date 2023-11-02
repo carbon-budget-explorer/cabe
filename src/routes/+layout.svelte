@@ -8,7 +8,12 @@
 	<div class="navbar bg-primary text-neutral-content">
 		<div class="flex-1">
 			<a href={`/${$page.url.search}`} class="btn-ghost btn text-xl normal-case"
-				><img src={logo} class="h-full" alt="Logo for Carbon Budget Explorer" /> Carbon Budget Explorer</a
+				><img
+					style="filter: invert(1);"
+					src={logo}
+					class="h-full text-current"
+					alt="Logo for Carbon Budget Explorer"
+				/> Carbon Budget Explorer</a
 			>
 		</div>
 		<div class="flex-none">

@@ -85,7 +85,9 @@
 		<div class="flex h-full max-h-full w-full flex-row gap-2">
 			<div class="flex grow flex-col">
 				<div class="relative h-full w-full">
-					<div class="absolute left-0 top-0 z-[500] h-16 w-64 rounded-br-md bg-white p-2 shadow">
+					<div
+						class="absolute left-0 top-0 z-[500] min-h-[4.5rem] w-64 rounded-br-md bg-white p-2 shadow"
+					>
 						{#if hoveredFeature && hoveredFeature.properties && hoveredMetric}
 							<div>
 								{hoveredFeature.properties.NAME}
@@ -96,10 +98,12 @@
 						{:else}
 							<div>Click country in map or</div>
 							<details class="dropdown">
-								<summary class="btn-ghost btn-sm btn w-60 font-normal">Pick country</summary>
+								<summary class="btn-ghost btn-sm btn w-60 font-normal"
+									>Select country &#9660;</summary
+								>
 								<!-- TODO dont hardcode height and width -->
 								<div
-									class="compact card dropdown-content rounded-box z-[1] h-[600px] w-[900px] overflow-y-scroll bg-base-100 shadow"
+									class="compact card dropdown-content rounded-box z-[500] h-[600px] w-[900px] overflow-y-scroll bg-base-100 shadow"
 								>
 									<!-- TODO add filter input box to make it easier to find country -->
 									<div class="card-body">
@@ -119,27 +123,32 @@
 							/>
 						</div>
 					</div>
-					<div class="absolute bottom-2 z-[500] flex w-full flex-row justify-center gap-2 p-2">
-						{#each Object.entries(principles) as [id, { label, summary }]}
-							<button
-								class={clsx(
-									'h-38 relative w-48 rounded border-2 object-top text-center shadow-lg',
-									data.effortSharing === id ? 'btn-neutral' : 'btn-outline bg-base-100'
-								)}
-								disabled={data.effortSharing === id}
-								on:click={() => selectEffortSharing(id)}
-							>
-								<p class="text-lg">{label}</p>
-								<p class="text-sm">{summary}</p>
-								<a
-									class="absolute right-1 top-1 inline-block text-xl"
-									title="More information"
-									target="_blank"
-									rel="noopener"
-									href={`/about#${id}`}>ⓘ</a
+					<div class="absolute bottom-2 z-[400] w-full">
+						<div class="flex w-full flex-row justify-center gap-2 p-2">
+							<div class="text-lg font-bold">Choose your effort-sharing principle:</div>
+						</div>
+						<div class="flex w-full flex-row justify-center gap-2 p-2">
+							{#each Object.entries(principles) as [id, { label, summary }]}
+								<button
+									class={clsx(
+										'h-38 relative w-48 rounded border-2 object-top text-center shadow-lg',
+										data.effortSharing === id ? 'btn-neutral' : 'btn-outline bg-base-100'
+									)}
+									disabled={data.effortSharing === id}
+									on:click={() => selectEffortSharing(id)}
 								>
-							</button>
-						{/each}
+									<p class=" font-bold">{label}</p>
+									<p class="text-sm">{summary}</p>
+									<a
+										class="absolute right-1 top-1 inline-block text-xl"
+										title="More information"
+										target="_blank"
+										rel="noopener"
+										href={`/about#${id}`}>ⓘ</a
+									>
+								</button>
+							{/each}
+						</div>
 					</div>
 				</div>
 			</div>

@@ -101,7 +101,7 @@
 			<h1 class="text-3xl font-bold">{data.info.name}</h1>
 		</div>
 		<!-- setting *any* initial height + grow fixes overflow-auto with h-full -->
-		<div class="h-[500px] grow overflow-y-auto bg-base-100 p-2 shadow-xl">
+		<div class="h-[500px] grow overflow-y-auto rounded-md bg-base-100 p-2 shadow-xl">
 			<section id="key-indicators">
 				<div class="border-10 stats mb-2 flex flex-row gap-10 p-2">
 					<div class="stat place-items-center bg-accent shadow-lg">
