@@ -79,17 +79,25 @@ def pathwaySelection():
     return dict(
         Temperature=request.args.get("temperature", defaults["temperature"]),
         Risk=request.args.get("exceedanceRisk", defaults["exceedanceRisk"]),
-        NegEmis=request.args.get("negativeEmissions", defaults["negativeEmissions"]),
+        NegEmis=request.args.get(
+            "negativeEmissions", defaults["negativeEmissions"]
+        ),
     )
 
 
 available_region_files = set(
-    [r.lstrip("data/xr_alloc_").rstrip(".nc") for r in glob("data/xr_alloc_*.nc")]
+    [
+        r.lstrip("data/xr_alloc_").rstrip(".nc")
+        for r in glob("data/xr_alloc_*.nc")
+    ]
 )
+
 
 def build_regions():
     countries_geojson = {}
-    for g in loads(Path("data/ne_110m_admin_0_countries.geojson").read_text())["features"]:
+    for g in loads(Path("data/ne_110m_admin_0_countries.geojson").read_text())[
+        "features"
+    ]:
         ps = g["properties"]
         countries_geojson[ps["ISO_A3_EH"]] = {
             "name": ps["NAME"],
@@ -111,11 +119,19 @@ def build_regions():
             "iso3": "Northern America",
             "name": "Northern America",
         },
-        "VCT": {"iso2": "VC", "iso3": "VCT", "name": "Saint Vincent and the Grenadines"},
+        "VCT": {
+            "iso2": "VC",
+            "iso3": "VCT",
+            "name": "Saint Vincent and the Grenadines",
+        },
         "EU": {"iso2": "EU", "iso3": "EU", "name": "European Union"},
         "CPV": {"iso2": "CV", "iso3": "CPV", "name": "Cape Verde"},
         "BHR": {"iso2": "BH", "iso3": "BHR", "name": "Bahrain"},
-        "SIDS": {"iso2": None, "iso3": "SIDS", "name": "Small Island Developing States"},
+        "SIDS": {
+            "iso2": None,
+            "iso3": "SIDS",
+            "name": "Small Island Developing States",
+        },
         "KNA": {"iso2": "KN", "iso3": "KNA", "name": "Saint Kitts and Nevis"},
         "MCO": {"iso2": "MC", "iso3": "MCO", "name": "Monaco"},
         "TON": {"iso2": "TO", "iso3": "TON", "name": "Tonga"},
@@ -128,7 +144,11 @@ def build_regions():
         "NRU": {"iso2": "NR", "iso3": "NRU", "name": "Nauru"},
         "WSM": {"iso2": "WS", "iso3": "WSM", "name": "Samoa"},
         "AND": {"iso2": "AD", "iso3": "AND", "name": "Andorra"},
-        "Australasia": {"iso2": None, "iso3": "Australasia", "name": "Australasia"},
+        "Australasia": {
+            "iso2": None,
+            "iso3": "Australasia",
+            "name": "Australasia",
+        },
         "DMA": {"iso2": "DM", "iso3": "DMA", "name": "Dominica"},
         "SGP": {"iso2": "SG", "iso3": "SGP", "name": "Singapore"},
         "TUV": {"iso2": "TV", "iso3": "TUV", "name": "Tuvalu"},
@@ -138,10 +158,18 @@ def build_regions():
         "MHL": {"iso2": "MH", "iso3": "MHL", "name": "Marshall Islands"},
         "G7": {"iso2": None, "iso3": "G7", "name": "Group of Seven (G7)"},
         "VAT": {"iso2": "VA", "iso3": "VAT", "name": "Vatican City"},
-        "African Group": {"iso2": None, "iso3": "African Group", "name": "African Group"},
+        "African Group": {
+            "iso2": None,
+            "iso3": "African Group",
+            "name": "African Group",
+        },
         "FSM": {"iso2": "FM", "iso3": "FSM", "name": "Micronesia"},
         "G20": {"iso2": None, "iso3": "G20", "name": "Group of 20 (G20)"},
-        "LDC": {"iso2": None, "iso3": "LDC", "name": "Least developed countries"},
+        "LDC": {
+            "iso2": None,
+            "iso3": "LDC",
+            "name": "Least developed countries",
+        },
         "NIU": {"iso2": "NU", "iso3": "NIU", "name": "Niue"},
         "COK": {"iso2": "CK", "iso3": "COK", "name": "Cook Islands"},
     }
@@ -156,11 +184,14 @@ def build_regions():
                 data.append(additional_regions[region])
     return sorted(data, key=lambda x: x["name"])
 
+
 available_regions = build_regions()
+
 
 @app.get("/regions")
 def regions():
     return available_regions
+
 
 @app.get("/regions/<region>")
 def region(region):
@@ -189,13 +220,20 @@ def pathwayStats():
     # TODO gaps is not needed on non-global pages, so dont compute if there
     gap_index = 2030
     pathway = (
-        dsGlobal.GHG_globe.sel(Time=gap_index, TrajUnc="Medium", **pathwaySelection())
+        dsGlobal.GHG_globe.sel(
+            Time=gap_index, TrajUnc="Medium", **pathwaySelection()
+        )
         .mean()
         .values
         + 0
     )
-    curPol = ds_policyscen.CurPol.sel(Region="EARTH", Time=gap_index).mean().values + 0
-    ndc = ds_policyscen.NDC.sel(Region="EARTH", Time=gap_index).mean().values + 0
+    curPol = (
+        ds_policyscen.CurPol.sel(Region="EARTH", Time=gap_index).mean().values
+        + 0
+    )
+    ndc = (
+        ds_policyscen.NDC.sel(Region="EARTH", Time=gap_index).mean().values + 0
+    )
 
     gaps = {
         "index": gap_index,
@@ -218,7 +256,9 @@ def pathwayStats():
 def historicalCarbon(region="EARTH"):
     start = request.args.get("start")
     end = request.args.get("end")
-    df = dsGlobal.GHG_hist.sel(Region=region, Time=slice(start, end)).to_pandas()
+    df = dsGlobal.GHG_hist.sel(
+        Region=region, Time=slice(start, end)
+    ).to_pandas()
 
     if region == "EARTH":
         df /= 1000  # global GHG in Gt CO2e
@@ -290,7 +330,9 @@ def fullCenturyBudgetSpatial(year):
         (
             file_by_year[year][effortSharing]
             .sel(**selection)
-            .mean(dim="TrajUnc")  # TODO: sel "Medium" instead of calculate mean?
+            .mean(
+                dim="TrajUnc"
+            )  # TODO: sel "Medium" instead of calculate mean?
             / population_map(year=2021)
         )
         .rename(Region="ISO")
@@ -349,7 +391,9 @@ ds_policyscen = xr.open_dataset("data/xr_policyscen.nc")
 def policyPathway(policy, region):
     assert policy in {"CurPol", "NDC", "NetZero"}
     policy_ds = (
-        ds_policyscen[policy].sel(Region=region, Time=slice(2021, 2100)).drop("Region")
+        ds_policyscen[policy]
+        .sel(Region=region, Time=slice(2021, 2100))
+        .drop("Region")
     )
     # Not all countries have data for all policies, so return None if no data
     if policy_ds.isnull().all():
@@ -375,7 +419,9 @@ def policyPathway(policy, region):
 
 
 def ndcAmbition(region):
-    ndc2030 = dsGlobal.GHG_ndc.sel(Region=region, Time=2030).mean().values.tolist()
+    ndc2030 = (
+        dsGlobal.GHG_ndc.sel(Region=region, Time=2030).mean().values.tolist()
+    )
     if np.isnan(ndc2030):
         return None
     hist1990 = dsGlobal.GHG_hist.sel(Region=region, Time=1990).values.tolist()
@@ -410,7 +456,6 @@ def indicators(region):
 # Country-specific data (xr_alloc_<ISO>.nc)
 
 
-
 def get_ds(ISO):
     if ISO not in available_region_files:
         raise ValueError(f"ISO {ISO} not found")
@@ -443,7 +488,10 @@ def effortSharing(ISO, principle):
         df = df.transpose()
 
     return (
-        df.agg(["mean", "min", "max"], axis=1).reset_index().dropna().to_dict(orient="records")
+        df.agg(["mean", "min", "max"], axis=1)
+        .reset_index()
+        .dropna()
+        .to_dict(orient="records")
     )
 
 
