@@ -95,9 +95,11 @@ available_region_files = set(
 
 def build_regions():
     countries_geojson = {}
-    for g in loads(Path("data/ne_110m_admin_0_countries.geojson").read_text())[
-        "features"
-    ]:
+    for g in loads(
+        Path("data/ne_110m_admin_0_countries.geojson").read_text(
+            encoding="utf8"
+        )
+    )["features"]:
         ps = g["properties"]
         countries_geojson[ps["ISO_A3_EH"]] = {
             "name": ps["NAME"],
