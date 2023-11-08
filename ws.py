@@ -345,43 +345,16 @@ def fullCenturyBudgetSpatial(year):
     )
     rows = df.to_dict(orient="records")
 
-    domain = [
-        min(rows, key=lambda x: x["value"])["value"],
-        max(rows, key=lambda x: x["value"])["value"],
-    ]
+    ds = (
+        file_by_year[year]
+        .sel(Scenario="SSP2", Convergence_year=2040, **pathwaySelection())
+        .sel(TrajUnc="Medium")
+    ).to_array("variable")
+
+    domain = [ds.quantile(0.1).item(), ds.quantile(0.5).item()]
+
     # Round domain to nearest 10
     domain = [d // 10 * 10 for d in domain]
-
-    # Floating randomness make plot look weird for pc
-    # [222.999999322, 223.00000067800002]
-    # added fudge factor
-    if effortSharing == "PC" or (effortSharing == "PCC" and year == "2040"):
-        domain = [
-            domain[0] - 10,
-            domain[1] + 10,
-        ]
-
-    # TODO calculate domain from all principles
-    # ECPC is much bigger then other principles, so looks weird
-    # if effortSharing != "ECPC":
-    #     similar_principles = ["PC", "PCC", "AP", "GDR", "GF"]
-    #     domainds = file_by_year[year][similar_principles].sel(
-    #         Scenario="SSP2",
-    #         Convergence_year=2040,
-    #         **pathwaySelection())
-    #     domain_std = domainds.std()
-    #     domain_mean = domainds.mean()
-    #     sigma = 1
-    #     raw_domain = [
-    #         domain_mean - (sigma * domain_std),
-    #         domain_mean + (sigma * domain_std),
-    #     ]
-    #     domain = [
-    #         min([v.values.tolist() for v in raw_domain[0].values()]),
-    #         max([v.values.tolist() for v in raw_domain[1].values()])
-    #     ]
-    # print(domain)
-
     return {"data": rows, "domain": domain}
 
 
