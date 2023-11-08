@@ -20,11 +20,11 @@
 			<a href="/about" class="btn-ghost btn-square btn px-10">About</a>
 		</div>
 	</div>
-	{#if $page.url.pathname === '/'}
+	<!-- {#if $page.url.pathname === '/'}
 		<slot />
-	{:else}
-		<div class="grow bg-base-200 p-4">
-			<slot />
-		</div>
-	{/if}
+	{:else} -->
+	<div class="flex-1 bg-base-200 p-4">
+		<slot />
+	</div>
+	<!-- {/if} -->
 </div>

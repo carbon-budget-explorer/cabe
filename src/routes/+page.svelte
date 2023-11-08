@@ -3,13 +3,15 @@
 	export const prerender = true;
 </script>
 
-<main class="grid grid-cols-2 content-around gap-20 bg-base-200 p-40">
-	<div class="flex flex-row items-center">
+<main
+	class="container mx-auto grid grid-cols-[1fr_auto] items-center justify-items-center gap-20 bg-base-200 px-20 pt-10"
+>
+	<div class="grid grid-cols-2">
 		<img src={logo} class="h-full" alt="Logo for Carbon Budget Explorer" />
 		<div class="text-6xl font-bold">
-			<div>Carbon</div>
-			<div>Budget</div>
-			<div>Explorer</div>
+			<p>Carbon</p>
+			<p>Budget</p>
+			<p>Explorer</p>
 		</div>
 	</div>
 	<div class="prose">
@@ -30,7 +32,7 @@
 		</ol>
 	</div>
 
-	<div class="prose">
+	<div class="prose max-w-none">
 		<h2>What is fair climate action?</h2>
 		<p>
 			While many countries commit to rapid climate action, no one likes to do more than their fair
@@ -40,7 +42,5 @@
 		</p>
 	</div>
 
-	<a class="btn-primary btn-lg btn self-center rounded-lg" href="/global">
-		Start exploring &raquo;
-	</a>
+	<a class="btn-primary btn-lg btn" href="/global"> Start exploring &raquo; </a>
 </main>
