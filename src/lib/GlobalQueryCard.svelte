@@ -21,7 +21,7 @@
 	$: onChange('negativeEmissions', negativeEmissions);
 </script>
 
-<div class="card card-compact prose bg-base-100 shadow-xl">
+<div class="card card-compact prose min-w-full bg-base-100 shadow-xl">
 	<div class="card-body">
 		<div>
 			<h2 class="not-prose card-title">Global budget</h2>

@@ -71,7 +71,7 @@
 </script>
 
 <div class="flex h-full flex-row gap-4">
-	<div id="sidebar" class="flex h-full max-w-[25%] flex-col gap-4">
+	<div id="sidebar" class="flex h-full w-1/3 flex-col gap-4">
 		<GlobalBudgetCard total={data.pathway.stats.total} remaining={data.pathway.stats.remaining} />
 		<GlobalQueryCard
 			choices={data.pathway.choices}

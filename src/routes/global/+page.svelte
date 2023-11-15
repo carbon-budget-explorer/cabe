@@ -91,14 +91,14 @@
 </script>
 
 <div class="flex gap-4">
-	<div id="sidebar" class="flex h-full max-w-[25%] flex-col justify-between gap-4">
+	<div id="sidebar" class="flex h-full w-1/3 flex-col justify-between gap-4">
 		<GlobalBudgetCard total={data.result.stats.total} remaining={data.result.stats.remaining} />
 		<GlobalQueryCard
 			choices={data.pathway.choices}
 			query={data.pathway.query}
 			onChange={updateQueryParam}
 		/>
-		<div class="card-compact card prose bg-base-100 shadow-xl">
+		<div class="card card-compact prose min-w-full bg-base-100 shadow-xl">
 			<div class="card-body">
 				<h2 class="not-prose card-title">Reference pathways</h2>
 				<p>Compare your pathway to the following reference pathways:</p>
