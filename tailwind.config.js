@@ -2,7 +2,9 @@
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 	theme: {
-		extend: {}
+		screens: {
+			'2xl': '1680px',
+		},
 	},
 	plugins: [require('@tailwindcss/forms'), require('daisyui'), require('@tailwindcss/typography')],
 	daisyui: {

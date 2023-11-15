@@ -13,7 +13,7 @@
 	export let activeEffortSharings: Record<string, boolean>;
 </script>
 
-<div class="p-4">
+<div class="rounded p-4">
 	<table class="prose w-full max-w-none table-auto">
 		<thead>
 			<tr>

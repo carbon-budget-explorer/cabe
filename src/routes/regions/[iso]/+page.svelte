@@ -107,31 +107,27 @@
 		<!-- setting *any* initial height + grow fixes overflow-auto with h-full -->
 		<div class="h-[500px] grow overflow-y-auto rounded-md bg-base-100 p-2 shadow-xl">
 			<section id="key-indicators">
-				<div class="border-10 stats mb-2 flex flex-row gap-10 p-2">
-					<div class="stat place-items-center bg-accent shadow-lg">
-						<div class="stat-title">NDC Ambition (2030)</div>
-						<div class="stat-value">
-							{data.indicators.ndcAmbition === null ? '-' : data.indicators.ndcAmbition.toFixed(0)}%
-						</div>
-						<div class="stat-desc" title="With respect to emissions in 1990">
-							wrt 1990 emissions
-						</div>
-					</div>
-
-					<div class="stat place-items-center bg-accent shadow-lg">
-						<div class="stat-title">Historical emissions</div>
-						<div class="stat-value">
+				<div class="p-4">
+					<p>
+						<span class="font-bold"> Historical emissions: </span>
+						<span>
 							{(data.indicators.historicalCarbon / 1_000).toFixed()}
-						</div>
-						<div class="stat-desc" title="cumulative gigaton carbon dioxide equivalent">
 							Gt CO₂e (cumulative)
-						</div>
-					</div>
+						</span>
+					</p>
+					<p>
+						<span class="font-bold"> 2030 NDC ambition: </span><span
+							>{data.indicators.ndcAmbition === null
+								? '-'
+								: data.indicators.ndcAmbition.toFixed(0)}% reduction with respect to 1990 emissions.
+						</span>
+					</p>
 				</div>
+				<hr />
+
 				<PrincipleStatsTable reductions={data.reductions} bind:activeEffortSharings />
 			</section>
-			<hr class="py-2" />
-			<section id="overview" class="relative h-[500px] grow">
+			<section id="overview" class="relative h-[300px] grow">
 				<!-- TODO compute smarter extent -->
 				<Pathway
 					yDomain={[data.historicalCarbon.extent[1] * -0.2, data.historicalCarbon.extent[1]]}
