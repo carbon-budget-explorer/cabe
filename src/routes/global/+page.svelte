@@ -103,7 +103,7 @@
 			query={data.pathway.query}
 			onChange={updateQueryParam}
 		/>
-		<div class="card card-compact prose min-w-full bg-base-100 shadow-xl">
+		<div class="card-compact card prose min-w-full bg-base-100 shadow-xl">
 			<div class="card-body">
 				<h2 class="not-prose card-title">Reference pathways</h2>
 				<p>Compare your pathway to the following reference pathways:</p>
