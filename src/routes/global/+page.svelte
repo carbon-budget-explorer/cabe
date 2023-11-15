@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Sidebar from '$lib/Sidebar.svelte';
+
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { page } from '$app/stores';
@@ -90,8 +92,8 @@
 	$: ambitionGapTweened.set(data.result.stats.gaps.ambition);
 </script>
 
-<div class="flex gap-4">
-	<div id="sidebar" class="flex h-full w-1/3 flex-col justify-between gap-4">
+<div class="flex h-full gap-4">
+	<Sidebar>
 		<GlobalBudgetCard total={data.result.stats.total} remaining={data.result.stats.remaining} />
 		<GlobalQueryCard
 			choices={data.pathway.choices}
@@ -147,8 +149,7 @@
 				</p>
 			</div>
 		</div>
-	</div>
-
+	</Sidebar>
 	<div class="flex grow flex-col">
 		<ShareTabs />
 		<div class="relative grow bg-base-100 p-4 shadow-lg">

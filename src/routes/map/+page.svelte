@@ -1,6 +1,5 @@
 <script lang="ts">
 	import clsx from 'clsx';
-	import type { GeoJSON } from 'geojson';
 
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
@@ -15,6 +14,7 @@
 	import GlobalQueryCard from '$lib/GlobalQueryCard.svelte';
 	import GlobalBudgetCard from '$lib/GlobalBudgetCard.svelte';
 	import RegionList from '$lib/RegionList.svelte';
+	import Sidebar from '$lib/Sidebar.svelte';
 
 	export let data: PageData;
 
@@ -70,7 +70,7 @@
 </script>
 
 <div class="flex h-full gap-4">
-	<div id="sidebar" class="flex h-full w-1/3 flex-col gap-4">
+	<Sidebar>
 		<GlobalBudgetCard total={data.pathway.stats.total} remaining={data.pathway.stats.remaining} />
 		<GlobalQueryCard
 			choices={data.pathway.choices}
@@ -79,7 +79,7 @@
 		/>
 		<MiniPathwayCard global={data.global} />
 		<AllocationCard bind:allocationTime />
-	</div>
+	</Sidebar>
 	<div class="flex grow flex-col">
 		<ShareTabs />
 		<div class="flex h-full max-h-full w-full flex-row gap-2">

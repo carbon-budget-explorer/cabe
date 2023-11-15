@@ -15,6 +15,7 @@
 	import GlobalQueryCard from '$lib/GlobalQueryCard.svelte';
 	import type { ComponentEvents, SvelteComponent } from 'svelte';
 	import NdcRange from '$lib/charts/components/NdcRange.svelte';
+	import Sidebar from '$lib/Sidebar.svelte';
 
 	export let data: PageData;
 
@@ -71,7 +72,7 @@
 </script>
 
 <div class="flex h-full flex-row gap-4">
-	<div id="sidebar" class="flex h-full w-1/3 flex-col gap-4">
+	<Sidebar>
 		<GlobalBudgetCard total={data.pathway.stats.total} remaining={data.pathway.stats.remaining} />
 		<GlobalQueryCard
 			choices={data.pathway.choices}
@@ -79,8 +80,8 @@
 			onChange={updateQueryParam}
 		/>
 		<MiniPathwayCard global={data.global} />
-	</div>
-	<div class="flex h-full grow flex-col">
+	</Sidebar>
+	<div class="flex h-full flex-col">
 		<div id="country-header" class="flex flex-row items-center gap-4 pb-2">
 			<a href={`/map${$page.url.search}`} title="Back to map"
 				><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 256 256"
