@@ -1,5 +1,5 @@
 <script lang="ts">
-	import PrincipleStatCard from '$lib/PrincipleStatCard.svelte';
+	import PrincipleStatsTable from '$lib/PrincipleStatsTable.svelte';
 
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
@@ -125,29 +125,10 @@
 						</div>
 					</div>
 				</div>
-				<div class="mb-2 flex flex-wrap gap-4 p-2">
-					{#each Object.entries(principles) as [id, { label, color }]}
-						<PrincipleStatCard {color} {label} reductions={data.reductions[id]} />
-					{/each}
-				</div>
+				<PrincipleStatsTable reductions={data.reductions} bind:activeEffortSharings />
 			</section>
 			<hr class="py-2" />
 			<section id="overview" class="relative h-[500px] grow">
-				<div id="overview-legend" class="absolute bottom-8 left-16 z-10">
-					<h1>Effort sharing principle</h1>
-					<ul>
-						{#each Object.entries(principles) as [id, { label, color }]}
-							<li>
-								<label>
-									<b style={`color: ${color}`}>▬</b>
-									<input type="checkbox" bind:checked={activeEffortSharings[id]} />
-									{' '}{label}
-								</label>
-							</li>
-						{/each}
-					</ul>
-				</div>
-
 				<!-- TODO compute smarter extent -->
 				<Pathway
 					yDomain={[data.historicalCarbon.extent[1] * -0.2, data.historicalCarbon.extent[1]]}
