@@ -51,13 +51,13 @@
 		};
 	}
 	const hoverHistoricalCarbon = hoverBuilder(
-		(row) => `Historical emission in ${row.time} was ${row.value.toFixed(0)} Gt CO₂e`
+		(row) => `Historical emission in ${row.time} was ${row.value.toFixed(0)} Mt CO₂e`
 	);
 	const hoverNdc = hoverBuilder(
 		(row) =>
 			`Nationally determined contribution at ${row.time} ranges from ${row.max.toFixed(
 				0
-			)} to ${row.min.toFixed(0)} Gt CO₂e`
+			)} to ${row.min.toFixed(0)} Mt CO₂e`
 	);
 
 	function hoverEffortSharing(id: string) {
