@@ -17,7 +17,6 @@
 		zoom: 3,
 		minZoom: 2,
 		zoomControl: false
-		// TODO when open street map is not shown render less gray background
 	};
 	if (browser) {
 		// mapOptions.crs = CRS.EPSG4326
@@ -36,22 +35,13 @@
 
 	let tileLayer;
 
-	function colors(specifier: string) {
-		var n = (specifier.length / 6) | 0,
-			colors = new Array(n),
-			i = 0;
-		while (i < n) colors[i] = '#' + specifier.slice(i * 6, ++i * 6);
-		return colors;
-	}
-
 	const interpolator = interpolateYlGnBu;
-	$: scale = scaleSequential().clamp(true).domain(metrics.domain).interpolator(interpolator); // TODO configurable colormap?
+	$: scale = scaleSequential().clamp(true).domain(metrics.domain).interpolator(interpolator);
 
 	function getColor(d: number) {
 		return scale(d);
 	}
 	// TODO Deal with nans?
-	// TODO add colorbar
 
 	function getMetric(
 		feature: GeoJSON.Feature<GeoJSON.GeometryObject, GeoJSON.GeoJsonProperties>,

@@ -24,7 +24,6 @@ CORS(app)
 # TODO improve endpoint names
 # TODO use class-based views for a reusable nc-file viewer?
 # TODO write tests with dummy data
-# TODO validate inputs? Must if ws is public, and now it is due to src/routes/api/\[...path\]/+server.ts
 # TODO make data/ configurable
 
 # Global data (xr_dataread.nc)
