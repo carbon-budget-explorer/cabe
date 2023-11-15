@@ -125,7 +125,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="border-10 mb-2 flex w-full flex-row flex-wrap items-stretch gap-4 p-2">
+				<div class="mb-2 flex flex-wrap gap-4 p-2">
 					{#each Object.entries(principles) as [id, { label, color }]}
 						<PrincipleStatCard {color} {label} reductions={data.reductions[id]} />
 					{/each}

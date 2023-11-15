@@ -16,7 +16,7 @@
 		{label}
 		<a title="More information" target="_blank" rel="noopener" href={`/about#principles`}>ⓘ</a>
 	</h3>
-	<div class="stats shadow">
+	<div class="stats">
 		<div class="stat place-items-center">
 			<div class="stat-title">2030 reduction</div>
 			<div class="stat-value text-3xl">
