@@ -1,4 +1,6 @@
 <script lang="ts">
+	import PrincipleStatCard from '$lib/PrincipleStatCard.svelte';
+
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
@@ -35,8 +37,6 @@
 	const tweenOptions = { duration: 1000, easing: cubicOut };
 	const tweenedEffortSharing = tweened(data.effortSharing, tweenOptions);
 	$: tweenedEffortSharing.set(data.effortSharing);
-	const tweenedReductions = tweened(data.reductions, tweenOptions);
-	$: tweenedReductions.set(data.reductions);
 
 	// Hover effort sharing
 	let evt = {};
@@ -81,7 +81,7 @@
 		/>
 		<MiniPathwayCard global={data.global} />
 	</Sidebar>
-	<div class="flex h-full flex-col">
+	<div class="flex h-full grow flex-col">
 		<div id="country-header" class="flex flex-row items-center gap-4 pb-2">
 			<a href={`/map${$page.url.search}`} title="Back to map"
 				><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 256 256"
@@ -127,38 +127,7 @@
 				</div>
 				<div class="border-10 mb-2 flex w-full flex-row flex-wrap items-stretch gap-4 p-2">
 					{#each Object.entries(principles) as [id, { label, color }]}
-						<div class="border-4 text-start shadow-lg" style={`border-color: ${color}`}>
-							<h3 class="px-2 text-center text-lg" style={`background-color: ${color}`}>
-								{label}
-								<a title="More information" target="_blank" rel="noopener" href={`/about#${id}`}
-									>ⓘ</a
-								>
-							</h3>
-							<div class="stats shadow">
-								<div class="stat place-items-center">
-									<div class="stat-title">2030 reduction</div>
-									<div class="stat-value text-3xl">
-										{$tweenedReductions[id][2030] === null
-											? '-'
-											: $tweenedReductions[id][2030].toFixed(0)}%
-									</div>
-									<div class="stat-desc" title="With respect to emissions in 1990">
-										wrt 1990 emissions
-									</div>
-								</div>
-								<div class="stat place-items-center">
-									<div class="stat-title">2040 reduction</div>
-									<div class="stat-value text-3xl">
-										{$tweenedReductions[id][2040] === null
-											? '-'
-											: $tweenedReductions[id][2040].toFixed(0)}%
-									</div>
-									<div class="stat-desc" title="With respect to emissions in 1990">
-										wrt 1990 emissions
-									</div>
-								</div>
-							</div>
-						</div>
+						<PrincipleStatCard {color} {label} reductions={data.reductions[id]} />
 					{/each}
 				</div>
 			</section>
