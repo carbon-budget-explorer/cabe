@@ -80,8 +80,10 @@
 			query={data.pathway.query}
 			onChange={updateQueryParam}
 		/>
-		<MiniPathwayCard global={data.global} />
 		<AllocationCard bind:allocationTime />
+		<div class="hidden 2xl:flex">
+			<MiniPathwayCard global={data.global} />
+		</div>
 	</Sidebar>
 	<div class="flex grow flex-col">
 		<ShareTabs />
@@ -130,26 +132,20 @@
 						<div class="flex w-full flex-row justify-center gap-2 p-2">
 							<div class="text-lg font-bold">Choose your effort-sharing principle:</div>
 						</div>
-						<div class="flex w-full flex-row justify-center gap-2 p-2">
+						<div class="flex w-full flex-row content-stretch justify-stretch gap-2 p-2">
 							{#each Object.entries(principles) as [id, { label, summary }]}
 								<button
 									class={clsx(
-										'h-38 relative w-48 rounded border-2 object-top text-center shadow-lg',
+										'tooltip flex-1 rounded border-2 text-center shadow-lg before:w-36',
 										data.effortSharing === id ? 'btn-neutral' : 'btn-outline bg-base-100'
 									)}
 									disabled={data.effortSharing === id}
 									on:click={() => selectEffortSharing(id)}
+									data-tip={summary}
 								>
-									<p class=" font-bold">{label}</p>
-									<p class="text-sm">{summary}</p>
-									<a
-										class="absolute right-1 top-1 inline-block text-xl"
-										title="More information"
-										target="_blank"
-										rel="noopener"
-										href={`/about#${id}`}>ⓘ</a
-									>
+									{label}
 								</button>
+								<!-- TODO bring back link to about page? -->
 							{/each}
 						</div>
 					</div>
