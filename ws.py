@@ -83,7 +83,10 @@ def pathwaySelection():
 
 
 available_region_files = set(
-    [r.lstrip("data/xr_alloc_").rstrip(".nc") for r in glob("data/xr_alloc_*.nc")]
+    [
+        r.lstrip("data/xr_alloc_").rstrip(".nc").lstrip("\\xr_alloc")
+        for r in glob("data/xr_alloc_*.nc")
+    ]
 )
 
 
