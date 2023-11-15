@@ -71,7 +71,10 @@
 
 <div class="flex h-full gap-4">
 	<Sidebar>
-		<GlobalBudgetCard total={data.pathway.stats.total} remaining={data.pathway.stats.remaining} />
+		<GlobalBudgetCard
+			remaining={data.pathway.stats.remaining}
+			relative={data.pathway.stats.relative}
+		/>
 		<GlobalQueryCard
 			choices={data.pathway.choices}
 			query={data.pathway.query}

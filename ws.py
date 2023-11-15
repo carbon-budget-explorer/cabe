@@ -79,26 +79,19 @@ def pathwaySelection():
     return dict(
         Temperature=request.args.get("temperature", defaults["temperature"]),
         Risk=request.args.get("exceedanceRisk", defaults["exceedanceRisk"]),
-        NegEmis=request.args.get(
-            "negativeEmissions", defaults["negativeEmissions"]
-        ),
+        NegEmis=request.args.get("negativeEmissions", defaults["negativeEmissions"]),
     )
 
 
 available_region_files = set(
-    [
-        r.lstrip("data/xr_alloc_").rstrip(".nc")
-        for r in glob("data/xr_alloc_*.nc")
-    ]
+    [r.lstrip("data/xr_alloc_").rstrip(".nc") for r in glob("data/xr_alloc_*.nc")]
 )
 
 
 def build_regions():
     countries_geojson = {}
     for g in loads(
-        Path("data/ne_110m_admin_0_countries.geojson").read_text(
-            encoding="utf8"
-        )
+        Path("data/ne_110m_admin_0_countries.geojson").read_text(encoding="utf8")
     )["features"]:
         ps = g["properties"]
         countries_geojson[ps["ISO_A3_EH"]] = {
@@ -215,27 +208,20 @@ def pathwayStats():
         .values.tolist()
     )
     total = used + remaining
-    # TODO fix this hardcoded 37, should be global emissions in 2021
-    relative = remaining / 37
+    reference = dsGlobal.GHG_hist.sel(Region="EARTH").sel(Time=2021).item()
+    relative = remaining / reference
 
     # Calculate gaps
     # TODO gaps is not needed on non-global pages, so dont compute if there
     gap_index = 2030
     pathway = (
-        dsGlobal.GHG_globe.sel(
-            Time=gap_index, TrajUnc="Medium", **pathwaySelection()
-        )
+        dsGlobal.GHG_globe.sel(Time=gap_index, TrajUnc="Medium", **pathwaySelection())
         .mean()
         .values
         + 0
     )
-    curPol = (
-        ds_policyscen.CurPol.sel(Region="EARTH", Time=gap_index).mean().values
-        + 0
-    )
-    ndc = (
-        ds_policyscen.NDC.sel(Region="EARTH", Time=gap_index).mean().values + 0
-    )
+    curPol = ds_policyscen.CurPol.sel(Region="EARTH", Time=gap_index).mean().values + 0
+    ndc = ds_policyscen.NDC.sel(Region="EARTH", Time=gap_index).mean().values + 0
 
     gaps = {
         "index": gap_index,
@@ -246,9 +232,9 @@ def pathwayStats():
         "ambition": (ndc - pathway) / 1000,
     }
     return {
-        "total": total,
-        "used": used,
-        "remaining": remaining,
+        "total": total / 1000,
+        "used": used / 1000,
+        "remaining": remaining / 1000,
         "relative": relative,
         "gaps": gaps,
     }
@@ -258,9 +244,7 @@ def pathwayStats():
 def historicalCarbon(region="EARTH"):
     start = request.args.get("start")
     end = request.args.get("end")
-    df = dsGlobal.GHG_hist.sel(
-        Region=region, Time=slice(start, end)
-    ).to_pandas()
+    df = dsGlobal.GHG_hist.sel(Region=region, Time=slice(start, end)).to_pandas()
 
     if region == "EARTH":
         df /= 1000  # global GHG in Gt CO2e
@@ -332,9 +316,7 @@ def fullCenturyBudgetSpatial(year):
         (
             file_by_year[year][effortSharing]
             .sel(**selection)
-            .mean(
-                dim="TrajUnc"
-            )  # TODO: sel "Medium" instead of calculate mean?
+            .mean(dim="TrajUnc")  # TODO: sel "Medium" instead of calculate mean?
             / population_map(year=2021)
         )
         .rename(Region="ISO")
@@ -366,9 +348,7 @@ ds_policyscen = xr.open_dataset("data/xr_policyscen.nc")
 def policyPathway(policy, region):
     assert policy in {"CurPol", "NDC", "NetZero"}
     policy_ds = (
-        ds_policyscen[policy]
-        .sel(Region=region, Time=slice(2021, 2100))
-        .drop("Region")
+        ds_policyscen[policy].sel(Region=region, Time=slice(2021, 2100)).drop("Region")
     )
     # Not all countries have data for all policies, so return None if no data
     if policy_ds.isnull().all():
@@ -394,9 +374,7 @@ def policyPathway(policy, region):
 
 
 def ndcAmbition(region):
-    ndc2030 = (
-        dsGlobal.GHG_ndc.sel(Region=region, Time=2030).mean().values.tolist()
-    )
+    ndc2030 = dsGlobal.GHG_ndc.sel(Region=region, Time=2030).mean().values.tolist()
     if np.isnan(ndc2030):
         return None
     hist1990 = dsGlobal.GHG_hist.sel(Region=region, Time=1990).values.tolist()
