@@ -31,7 +31,7 @@
 				<span
 					class="tooltip text-lg"
 					data-tip="The temperature target determines how many greenhouse gases we can still emit, globally. A
-			less ambitious target (for example, 2.2°C) means tolerating more emissions.">🛈</span
+			less ambitious target (for example, 2.2°C) means tolerating more emissions.">ⓘ</span
 				>
 				<CustomRange
 					bind:value={temperature}
@@ -44,7 +44,7 @@
 				<span
 					class="tooltip text-lg"
 					data-tip="The risk of exceeding the temperature target is also relevant to the budget. Less risk
-						means that your budget is more to the 'safe' side.">🛈</span
+						means that your budget is more to the 'safe' side.">ⓘ</span
 				>
 				<CustomRange
 					bind:value={exceedanceRisk}
@@ -60,7 +60,7 @@
 					class="tooltip text-lg"
 					data-tip="How quickly we need to reduce depends on the amount of negative emissions we expect to
 					achieve in the future. With less negative emissions you need to reduce faster. The global
-				budget remains the same.">🛈</span
+				budget remains the same.">ⓘ</span
 				>
 				<CustomRange
 					bind:value={negativeEmissions}

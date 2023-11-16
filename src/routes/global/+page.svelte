@@ -143,7 +143,7 @@
 						on:mouseenter={toggleEmissionGap}
 						on:mouseleave={toggleEmissionGap}
 						data-tip="The emission gap is the difference between your scenario and the current policy."
-						>emission 🛈</span
+						>emission ⓘ</span
 					>
 					and
 					<span
@@ -152,7 +152,7 @@
 						on:mouseenter={toggleAmbitionGap}
 						on:mouseleave={toggleAmbitionGap}
 						data-tip="The ambition gap is the
-				difference between your scenario and the NDCs.">ambition 🛈</span
+				difference between your scenario and the NDCs.">ambition ⓘ</span
 					>
 					gaps.
 				</p>
