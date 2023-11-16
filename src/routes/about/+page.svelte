@@ -1,6 +1,4 @@
 <script lang="ts">
-	import Answer from '$lib/Answer.svelte';
-	import Question from '$lib/Question.svelte';
 	import QA from '$lib/QA.svelte';
 
 	export const prerender = true;
