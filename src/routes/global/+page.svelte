@@ -103,36 +103,42 @@
 			query={data.pathway.query}
 			onChange={updateQueryParam}
 		/>
-		<div class="card-compact card prose min-w-full bg-base-100 shadow-xl">
+		<div class="card card-compact prose min-w-full bg-base-100 shadow-xl">
 			<div class="card-body">
 				<h2 class="not-prose card-title">Reference pathways</h2>
 				<p>Compare your pathway to the following reference pathways:</p>
 				<ul class="not-prose">
 					<li>
-						<label>
-							<b style={`color: ${ipcc_red}`}>▬</b>
-							<input type="checkbox" bind:checked={policyPathwayToggles.current} />{' '}Current
-							policy</label
+						<label class="cursor-pointer">
+							<input
+								type="checkbox"
+								style={`background-color: ${ipcc_red}`}
+								bind:checked={policyPathwayToggles.current}
+							/>{' '}Current policy</label
 						>
 					</li>
 					<li>
-						<label>
-							<b style={`color: ${ipcc_blue}`}>▬</b>
-							<input type="checkbox" bind:checked={policyPathwayToggles.ndc} />{' '}Nationally
-							determined contributions (NDCs)</label
+						<label class="cursor-pointer">
+							<input
+								type="checkbox"
+								style={`background-color: ${ipcc_blue}`}
+								bind:checked={policyPathwayToggles.ndc}
+							/>{' '}Nationally determined contributions (NDCs)</label
 						>
 					</li>
 					<li>
-						<label>
-							<b style={`color: ${ipcc_purple}`}>▬</b>
-							<input type="checkbox" bind:checked={policyPathwayToggles.netzero} />{' '}Net
-							zero-scenarios</label
+						<label class="cursor-pointer">
+							<input
+								type="checkbox"
+								style={`background-color: ${ipcc_purple}`}
+								bind:checked={policyPathwayToggles.netzero}
+							/>{' '}Net zero-scenarios</label
 						>
 					</li>
 				</ul>
 				<p>
 					The difference between your pathway and the reference pathways is characterized by the <span
-						class="tooltip"
+						class="tooltip cursor-pointer"
 						role="tooltip"
 						on:mouseenter={toggleEmissionGap}
 						on:mouseleave={toggleEmissionGap}
@@ -141,7 +147,7 @@
 					>
 					and
 					<span
-						class="tooltip"
+						class="tooltip cursor-pointer"
 						role="tooltip"
 						on:mouseenter={toggleAmbitionGap}
 						on:mouseleave={toggleAmbitionGap}
