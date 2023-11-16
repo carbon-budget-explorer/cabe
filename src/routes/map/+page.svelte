@@ -82,7 +82,7 @@
 			onChange={updateQueryParam}
 		/>
 		<AllocationCard bind:allocationTime />
-		<div class="hidden 2xl:flex">
+		<div class="hidden 2xl:flex 2xl:flex-1">
 			<MiniPathwayCard global={data.global} />
 		</div>
 	</Sidebar>
@@ -137,7 +137,7 @@
 							{#each Object.entries(principles) as [id, { label, summary }]}
 								<button
 									class={clsx(
-										'tooltip flex-1 rounded border-2 text-center shadow-lg before:w-36',
+										'tooltip h-16 flex-1 rounded border-2 text-center shadow-lg before:w-36',
 										data.effortSharing === id ? 'btn-neutral' : 'btn-outline bg-base-100'
 									)}
 									disabled={data.effortSharing === id}
