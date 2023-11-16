@@ -8,6 +8,8 @@
 	import { interpolateYlGnBu, scaleSequential } from 'd3';
 	import ColorLegend from './components/ColorLegend.svelte';
 	import type { BudgetSpatial, SpatialMetric } from '$lib/api';
+	import { tweened } from 'svelte/motion';
+	import { cubicOut } from 'svelte/easing';
 
 	export let borders: BordersCollection;
 	export let metrics: BudgetSpatial<SpatialMetric>;
@@ -35,8 +37,12 @@
 
 	let tileLayer;
 
+	const tweenOptions = { duration: 1000, easing: cubicOut };
+	const tweenedDomain = tweened(metrics.domain, tweenOptions);
+	$: tweenedDomain.set(metrics.domain);
+
 	const interpolator = interpolateYlGnBu;
-	$: scale = scaleSequential().clamp(true).domain(metrics.domain).interpolator(interpolator);
+	$: scale = scaleSequential().clamp(true).domain($tweenedDomain).interpolator(interpolator);
 
 	function getColor(d: number) {
 		return scale(d);
