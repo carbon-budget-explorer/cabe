@@ -1,25 +1,19 @@
-<script context="module">
-	let counter = 0;
-</script>
-
 <script lang="ts">
-	counter += 1;
-	let id: string = 'question-' + counter;
-	export let question: string;
+	import clsx from 'clsx';
+
+	let active: boolean = false;
+	export let question: string = 'question';
 </script>
 
-<div>
-	<input {id} type="checkbox" class="group peer hidden" />
-	<label for={id} class="cursor-pointer"
-		><h3 class="rounded p-2">
-			<span>⮚</span>
+<div class="transition-all">
+	<label class="cursor-pointer transition-all">
+		<input type="checkbox" bind:checked={active} class="hidden" />
+		<h3>
+			<span class={clsx(active && 'inline-flex rotate-90', 'transition-all')}>⮚</span>
 			{question}
 		</h3></label
 	>
-	<div class="hidden px-2 peer-checked:block">
+	<div class={clsx('prose px-2', !active && 'hidden')}>
 		<slot><p>Answer</p></slot>
 	</div>
 </div>
-
-<!-- content-['︾'] content-['»'] -->
-<!-- ⮛ -->
