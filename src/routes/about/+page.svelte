@@ -21,17 +21,30 @@
 		</div>
 		<div class="card-compact card mt-auto">
 			<div class="card-body prose">
-				<h2 class="card-title">Contact</h2>
+				<h2 class="card-title">More information</h2>
 				<p>
-					For more information you can contact the lead author of the scientific research on fair
-					shares dr. Mark Dekker at mark.dekker@pbl.nl
+					This tool has been developed by the <a
+						href="https://www.esciencecenter.nl/"
+						target="_blank"
+						rel="noopener
+					noreferrer">Netherlands eScience Center</a
+					>
+					in collaboration with the
+					<a href="https://www.pbl.nl/en" target="_blank" rel="noopener noreferrer"
+						>Environmental Assessment Agency (PBL)</a
+					>, in the context of the
+
+					<a href="https://www.ecemf.eu/about/" target="_blank" rel="noopener noreferrer"
+						>ECEMF project</a
+					>. For more information you can contact the lead author of the scientific research on fair
+					shares dr. Mark Dekker at <a href="mailto:mark.dekker@pbl.nl">mark.dekker@pbl.nl</a>.
 				</p>
 			</div>
 		</div>
 	</div>
 	<!-- Main panel -->
-	<main class="max-h-full flex-1 bg-base-100 p-4">
-		<div class="prose ml-4 max-w-[60%]">
+	<main class="relative max-h-full flex-1 overflow-auto bg-base-100 p-4">
+		<div class="prose absolute ml-4 max-w-[60%]">
 			<h1>Frequently asked questions</h1>
 			<section>
 				<h2 id="scientific">Scientific basis</h2>
