@@ -4,7 +4,7 @@
 </script>
 
 <main class="container mx-auto flex h-full w-4/5 flex-col items-stretch justify-around">
-	<div class="flex flex-row items-center justify-around">
+	<div class="flex h-2/3 flex-row items-center justify-around">
 		<div class="flex flex-col items-end gap-6">
 			<div class="flex flex-row items-center gap-8">
 				<!-- Logo -->
