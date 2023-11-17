@@ -103,41 +103,12 @@
 			query={data.pathway.query}
 			onChange={updateQueryParam}
 		/>
-		<div class="card card-compact prose min-w-full bg-base-100 shadow-xl">
+		<div class="card card-compact min-w-full bg-base-100 shadow-xl">
 			<div class="card-body">
-				<h2 class="not-prose card-title">Reference pathways</h2>
-				<p>Compare your pathway to the following reference pathways:</p>
-				<ul class="not-prose">
-					<li>
-						<label class="cursor-pointer">
-							<input
-								type="checkbox"
-								style={`background-color: ${ipcc_red}`}
-								bind:checked={policyPathwayToggles.current}
-							/>{' '}Current policy</label
-						>
-					</li>
-					<li>
-						<label class="cursor-pointer">
-							<input
-								type="checkbox"
-								style={`background-color: ${ipcc_blue}`}
-								bind:checked={policyPathwayToggles.ndc}
-							/>{' '}Nationally determined contributions (NDCs)</label
-						>
-					</li>
-					<li>
-						<label class="cursor-pointer">
-							<input
-								type="checkbox"
-								style={`background-color: ${ipcc_purple}`}
-								bind:checked={policyPathwayToggles.netzero}
-							/>{' '}Net zero-scenarios</label
-						>
-					</li>
-				</ul>
+				<h2 class="card-title">Reference pathways</h2>
 				<p>
-					The difference between your pathway and the reference pathways is characterized by the <span
+					Use the checkboxes below to compare your pathway with common references. The difference
+					between them is characterized by the <span
 						class="tooltip cursor-pointer"
 						role="tooltip"
 						on:mouseenter={toggleEmissionGap}
@@ -156,6 +127,49 @@
 					>
 					gaps.
 				</p>
+				<ul class="">
+					<li>
+						<label class="cursor-pointer">
+							<input
+								type="checkbox"
+								style={`background-color: ${ipcc_green}`}
+								class="m-1 scale-125 shadow"
+								checked
+								disabled
+							/>{' '}Your pathway</label
+						>
+					</li>
+					<li>
+						<label class="cursor-pointer">
+							<input
+								type="checkbox"
+								style={`background-color: ${ipcc_red}`}
+								class="m-1 scale-125 shadow"
+								bind:checked={policyPathwayToggles.current}
+							/>{' '}Current policy</label
+						>
+					</li>
+					<li>
+						<label class="cursor-pointer">
+							<input
+								type="checkbox"
+								style={`background-color: ${ipcc_blue}`}
+								class="m-1 scale-125 shadow"
+								bind:checked={policyPathwayToggles.ndc}
+							/>{' '}Nationally determined contributions (NDCs)</label
+						>
+					</li>
+					<li>
+						<label class="cursor-pointer">
+							<input
+								type="checkbox"
+								style={`background-color: ${ipcc_purple}`}
+								class="m-1 scale-125 shadow"
+								bind:checked={policyPathwayToggles.netzero}
+							/>{' '}Net zero-scenarios</label
+						>
+					</li>
+				</ul>
 			</div>
 		</div>
 	</Sidebar>
