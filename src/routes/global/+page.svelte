@@ -16,9 +16,40 @@
 	import type { PageData } from '../global/$types';
 	import GlobalBudgetCard from '$lib/GlobalBudgetCard.svelte';
 	import GlobalQueryCard from '$lib/GlobalQueryCard.svelte';
-	import type { ComponentEvents, SvelteComponent } from 'svelte';
+	import { onMount, type ComponentEvents, type SvelteComponent } from 'svelte';
+
+	import { driver } from 'driver.js';
+	import 'driver.js/dist/driver.css';
 
 	export let data: PageData;
+	const driverObj = driver({
+		steps: [
+			{
+				element: '#globalquerycard',
+				popover: {
+					title: 'Determine your pathway',
+					description: 'Use the sliders to construct your personal carbon budget and pathway'
+				}
+			},
+			{
+				element: '#references',
+				popover: {
+					title: 'Compare with others',
+					description: 'Check the tickboxes to show reference pathways on the graph'
+				}
+			},
+			{
+				element: '#sharetabs',
+				popover: {
+					title: 'Proceed to map',
+					description:
+						"When you're ready, proceed to the map view to select your effor-sharing principle"
+				}
+			}
+		]
+	});
+
+	onMount(() => driverObj.drive());
 
 	// TODO generalize to colormap component or named after the series it used for
 	const ipcc_green = '#82a56e';
@@ -98,83 +129,89 @@
 			remaining={data.result.stats.remaining}
 			relative={data.result.stats.relative}
 		/>
-		<GlobalQueryCard
-			choices={data.pathway.choices}
-			query={data.pathway.query}
-			onChange={updateQueryParam}
-		/>
-		<div class="card card-compact min-w-full bg-base-100 shadow-xl">
-			<div class="card-body">
-				<h2 class="card-title">Reference pathways</h2>
-				<p>
-					Use the checkboxes below to compare your pathway with common references. The difference
-					between them is characterized by the <span
-						class="tooltip cursor-pointer"
-						role="tooltip"
-						on:mouseenter={toggleEmissionGap}
-						on:mouseleave={toggleEmissionGap}
-						data-tip="The emission gap is the difference between your scenario and the current policy."
-						>emission ⓘ</span
-					>
-					and
-					<span
-						class="tooltip cursor-pointer"
-						role="tooltip"
-						on:mouseenter={toggleAmbitionGap}
-						on:mouseleave={toggleAmbitionGap}
-						data-tip="The ambition gap is the
+		<div id="globalquerycard">
+			<GlobalQueryCard
+				choices={data.pathway.choices}
+				query={data.pathway.query}
+				onChange={updateQueryParam}
+			/>
+		</div>
+		<div id="references">
+			<div class="card card-compact min-w-full bg-base-100 shadow-xl">
+				<div class="card-body">
+					<h2 class="card-title">Reference pathways</h2>
+					<p>
+						Use the checkboxes below to compare your pathway with common references. The difference
+						between them is characterized by the <span
+							class="tooltip cursor-pointer"
+							role="tooltip"
+							on:mouseenter={toggleEmissionGap}
+							on:mouseleave={toggleEmissionGap}
+							data-tip="The emission gap is the difference between your scenario and the current policy."
+							>emission ⓘ</span
+						>
+						and
+						<span
+							class="tooltip cursor-pointer"
+							role="tooltip"
+							on:mouseenter={toggleAmbitionGap}
+							on:mouseleave={toggleAmbitionGap}
+							data-tip="The ambition gap is the
 				difference between your scenario and the NDCs.">ambition ⓘ</span
-					>
-					gaps.
-				</p>
-				<ul class="">
-					<li>
-						<label class="cursor-pointer">
-							<input
-								type="checkbox"
-								style={`background-color: ${ipcc_green}`}
-								class="m-1 scale-125 shadow"
-								checked
-								disabled
-							/>{' '}Your pathway</label
 						>
-					</li>
-					<li>
-						<label class="cursor-pointer">
-							<input
-								type="checkbox"
-								style={`background-color: ${ipcc_red}`}
-								class="m-1 scale-125 shadow"
-								bind:checked={policyPathwayToggles.current}
-							/>{' '}Current policy</label
-						>
-					</li>
-					<li>
-						<label class="cursor-pointer">
-							<input
-								type="checkbox"
-								style={`background-color: ${ipcc_blue}`}
-								class="m-1 scale-125 shadow"
-								bind:checked={policyPathwayToggles.ndc}
-							/>{' '}Nationally determined contributions (NDCs)</label
-						>
-					</li>
-					<li>
-						<label class="cursor-pointer">
-							<input
-								type="checkbox"
-								style={`background-color: ${ipcc_purple}`}
-								class="m-1 scale-125 shadow"
-								bind:checked={policyPathwayToggles.netzero}
-							/>{' '}Net zero-scenarios</label
-						>
-					</li>
-				</ul>
+						gaps.
+					</p>
+					<ul class="">
+						<li>
+							<label class="cursor-pointer">
+								<input
+									type="checkbox"
+									style={`background-color: ${ipcc_green}`}
+									class="m-1 scale-125 shadow"
+									checked
+									disabled
+								/>{' '}Your pathway</label
+							>
+						</li>
+						<li>
+							<label class="cursor-pointer">
+								<input
+									type="checkbox"
+									style={`background-color: ${ipcc_red}`}
+									class="m-1 scale-125 shadow"
+									bind:checked={policyPathwayToggles.current}
+								/>{' '}Current policy</label
+							>
+						</li>
+						<li>
+							<label class="cursor-pointer">
+								<input
+									type="checkbox"
+									style={`background-color: ${ipcc_blue}`}
+									class="m-1 scale-125 shadow"
+									bind:checked={policyPathwayToggles.ndc}
+								/>{' '}Nationally determined contributions (NDCs)</label
+							>
+						</li>
+						<li>
+							<label class="cursor-pointer">
+								<input
+									type="checkbox"
+									style={`background-color: ${ipcc_purple}`}
+									class="m-1 scale-125 shadow"
+									bind:checked={policyPathwayToggles.netzero}
+								/>{' '}Net zero-scenarios</label
+							>
+						</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</Sidebar>
 	<div class="flex grow flex-col">
-		<ShareTabs />
+		<div id="sharetabs">
+			<ShareTabs />
+		</div>
 		<div class="relative grow bg-base-100 p-4 shadow-lg">
 			<Pathway {evt} yAxisTtle="Greenhouse gas emissions (Gt CO₂e/year)">
 				<Line
