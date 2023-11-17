@@ -8,7 +8,7 @@
 		<div class="flex flex-col items-end gap-6">
 			<div class="flex flex-row items-center gap-8">
 				<!-- Logo -->
-				<img src={logo} class="h-36 xl:h-64" alt="Logo for Carbon Budget Explorer" />
+				<img src={logo} class="color-filter h-36 xl:h-64" alt="Logo for Carbon Budget Explorer" />
 				<div class="text-4xl font-bold xl:text-6xl">
 					<p>Carbon</p>
 					<p>Budget</p>
@@ -60,7 +60,7 @@
 	</div>
 
 	<!-- text -->
-	<div class="prose max-w-none">
+	<div class="">
 		<!-- <h2>What is fair climate action?</h2> -->
 		<p>
 			While many countries commit to rapid climate action, no one likes to do more than their fair
@@ -72,3 +72,9 @@
 
 	<a class="btn-primary btn-lg btn w-4/5 self-center" href="/global"> Start exploring &raquo; </a>
 </main>
+
+<style>
+	.color-filter {
+		filter: invert(11%) sepia(6%) saturate(127%) hue-rotate(314deg) brightness(101%) contrast(80%);
+	}
+</style>
