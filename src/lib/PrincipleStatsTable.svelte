@@ -42,8 +42,9 @@
 					<th
 						><input
 							type="checkbox"
-							style={`background-color: ${color}`}
 							bind:checked={activeEffortSharings[id]}
+							style={`background-color: ${color}`}
+							class="m-1 scale-125 shadow"
 						/></th
 					>
 				{/each}
