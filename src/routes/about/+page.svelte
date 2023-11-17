@@ -5,9 +5,9 @@
 </script>
 
 <!-- Sidebar -->
-<div class="flex h-full gap-4 bg-base-300">
-	<div class="items-between flex h-full w-1/5 flex-col bg-base-300">
-		<div class="card card-compact">
+<div class="flex h-full gap-4 rounded bg-secondary">
+	<div class="items-between flex h-full w-1/5 flex-col rounded bg-secondary">
+		<div class="card-compact card">
 			<div class="card-body prose">
 				<h2 class="card-title">About</h2>
 				<ul class="not-prose m-2 list-inside list-disc">
