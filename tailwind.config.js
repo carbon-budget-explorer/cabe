@@ -2,14 +2,18 @@
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 	theme: {
-		extend: {}
+		extend: {
+			screens: {
+				'2xl': '1680px'
+			}
+		}
 	},
 	plugins: [require('@tailwindcss/forms'), require('daisyui'), require('@tailwindcss/typography')],
 	daisyui: {
 		themes: [
 			{
 				mytheme: {
-					primary: '#1e3a8a',
+					primary: '#313B72',
 					secondary: '#7b92b2',
 					accent: '#67cba0',
 					neutral: '#181a2a',

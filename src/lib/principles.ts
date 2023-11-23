@@ -19,7 +19,7 @@ export const principles = {
 	PC: {
 		label: 'Per capita',
 		summary: 'Population.',
-		color: '#ffffb3'
+		color: '#f5e663'
 	},
 	PCC: {
 		label: 'Per capita convergence',
