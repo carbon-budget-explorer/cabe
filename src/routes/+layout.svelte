@@ -28,12 +28,12 @@
 
 <style>
 	.fancy-gradient {
-		background: rgb(49, 59, 114);
+		background: #0069AA;
 		background: radial-gradient(
 			500% 100% at 50% top,
-			rgba(49, 59, 114, 1) 7%,
-			rgba(123, 146, 178, 1) 75%,
-			rgba(200, 200, 200, 1) 100%
+			#0069AA 7%,
+			#0099D9 75%,
+			#c8c8c8 100%
 		);
 	}
 </style>

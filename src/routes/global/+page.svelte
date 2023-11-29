@@ -52,8 +52,8 @@
 	onMount(() => driverObj.drive());
 
 	// TODO generalize to colormap component or named after the series it used for
-	const ipcc_green = '#82a56e';
-	const ipcc_red = '#f5331e';
+	const ipcc_green = '#A9C810';
+	const ipcc_red = '#c82f10';
 	const ipcc_blue = '#5bb0c6';
 	const ipcc_purple = '#a67ab8';
 
