@@ -23,7 +23,7 @@ export const principles = {
 	},
 	PCC: {
 		label: 'Per capita convergence',
-		summary: 'Population with convergence in 2040.',
+		summary: 'Population with convergence in 2050.',
 		color: '#bebada'
 	},
 	AP: {
