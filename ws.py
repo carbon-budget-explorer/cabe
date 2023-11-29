@@ -215,11 +215,11 @@ def pathwayStats():
         total = used + remaining
         reference = hist.sel(Region="EARTH").sel(Time=2021).item()
         relative = remaining / reference
-        
+
         # TODO gaps is not needed on non-global pages, so dont compute if there
         gap_index = 2030
         pathway = (
-            dsGlobal.GHG_globe.sel(Time=gap_index, TrajUnc="Medium", **pathwaySelection())
+            globe.sel(Time=gap_index, TrajUnc="Medium", **pathwaySelection())
             .mean()
             .values
             + 0
