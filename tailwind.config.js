@@ -13,10 +13,10 @@ export default {
 		themes: [
 			{
 				mytheme: {
-					primary: '#0069AA',
+					primary: '#2B5161',
 					secondary: '#0099D9',
 					accent: '#A9C810',
-					neutral: '#2B5161',
+					neutral: '#0069AA',
 					'base-100': '#ffffff',
 					info: '#3abff8',
 					success: '#36d399',
