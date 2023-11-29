@@ -117,17 +117,17 @@
 	const tweenOptions = { duration: 1000, easing: cubicOut };
 	const pathwayCarbonTweened = tweened(data.result.pathwayCarbon, tweenOptions);
 	$: pathwayCarbonTweened.set(data.result.pathwayCarbon);
-	const emissionGapTweened = tweened(data.result.stats.gaps.emission, tweenOptions);
-	$: emissionGapTweened.set(data.result.stats.gaps.emission);
-	const ambitionGapTweened = tweened(data.result.stats.gaps.ambition, tweenOptions);
-	$: ambitionGapTweened.set(data.result.stats.gaps.ambition);
+	const emissionGapTweened = tweened(data.result.stats.ghg.gaps.emission, tweenOptions);
+	$: emissionGapTweened.set(data.result.stats.ghg.gaps.emission);
+	const ambitionGapTweened = tweened(data.result.stats.ghg.gaps.ambition, tweenOptions);
+	$: ambitionGapTweened.set(data.result.stats.ghg.gaps.ambition);
 </script>
 
 <div class="flex h-full gap-4">
 	<Sidebar>
 		<GlobalBudgetCard
-			remaining={data.result.stats.remaining}
-			relative={data.result.stats.relative}
+			remaining={data.result.stats.co2.remaining}
+			relative={data.result.stats.co2.relative}
 		/>
 		<div id="globalquerycard">
 			<GlobalQueryCard
@@ -261,16 +261,16 @@
 
 				{#if ambitionGapHover}
 					<Gap
-						x={data.result.stats.gaps.index}
-						y0={data.result.stats.gaps.ndc}
-						y1={data.result.stats.gaps.budget}
+						x={data.result.stats.ghg.gaps.index}
+						y0={data.result.stats.ghg.gaps.ndc}
+						y1={data.result.stats.ghg.gaps.budget}
 					/>
 				{/if}
 				{#if emissionGapHover}
 					<Gap
-						x={data.result.stats.gaps.index}
-						y0={data.result.stats.gaps.curPol}
-						y1={data.result.stats.gaps.budget}
+						x={data.result.stats.ghg.gaps.index}
+						y0={data.result.stats.ghg.gaps.curPol}
+						y1={data.result.stats.ghg.gaps.budget}
 					/>
 				{/if}
 
