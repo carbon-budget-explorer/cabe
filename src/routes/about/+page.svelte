@@ -7,7 +7,7 @@
 <!-- Sidebar -->
 <div class="flex h-full gap-4 rounded bg-secondary">
 	<div class="items-between flex h-full w-1/5 flex-col rounded bg-secondary">
-		<div class="card card-compact">
+		<div class="card-compact card">
 			<div class="card-body prose">
 				<h2 class="card-title">About</h2>
 				<ul class="not-prose m-2 list-inside list-disc">
@@ -97,9 +97,9 @@
 					sense to talk about a budget in terms of cumulative CO<sub>2</sub> emissions, because CO<sub
 						>2</sub
 					>
-					remains in the atmosphere for a long time, while other greenhouse gases are mostly
-					short-lived and filtered out quickly from the atmosphere, so it matters when exactly these
-					greenhouse gases are emitted. The global carbon budget numbers are taken from
+					remains in the atmosphere for a long time, while other greenhouse gases are mostly short-lived
+					and filtered out quickly from the atmosphere, so it matters when exactly these greenhouse gases
+					are emitted. The global carbon budget numbers are taken from
 					<a
 						href="https://essd.copernicus.org/articles/15/2295/2023/"
 						target="_blank"

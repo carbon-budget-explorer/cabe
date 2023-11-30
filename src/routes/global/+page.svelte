@@ -28,7 +28,8 @@
 				element: '#globalquerycard',
 				popover: {
 					title: 'Set global targets',
-					description: 'In these sliders, set your targets on temperature, risk and negative emissions, which affect the global emissions pathway'
+					description:
+						'In these sliders, set your targets on temperature, risk and negative emissions, which affect the global emissions pathway'
 				}
 			},
 			{
@@ -84,7 +85,8 @@
 		};
 	}
 	const hoverHistoricalCarbon = hoverBuilder(
-		(row) => `The historical greenhouse gas emissions in ${row.time} were ${row.value.toFixed(1)} Gt CO₂e`
+		(row) =>
+			`The historical greenhouse gas emissions in ${row.time} were ${row.value.toFixed(1)} Gt CO₂e`
 	);
 	const hoverPathway = hoverBuilder(
 		(row) =>
@@ -141,14 +143,16 @@
 				<div class="card-body">
 					<h2 class="card-title">Reference pathways</h2>
 					<p>
-						Use the checkboxes below to compare your pathway with common references. Of particular interest is the 
+						Use the checkboxes below to compare your pathway with common references. Of particular
+						interest is the
 						<span
 							class="tooltip cursor-pointer"
 							role="tooltip"
 							on:mouseenter={toggleEmissionGap}
 							on:mouseleave={toggleEmissionGap}
 							data-tip="The implementation gap is the difference between your scenario and current policy projections."
-							>implementation ⓘ</span>
+							>implementation ⓘ</span
+						>
 						<!-- and # TODO: removed NDC gap because showing wrong part (see Annual NZ Report) see issue #107
 						<span
 							class="tooltip cursor-pointer"
