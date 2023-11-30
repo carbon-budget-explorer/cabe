@@ -29,6 +29,9 @@ CORS(app)
 # Global data (xr_dataread.nc)
 dsGlobal = xr.open_dataset("data/xr_dataread.nc")
 
+# PCC convergence year is standard on 2050
+DEFAULT_CONVERGENCE_YEAR = 2050
+
 
 @app.get("/pathwayCarbon")
 def pathwayCarbon():
@@ -311,7 +314,7 @@ def fullCenturyBudgetSpatial(year):
     if effortSharing in ["PC", "PCC", "AP", "GDR", "ECPC"]:
         selection.update(Scenario="SSP2")
     if effortSharing == "PCC":
-        selection.update(Convergence_year=2040)
+        selection.update(Convergence_year=DEFAULT_CONVERGENCE_YEAR)
 
     file_by_year = {
         "2030": ds_alloc_2030,
@@ -337,7 +340,11 @@ def fullCenturyBudgetSpatial(year):
 
     ds = (
         file_by_year[year]
-        .sel(Scenario="SSP2", Convergence_year=2040, **pathwaySelection())
+        .sel(
+            Scenario="SSP2",
+            Convergence_year=DEFAULT_CONVERGENCE_YEAR,
+            **pathwaySelection(),
+        )
         .sel(TrajUnc="Medium")
     ).to_array("variable")
 
@@ -435,7 +442,7 @@ def effortSharing(ISO, principle):
     if principle in ["PC", "PCC", "AP", "GDR", "ECPC"]:
         selection.update(Scenario="SSP2")
     if principle == "PCC":
-        selection.update(Convergence_year=2040)
+        selection.update(Convergence_year=DEFAULT_CONVERGENCE_YEAR)
 
     ds = get_ds(ISO)[principle].sel(**selection)
     df = ds.rename(Time="time").to_pandas()
@@ -491,7 +498,7 @@ def effortSharingReductions(ISO):
         if principle in ["PC", "PCC", "AP", "GDR", "ECPC"]:
             pselection.update(Scenario="SSP2")
         if principle == "PCC":
-            pselection.update(Convergence_year=2040)
+            pselection.update(Convergence_year=DEFAULT_CONVERGENCE_YEAR)
         reductions[principle] = {}
         for period in periods:
             pselection.update(Time=period)
