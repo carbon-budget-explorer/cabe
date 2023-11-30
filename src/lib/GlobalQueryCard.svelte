@@ -25,7 +25,7 @@
 	<div class="card-body">
 		<div>
 			<h2 class="not-prose card-title">Global budget</h2>
-			<p><i>How much do we have left?</i></p>
+			<p class="italic">How much do we have left?</p>
 			<p>
 				Limit global warming to (&deg;C)
 				<span
