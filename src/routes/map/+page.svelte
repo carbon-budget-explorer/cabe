@@ -73,8 +73,8 @@
 <div class="flex h-full gap-4">
 	<Sidebar>
 		<GlobalBudgetCard
-			remaining={data.pathway.stats.remaining}
-			relative={data.pathway.stats.relative}
+			remaining={data.pathway.stats.co2.remaining}
+			relative={data.pathway.stats.co2.relative}
 		/>
 		<GlobalQueryCard
 			choices={data.pathway.choices}
@@ -102,7 +102,7 @@
 								{hoveredMetric.value.toFixed(0)} tonnes CO₂e per capita
 							</div>
 						{:else}
-							<div>Click country in map or</div>
+							<div>Click on a country or</div>
 							<details class="dropdown">
 								<summary class="btn-ghost btn-sm btn w-60 font-normal"
 									>Select country &#9660;</summary
@@ -131,7 +131,7 @@
 					</div>
 					<div class="absolute bottom-2 z-[400] w-full">
 						<div class="flex w-full flex-row justify-center gap-2 p-2">
-							<div class="text-lg font-bold">Choose your effort-sharing principle:</div>
+							<div class="text-lg font-bold prose">Choose a method of allocation:</div>
 						</div>
 						<div class="flex w-full flex-row content-stretch justify-stretch gap-2 p-2">
 							{#each Object.entries(principles) as [id, { label, summary }]}

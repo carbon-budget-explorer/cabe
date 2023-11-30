@@ -11,9 +11,9 @@
 	}
 </script>
 
-<div class="card card-compact bg-base-100 shadow-xl">
+<div class="card card-compact prose min-w-full bg-base-100 shadow-xl">
 	<div class="card-body">
-		<p>Display allocations for year:</p>
+		<h2 class="not-prose card-title">Allocation on map</h2>
 		{#if $page.url.pathname === '/map'}
 			<div class="btn-group flex w-full flex-row justify-items-stretch">
 				{#each allocOptions as option}

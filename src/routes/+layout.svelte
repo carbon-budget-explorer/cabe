@@ -17,6 +17,24 @@
 				/> Carbon Budget Explorer</a
 			>
 		</div>
+		<div class="alert" style="width: 50%">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 24 24"
+				class="h-6 w-6 shrink-0 stroke-current"
+				><path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+				/></svg
+			>
+			<span
+				>This website is currently in beta and is subject to frequent updates. Please see the About
+				page for more information</span
+			>
+		</div>
 		<div class="flex-none">
 			<a href="/about" class="btn-ghost btn-square btn px-10">About</a>
 		</div>
@@ -24,6 +42,15 @@
 	<div class={clsx($page.url.pathname === '/' && 'fancy-gradient', 'flex-1 bg-base-200 p-4')}>
 		<slot />
 	</div>
+	{#if $page.url.pathname === '/about'}
+		<footer class="flex h-16 justify-around gap-10 bg-primary text-center">
+			<p class="self-center">© 2023 Planbureau voor de Leefomgeving.</p>
+			<img src="/logo_pbl.png" alt="logo_pbl" />
+			<img src="/logo_ecemf.png" alt="logo_ecemf" />
+			<img src="/logo_elevate.png" alt="logo_elevate" />
+			<img src="/logo_escience.png" alt="logo_escience" />
+		</footer>
+	{/if}
 </div>
 
 <style>

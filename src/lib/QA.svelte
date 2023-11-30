@@ -1,8 +1,8 @@
 <script lang="ts">
 	import clsx from 'clsx';
 
-	let active: boolean = false;
-	export let question: string = 'question';
+	let active = false;
+	export let question = 'question';
 </script>
 
 <div class="transition-all">

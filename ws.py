@@ -29,6 +29,9 @@ CORS(app)
 # Global data (xr_dataread.nc)
 dsGlobal = xr.open_dataset("data/xr_dataread.nc")
 
+# PCC convergence year is standard on 2050
+DEFAULT_CONVERGENCE_YEAR = 2050
+
 
 @app.get("/pathwayCarbon")
 def pathwayCarbon():
@@ -200,45 +203,51 @@ def region(region):
 
 @app.get("/pathwayStats")
 def pathwayStats():
-    used = dsGlobal.GHG_hist.sel(Region="EARTH").sum().values.tolist()
-    remaining = (
-        dsGlobal.GHG_globe.sel(
-            TrajUnc="Medium",
-            **pathwaySelection(),
+    def stats(emission_type):
+        if emission_type == 'ghg':
+            hist = dsGlobal.GHG_hist
+            globe = dsGlobal.GHG_globe
+        elif emission_type == 'co2':
+            hist = dsGlobal.CO2_hist
+            globe = dsGlobal.CO2_globe
+        else:
+            raise ValueError(f"Emission type {emission_type} not supported")
+
+        used = hist.sel(Region="EARTH").sum().values.tolist()
+        remaining = globe.sel(TrajUnc="Medium",**pathwaySelection()).sum().values.tolist()
+        total = used + remaining
+        reference = hist.sel(Region="EARTH").sel(Time=2021).item()
+        relative = remaining / reference
+
+        # TODO gaps is not needed on non-global pages, so dont compute if there
+        gap_index = 2030
+        pathway = (
+            globe.sel(Time=gap_index, TrajUnc="Medium", **pathwaySelection())
+            .mean()
+            .values
+            + 0
         )
-        .sum()
-        .values.tolist()
-    )
-    total = used + remaining
-    reference = dsGlobal.GHG_hist.sel(Region="EARTH").sel(Time=2021).item()
-    relative = remaining / reference
+        curPol = ds_policyscen.CurPol.sel(Region="EARTH", Time=gap_index).mean().values + 0
+        ndc = ds_policyscen.NDC.sel(Region="EARTH", Time=gap_index).mean().values + 0
 
-    # Calculate gaps
-    # TODO gaps is not needed on non-global pages, so dont compute if there
-    gap_index = 2030
-    pathway = (
-        dsGlobal.GHG_globe.sel(Time=gap_index, TrajUnc="Medium", **pathwaySelection())
-        .mean()
-        .values
-        + 0
-    )
-    curPol = ds_policyscen.CurPol.sel(Region="EARTH", Time=gap_index).mean().values + 0
-    ndc = ds_policyscen.NDC.sel(Region="EARTH", Time=gap_index).mean().values + 0
-
-    gaps = {
-        "index": gap_index,
-        "budget": pathway / 1000,
-        "curPol": curPol / 1000,
-        "ndc": ndc / 1000,
-        "emission": (curPol - pathway) / 1000,
-        "ambition": (ndc - pathway) / 1000,
-    }
+        gaps = {
+            "index": gap_index,
+            "budget": pathway / 1000,
+            "curPol": curPol / 1000,
+            "ndc": ndc / 1000,
+            "emission": (curPol - pathway) / 1000,
+            "ambition": (ndc - pathway) / 1000,
+        }
+        return {
+            "total": total / 1000,
+            "used": used / 1000,
+            "remaining": remaining / 1000,
+            "relative": relative,
+            "gaps": gaps
+        }
     return {
-        "total": total / 1000,
-        "used": used / 1000,
-        "remaining": remaining / 1000,
-        "relative": relative,
-        "gaps": gaps,
+        "co2": stats("co2"),
+        "ghg": stats("ghg")
     }
 
 
@@ -305,7 +314,7 @@ def fullCenturyBudgetSpatial(year):
     if effortSharing in ["PC", "PCC", "AP", "GDR", "ECPC"]:
         selection.update(Scenario="SSP2")
     if effortSharing == "PCC":
-        selection.update(Convergence_year=2040)
+        selection.update(Convergence_year=DEFAULT_CONVERGENCE_YEAR)
 
     file_by_year = {
         "2030": ds_alloc_2030,
@@ -331,7 +340,11 @@ def fullCenturyBudgetSpatial(year):
 
     ds = (
         file_by_year[year]
-        .sel(Scenario="SSP2", Convergence_year=2040, **pathwaySelection())
+        .sel(
+            Scenario="SSP2",
+            Convergence_year=DEFAULT_CONVERGENCE_YEAR,
+            **pathwaySelection(),
+        )
         .sel(TrajUnc="Medium")
     ).to_array("variable")
 
@@ -429,7 +442,7 @@ def effortSharing(ISO, principle):
     if principle in ["PC", "PCC", "AP", "GDR", "ECPC"]:
         selection.update(Scenario="SSP2")
     if principle == "PCC":
-        selection.update(Convergence_year=2040)
+        selection.update(Convergence_year=DEFAULT_CONVERGENCE_YEAR)
 
     ds = get_ds(ISO)[principle].sel(**selection)
     df = ds.rename(Time="time").to_pandas()
@@ -485,7 +498,7 @@ def effortSharingReductions(ISO):
         if principle in ["PC", "PCC", "AP", "GDR", "ECPC"]:
             pselection.update(Scenario="SSP2")
         if principle == "PCC":
-            pselection.update(Convergence_year=2040)
+            pselection.update(Convergence_year=DEFAULT_CONVERGENCE_YEAR)
         reductions[principle] = {}
         for period in periods:
             pselection.update(Time=period)
