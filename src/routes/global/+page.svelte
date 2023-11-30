@@ -6,7 +6,7 @@
 	import { page } from '$app/stores';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
-
+	import { tour } from '$lib/shared/stores';
 	import ShareTabs from '$lib/ShareTabs.svelte';
 	import Pathway from '$lib/charts/Pathway.svelte';
 	import Line from '$lib/charts/components/Line.svelte';
@@ -49,7 +49,14 @@
 		]
 	});
 
-	onMount(() => driverObj.drive());
+	onMount(() => {
+		tour.useLocalStorage();
+		if ($tour.completed === false) {
+			console.log($tour);
+			driverObj.drive();
+			tour.set({ completed: true });
+		}
+	});
 
 	// TODO generalize to colormap component or named after the series it used for
 	const ipcc_green = '#A9C810';
@@ -137,7 +144,7 @@
 			/>
 		</div>
 		<div id="references">
-			<div class="card-compact card min-w-full bg-base-100 shadow-xl">
+			<div class="card card-compact min-w-full bg-base-100 shadow-xl">
 				<div class="card-body">
 					<h2 class="card-title">Reference pathways</h2>
 					<p>
