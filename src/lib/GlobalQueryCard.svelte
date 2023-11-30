@@ -31,7 +31,7 @@
 				<span
 					class="tooltip text-lg"
 					data-tip="The temperature target determines the emissions we can globally still emit. A
-			less ambitious target (for example, 2.2°C) implicates the possibility to emit more greenhouse gases.">ⓘ</span
+			less ambitious target (for example, 2.2°C) implies the possibility to emit more greenhouse gases.">ⓘ</span
 				>
 				<CustomRange
 					bind:value={temperature}
