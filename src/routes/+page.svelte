@@ -69,9 +69,6 @@
 			the countries that have emitted a lot in the past? Clearly, there is no single answer, because
 			it depends on what you think is fair. However, these principles can be quantified. The Carbon
 			Budget Explorer allows navigating through the implications of different views on fairness.
-			<br>
-			<br>
-			The Explorer is currently still under development, both in terms of visualisation as well as the underlying data. For more information on upcoming updates, please see our About page.
 		</p>
 	</div>
 
