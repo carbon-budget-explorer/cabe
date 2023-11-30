@@ -102,8 +102,6 @@
 								: data.indicators.ndcAmbition.toFixed(0)}<span
 								class="tooltip cursor-pointer"
 								role="tooltip"
-								on:mouseenter={toggleEmissionGap}
-								on:mouseleave={toggleEmissionGap}
 								data-tip="In terms of greenhouse gases without taking into account land use, land use change and forestry (LULUCF)."
 								>% reduction ⓘ</span>
 						</span>
