@@ -11,9 +11,9 @@
 			<div class="card-body prose">
 				<h2 class="card-title text-white">About</h2>
 				<ul class="not-prose m-2 list-inside list-disc">
-					<li class="text-lg font-semibold text-white"><a href="#scientific">Scientific basis</a></li>
-					<li class="text-lg font-semibold text-white"><a href="#societal">Societal relevance</a></li>
-					<li class="text-lg font-semibold text-white"><a href="#technology">Technological aspects</a></li>
+					<li class="text-lg font-semibold text-white"><a href="#scientific">Introduction</a></li>
+					<li class="text-lg font-semibold text-white"><a href="#societal">Scientific basis</a></li>
+					<li class="text-lg font-semibold text-white"><a href="#technology">Other</a></li>
 				</ul>
 			</div>
 		</div>
@@ -21,7 +21,7 @@
 			<div class="card-body prose">
 				<h2 class="card-title text-white">More information</h2>
 				<p class="text-white">
-					This tool has been developed by the <a
+					This tool was developed by the <a
 						href="https://www.esciencecenter.nl/"
 						target="_blank"
 						rel="noopener
@@ -33,9 +33,18 @@
 					>, in the context of the
 
 					<a href="https://www.ecemf.eu/about/" target="_blank" rel="noopener noreferrer" class="text-white"
-						>ECEMF project</a
-					>. For more information you can contact the lead author of the scientific research on fair
-					shares dr. Mark Dekker at <a href="mailto:mark.dekker@pbl.nl" class="text-white">mark.dekker@pbl.nl</a>.
+						>ECEMF</a> and 
+					<a href="https://www.elevate-climate.org/" target="_blank" rel="noopener noreferrer" class="text-white"
+						>ELEVATE</a
+					>
+					projects. For more information you can contact dr.
+					<a
+						href="https://www.pbl.nl/about-pbl/employees/mark-dekker"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="text-white"
+						>Mark Dekker</a
+					>.
 				</p>
 			</div>
 		</div>
