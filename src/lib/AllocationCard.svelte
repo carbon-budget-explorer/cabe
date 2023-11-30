@@ -4,8 +4,8 @@
 	import { page } from '$app/stores';
 
 	// Enable binding to allocationTime
-	export let allocationTime = '2021-2100';
-	const allocOptions = ['2021-2100', '2030', '2040']; // 2050
+	export let allocationTime = '2030';
+	const allocOptions = ['2030', '2040']; // 2050
 	function updateAlloc(option: string) {
 		allocationTime = option;
 	}
