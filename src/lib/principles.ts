@@ -1,15 +1,5 @@
-// Top colors from https://colorbrewer2.org/#type=qualitative&scheme=Set3&n=9
-/*
-#8dd3c7
-#ffffb3
-#bebada
-#fb8072 to much like ndc
-#80b1d3
-#fdb462
-#b3de69 to much like pathway
-#fccde5
-#d9d9d9
-*/
+// Top colors from https://venngage.com/tools/accessible-color-palette-generator
+
 export const principles = {
 	GF: {
 		label: 'Grandfathering',

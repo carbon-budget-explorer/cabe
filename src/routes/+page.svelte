@@ -23,35 +23,35 @@
 				<ol>
 					<li class="mb-1 flex flex-row">
 						<h3
-							class="z-50 h-12 w-12 rounded-full bg-primary pt-2 text-center text-xl font-semibold text-neutral-content"
+							class="z-50 h-12 w-12 rounded-full bg-primary pt-2 text-center text-xl font-semibold text-white"
 						>
 							1.
 						</h3>
-						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-secondary p-4 px-10" style="opacity: 0.75;">
-							<h3 class="mb-2 text-xl font-semibold text-neutral-content">Set global targets</h3>
-							<p class="text-neutral-content">Determine the global carbon budget and pathway</p>
+						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-neutral p-4 px-10" style="opacity: 0.60;">
+							<h3 class="mb-2 text-xl font-semibold text-white">Set global targets</h3>
+							<p class="text-white">Determine the global carbon budget and pathway</p>
 						</div>
 					</li>
 					<li class="mb-1 flex flex-row items-start">
 						<h3
-							class="z-50 h-12 w-12 rounded-full bg-primary pt-2 text-center text-xl font-semibold text-neutral-content"
+							class="z-50 h-12 w-12 rounded-full bg-primary pt-2 text-center text-xl font-semibold text-white"
 						>
 							2.
 						</h3>
-						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-neutral p-4 px-10" style="opacity: 0.75;">
-							<h3 class="mb-2 text-xl font-semibold text-neutral-content">Choose your effort-sharing principle</h3>
-							<p class="text-neutral-content">Establish each country's "fair" contribution</p>
+						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-neutral p-4 px-10" style="opacity: 0.60;">
+							<h3 class="mb-2 text-xl font-semibold text-white">Choose your effort-sharing principle</h3>
+							<p class="text-white">Establish each country's "fair" contribution</p>
 						</div>
 					</li>
 					<li class="mb-1 flex flex-row items-start">
 						<h3
-							class="z-50 h-12 w-12 rounded-full bg-primary pt-2 text-center text-xl font-semibold text-neutral-content"
+							class="z-50 h-12 w-12 rounded-full bg-primary pt-2 text-center text-xl font-semibold text-white"
 						>
 							3.
 						</h3>
-						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-neutral p-4 px-10">
-							<h3 class="mb-2 text-xl font-semibold text-neutral-content">Observe individual country results</h3>
-							<p class="text-neutral-content">Explore the pathway for your country in more detail</p>
+						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-neutral p-4 px-10" style="opacity: 0.60;">
+							<h3 class="mb-2 text-xl font-semibold text-white">Observe individual country results</h3>
+							<p class="text-white">Explore the pathway for your country in more detail</p>
 						</div>
 					</li>
 				</ol>
