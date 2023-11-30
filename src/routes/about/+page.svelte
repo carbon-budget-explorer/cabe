@@ -5,37 +5,37 @@
 </script>
 
 <!-- Sidebar -->
-<div class="flex h-full gap-4 rounded bg-secondary">
-	<div class="items-between flex h-full w-1/5 flex-col rounded bg-secondary">
+<div class="flex h-full gap-4 rounded bg-primary">
+	<div class="items-between flex h-full w-1/5 flex-col rounded bg-primary">
 		<div class="card-compact card">
 			<div class="card-body prose">
-				<h2 class="card-title">About</h2>
+				<h2 class="card-title text-white">About</h2>
 				<ul class="not-prose m-2 list-inside list-disc">
-					<li class="text-lg font-semibold"><a href="#scientific">Scientific basis</a></li>
-					<li class="text-lg font-semibold"><a href="#societal">Societal relevance</a></li>
-					<li class="text-lg font-semibold"><a href="#technology">Technological aspects</a></li>
+					<li class="text-lg font-semibold text-white"><a href="#scientific">Scientific basis</a></li>
+					<li class="text-lg font-semibold text-white"><a href="#societal">Societal relevance</a></li>
+					<li class="text-lg font-semibold text-white"><a href="#technology">Technological aspects</a></li>
 				</ul>
 			</div>
 		</div>
 		<div class="card-compact card mt-auto">
 			<div class="card-body prose">
-				<h2 class="card-title">More information</h2>
-				<p>
+				<h2 class="card-title text-white">More information</h2>
+				<p class="text-white">
 					This tool has been developed by the <a
 						href="https://www.esciencecenter.nl/"
 						target="_blank"
 						rel="noopener
-					noreferrer">Netherlands eScience Center</a
+					noreferrer" class="text-white">Netherlands eScience Center</a
 					>
 					in collaboration with the
 					<a href="https://www.pbl.nl/en" target="_blank" rel="noopener noreferrer"
-						>Environmental Assessment Agency (PBL)</a
+					class="text-white">Environmental Assessment Agency (PBL)</a
 					>, in the context of the
 
-					<a href="https://www.ecemf.eu/about/" target="_blank" rel="noopener noreferrer"
+					<a href="https://www.ecemf.eu/about/" target="_blank" rel="noopener noreferrer" class="text-white"
 						>ECEMF project</a
 					>. For more information you can contact the lead author of the scientific research on fair
-					shares dr. Mark Dekker at <a href="mailto:mark.dekker@pbl.nl">mark.dekker@pbl.nl</a>.
+					shares dr. Mark Dekker at <a href="mailto:mark.dekker@pbl.nl" class="text-white">mark.dekker@pbl.nl</a>.
 				</p>
 			</div>
 		</div>
