@@ -52,8 +52,8 @@
 	onMount(() => driverObj.drive());
 
 	// TODO generalize to colormap component or named after the series it used for
-	const ipcc_green = '#82a56e';
-	const ipcc_red = '#f5331e';
+	const ipcc_green = '#A9C810';
+	const ipcc_red = '#c82f10';
 	const ipcc_blue = '#5bb0c6';
 	const ipcc_purple = '#a67ab8';
 
@@ -186,7 +186,7 @@
 							<label class="cursor-pointer">
 								<input
 									type="checkbox"
-									style={`background-color: ${ipcc_blue}`}
+									style={`background-color: ${ipcc_purple}`}
 									class="m-1 scale-125 shadow"
 									bind:checked={policyPathwayToggles.ndc}
 								/>{' '}Projections of nationally determined contributions (NDCs)</label
@@ -196,7 +196,7 @@
 							<label class="cursor-pointer">
 								<input
 									type="checkbox"
-									style={`background-color: ${ipcc_purple}`}
+									style={`background-color: ${ipcc_blue}`}
 									class="m-1 scale-125 shadow"
 									bind:checked={policyPathwayToggles.netzero}
 								/>{' '}Projections of net-zero pledges</label
@@ -234,25 +234,25 @@
 					/>
 				{/if}
 				{#if policyPathwayToggles.ndc || ambitionGapHover}
-					<Line data={data.result.ndc} x={'time'} y={'mean'} color={ipcc_blue} />
+					<Line data={data.result.ndc} x={'time'} y={'mean'} color={ipcc_purple} />
 					<Area
 						data={data.result.ndc}
 						x={'time'}
 						y0={'min'}
 						y1={'max'}
-						color={ipcc_blue}
+						color={ipcc_purple}
 						on:mouseover={hoverNdc}
 						on:mouseout={(e) => (evt = e)}
 					/>
 				{/if}
 				{#if policyPathwayToggles.netzero}
-					<Line data={data.result.netzero} x={'time'} y={'mean'} color={ipcc_purple} />
+					<Line data={data.result.netzero} x={'time'} y={'mean'} color={ipcc_blue} />
 					<Area
 						data={data.result.netzero}
 						x={'time'}
 						y0={'min'}
 						y1={'max'}
-						color={ipcc_purple}
+						color={ipcc_blue}
 						on:mouseover={hoverNetzero}
 						on:mouseout={(e) => (evt = e)}
 					/>

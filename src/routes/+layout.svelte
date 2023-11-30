@@ -39,7 +39,7 @@
 			<a href="/about" class="btn-ghost btn-square btn px-10">About</a>
 		</div>
 	</div>
-	<div class={clsx($page.url.pathname === '/' && 'fancy-gradient', 'flex-1 bg-base-200 p-4')}>
+	<div class={clsx($page.url.pathname === '/', 'flex-1 bg-base-100 p-4')}>
 		<slot />
 	</div>
 	{#if $page.url.pathname === '/about'}
@@ -52,15 +52,3 @@
 		</footer>
 	{/if}
 </div>
-
-<style>
-	.fancy-gradient {
-		background: rgb(49, 59, 114);
-		background: radial-gradient(
-			500% 100% at 50% top,
-			rgba(49, 59, 114, 1) 7%,
-			rgba(123, 146, 178, 1) 75%,
-			rgba(200, 200, 200, 1) 100%
-		);
-	}
-</style>
