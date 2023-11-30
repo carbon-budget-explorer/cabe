@@ -19,7 +19,6 @@
 		</div>
 		<div class="card-compact card mt-auto">
 			<div class="card-body prose">
-				<h2 class="card-title" />
 				<p>
 					This tool was developed by the <a
 						href="https://www.esciencecenter.nl/"
