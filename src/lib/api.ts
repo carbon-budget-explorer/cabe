@@ -12,7 +12,7 @@ export interface PathWayQuery {
 	negativeEmissions: string;
 }
 
-export interface PathwayStats {
+export interface PathwayStatsType {
 	total: number;
 	used: number;
 	remaining: number;
@@ -25,6 +25,11 @@ export interface PathwayStats {
 		ambition: number;
 		emission: number;
 	};
+}
+
+export interface PathwayStats {
+	ghg: PathwayStatsType;
+	co2: PathwayStatsType;
 }
 
 export interface TimeSeriesValue {
