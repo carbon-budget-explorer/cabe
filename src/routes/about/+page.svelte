@@ -69,7 +69,7 @@
 			<h1>Frequently asked questions</h1>
 			<section>
 				<h2 id="intro">Introduction</h2>
-				<QA question="What is the goal of this research?">
+				<QA question="What is the goal of this explorer?">
 					The goal is to inform everyone about the consequences of one's view on fairness and
 					requirements of climate targets. The calculations in this tool act as a 'mirror' to
 					reflect on how the ambition gap can be closed and evaluate NDCs in light of fairness.
