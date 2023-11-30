@@ -23,35 +23,35 @@
 				<ol>
 					<li class="mb-1 flex flex-row">
 						<h3
-							class="z-50 h-12 w-12 rounded-full bg-primary pt-2 text-center text-xl font-semibold text-neutral-content"
+							class="z-50 h-12 w-12 rounded-full bg-primary pt-2 text-center text-xl font-semibold text-white"
 						>
 							1.
 						</h3>
-						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-secondary p-4 px-10">
-							<h3 class="mb-2 text-xl font-semibold">Set global targets</h3>
-							<p>Defining the global carbon budget and emissions pathway</p>
+						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-neutral p-4 px-10 opacity-60">
+							<h3 class="mb-2 text-xl font-semibold text-white">Set global targets</h3>
+							<p class="text-white">Defining the global carbon budget and emissions pathway</p>
 						</div>
 					</li>
 					<li class="mb-1 flex flex-row items-start">
 						<h3
-							class="z-50 h-12 w-12 rounded-full bg-primary pt-2 text-center text-xl font-semibold text-neutral-content"
+							class="z-50 h-12 w-12 rounded-full bg-primary pt-2 text-center text-xl font-semibold text-white"
 						>
 							2.
 						</h3>
-						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-secondary p-4 px-10">
-							<h3 class="mb-2 text-xl font-semibold">Select your view on fairness</h3>
-							<p>Implicating each country's "fair" emissions</p>
+						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-neutral p-4 px-10 opacity-60">
+							<h3 class="mb-2 text-xl font-semibold text-white">Choose your effort-sharing principle</h3>
+							<p class="text-white">Implicating each country's "fair" emissions</p>
 						</div>
 					</li>
 					<li class="mb-1 flex flex-row items-start">
 						<h3
-							class="z-50 h-12 w-12 rounded-full bg-primary pt-2 text-center text-xl font-semibold text-neutral-content"
+							class="z-50 h-12 w-12 rounded-full bg-primary pt-2 text-center text-xl font-semibold text-white"
 						>
 							3.
 						</h3>
-						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-secondary p-4 px-10">
-							<h3 class="mb-2 text-xl font-semibold">Explore individual country results</h3>
-							<p>Indicating the pathway for each country in more detail</p>
+						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-neutral p-4 px-10 opacity-60">
+							<h3 class="mb-2 text-xl font-semibold text-white">Observe individual country results</h3>
+							<p class="text-white">Indicating the pathway for each country in more detail</p>
 						</div>
 					</li>
 				</ol>

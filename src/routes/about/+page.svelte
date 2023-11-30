@@ -5,43 +5,61 @@
 </script>
 
 <!-- Sidebar -->
-<div class="flex h-full gap-4 rounded bg-secondary">
-	<div class="items-between flex h-full w-1/5 flex-col rounded bg-secondary">
-		<div class="card-compact card">
+<div class="flex h-full gap-4 rounded bg-primary">
+	<div class="items-between flex h-full w-1/5 flex-col rounded bg-primary">
+		<div class="card card-compact">
 			<div class="card-body prose">
-				<h2 class="card-title">About</h2>
+				<h2 class="card-title text-white">About</h2>
 				<ul class="not-prose m-2 list-inside list-disc">
-					<li class="text-lg font-semibold"><a href="#intro">Introduction</a></li>
-					<li class="text-lg font-semibold"><a href="#scientific">Scientific basis</a></li>
-					<li class="text-lg font-semibold"><a href="#other">Other</a></li>
+					<li class="text-lg font-semibold text-white"><a href="#scientific">Introduction</a></li>
+					<li class="text-lg font-semibold text-white"><a href="#societal">Scientific basis</a></li>
+					<li class="text-lg font-semibold text-white"><a href="#technology">Other</a></li>
 				</ul>
 			</div>
 		</div>
 		<div class="card-compact card mt-auto">
 			<div class="card-body prose">
-				<p>
+				<h2 class="card-title text-white">More information</h2>
+				<p class="text-white">
 					This tool was developed by the <a
 						href="https://www.esciencecenter.nl/"
 						target="_blank"
 						rel="noopener
-					noreferrer">Netherlands eScience Center</a
+					noreferrer"
+						class="text-white">Netherlands eScience Center</a
 					>
 					in collaboration with the
-					<a href="https://www.pbl.nl/en" target="_blank" rel="noopener noreferrer"
-						>Environmental Assessment Agency (PBL)</a
+					<a
+						href="https://www.pbl.nl/en"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="text-white">Environmental Assessment Agency (PBL)</a
 					>, in the context of the
-
-					<a href="https://www.ecemf.eu/about/" target="_blank" rel="noopener noreferrer">ECEMF</a>
+					<a
+						href="https://www.ecemf.eu/about/"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="text-white">ECEMF</a
+					>
 					and
-					<a href="https://www.elevate-climate.org/" target="_blank" rel="noopener noreferrer"
-						>ELEVATE</a
+					<a
+						href="https://www.elevate-climate.org/"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="text-white">ELEVATE</a
 					>
 					projects. For more information you can contact dr.
 					<a
 						href="https://www.pbl.nl/about-pbl/employees/mark-dekker"
 						target="_blank"
-						rel="noopener noreferrer">Mark Dekker</a
-					>.
+						class="text-white"
+						rel="noopener noreferrer">Mark Dekker.</a
+					>
+					<br /><br />© 2023 Planbureau voor de Leefomgeving and Netherlands eScience Center.
+					<img src="/logo_pbl.png" alt="logo_pbl" width="200" />
+					<img src="/logo_ecemf.png" alt="logo_ecemf" width="200" />
+					<img src="/logo_elevate.png" alt="logo_elevate" width="200" />
+					<img src="/netherlands-escience-center-logo-DIAP.png" alt="logo_escience" width="200" />
 				</p>
 			</div>
 		</div>

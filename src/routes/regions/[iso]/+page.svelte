@@ -116,6 +116,7 @@
 				<Pathway
 					yDomain={[data.historicalCarbon.extent[1] * -0.2, data.historicalCarbon.extent[1]]}
 					{evt}
+					yAxisTtle="GHG emissions (Mt CO₂e/year)"
 				>
 					<Line
 						data={data.historicalCarbon.data.filter((d) => d.time >= 1990)}
