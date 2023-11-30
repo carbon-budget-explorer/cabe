@@ -27,7 +27,7 @@
 						>
 							1.
 						</h3>
-						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-neutral p-4 px-10" style="opacity: 0.60;">
+						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-neutral p-4 px-10 opacity-60">
 							<h3 class="mb-2 text-xl font-semibold text-white">Set global targets</h3>
 							<p class="text-white">Determine the global carbon budget and pathway</p>
 						</div>
@@ -38,7 +38,7 @@
 						>
 							2.
 						</h3>
-						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-neutral p-4 px-10" style="opacity: 0.60;">
+						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-neutral p-4 px-10 opacity-60">
 							<h3 class="mb-2 text-xl font-semibold text-white">Choose your effort-sharing principle</h3>
 							<p class="text-white">Establish each country's "fair" contribution</p>
 						</div>
@@ -49,7 +49,7 @@
 						>
 							3.
 						</h3>
-						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-neutral p-4 px-10" style="opacity: 0.60;">
+						<div class="-ml-6 flex-1 -skew-x-[20deg] rounded bg-neutral p-4 px-10 opacity-60">
 							<h3 class="mb-2 text-xl font-semibold text-white">Observe individual country results</h3>
 							<p class="text-white">Explore the pathway for your country in more detail</p>
 						</div>
