@@ -63,8 +63,8 @@
 	<div class="">
 		<!-- <h2>What is fair climate action?</h2> -->
 		<p>
-			Many countries commit to rapid climate action, but there is still a gap in ambition to reach the Paris Agreement climate goals.
-			It is not trivial to define what the targets per country should be. This is a matter of fairness.
+			Many countries commit to rapid climate action, but their ambitions are not enough to reach the Paris goals.
+			It is not trivial to define which countries should do more. This is a matter of fairness.
 			But what is fair in this context? Should rich countries mitigate more, because they have the means to do so? Or
 			the countries that have emitted a lot in the past? Clearly, there is no single answer, because
 			it depends on what you think is fair. However, these principles can be quantified. The Carbon
