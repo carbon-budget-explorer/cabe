@@ -47,6 +47,7 @@
 					<img src="/logo_pbl.png" alt="logo_pbl" width=200/>
 					<img src="/logo_ecemf.png" alt="logo_ecemf" width=200/>
 					<img src="/logo_elevate.png" alt="logo_elevate" width=200/>
+					<img src="/netherlands-escience-center-logo-DIAP.png" alt="logo_escience" width=200/>
 					
 				</p>
 			</div>
