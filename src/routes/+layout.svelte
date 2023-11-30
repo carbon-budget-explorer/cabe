@@ -31,8 +31,8 @@
 				/></svg
 			>
 			<span
-				>This website is currently in beta and is subject to frequent updates. Please see the
-				About page for more information</span
+				>This website is currently in beta and is subject to frequent updates. Please see the About
+				page for more information</span
 			>
 		</div>
 		<div class="flex-none">
