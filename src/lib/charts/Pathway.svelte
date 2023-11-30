@@ -8,7 +8,7 @@
 	export let xDomain: [number, number] = [1990, 2100];
 	export let yDomain: [number, number] = [0, 60];
 	export let evt: ComponentEvents<SvelteComponent> = {};
-	export let yAxisTtle = 'Greenhouse gas emissions (Mt CO₂e/year)';
+	export let yAxisTtle = '';
 	export let xTicks: number | Array<any> | undefined = undefined;
 	export let yTicks: number | Array<any> | undefined = 8;
 </script>
