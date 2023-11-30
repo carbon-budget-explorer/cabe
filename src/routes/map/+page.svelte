@@ -99,7 +99,7 @@
 								{hoveredFeature.properties.NAME}
 							</div>
 							<div>
-								{hoveredMetric.value.toFixed(0)} tonnes CO₂e per capita
+								{hoveredMetric.value.toFixed(0)} Emissions allocation per capita (t CO2e/pc)
 							</div>
 						{:else}
 							<div>Click on a country or</div>
