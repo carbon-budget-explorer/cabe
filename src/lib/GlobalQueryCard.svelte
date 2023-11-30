@@ -42,7 +42,7 @@
 			<p>
 				Acceptable risk of exceeding global warming limit
 				<span
-					class="tooltip text-lg"
+					class="tooltip text-lg z-[750]"
 					data-tip="The exact level of temperature rise at any level of cumulative emissions has some uncertainties.
 					Therefore, if you want to be sure to remain within a given temperature level, you will need to set the risk slider accordingly, but that means
 					that the budget shrinks even more.">ⓘ</span
