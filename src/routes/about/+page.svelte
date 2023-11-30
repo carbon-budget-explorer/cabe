@@ -43,7 +43,7 @@
             class="text-white"
 						rel="noopener noreferrer">Mark Dekker.</a
 					>
-					<br><br>© 2023 Planbureau voor de Leefomgeving.
+					<br><br>© 2023 Planbureau voor de Leefomgeving and Netherlands eScience Center.
 					<img src="/logo_pbl.png" alt="logo_pbl" width=200/>
 					<img src="/logo_ecemf.png" alt="logo_ecemf" width=200/>
 					<img src="/logo_elevate.png" alt="logo_elevate" width=200/>
