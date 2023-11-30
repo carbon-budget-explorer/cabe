@@ -146,7 +146,7 @@
 			/>
 		</div>
 		<div id="references">
-			<div class="card card-compact min-w-full bg-base-100 shadow-xl">
+			<div class="card-compact card min-w-full bg-base-100 shadow-xl">
 				<div class="card-body">
 					<h2 class="card-title">Reference pathways</h2>
 					<p>

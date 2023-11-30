@@ -66,9 +66,7 @@
 				transform="translate(-35, 250) rotate(270)"
 				text-anchor="start"
 				font-weight="bold"
-				font-size="14px"
-				>{title}</text
-				
+				font-size="14px">{title}</text
 			>
 		</g>
 	</svg>
