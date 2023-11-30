@@ -18,6 +18,7 @@
 			</div>
 		</div>
 		<div class="card-compact card mt-auto">
+			<div class="card-body prose">
 				<h2 class="card-title text-white">More information</h2>
 				<p class="text-white">
 					This tool was developed by the <a
