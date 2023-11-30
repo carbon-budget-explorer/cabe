@@ -23,12 +23,14 @@ export const principles = {
 	},
 	GDR: {
 		label: 'GH development rights',
-		summary: 'Capability + Responsibility. Based on GDP per capita and a responsibility-capability index.',
+		summary:
+			'Capability + Responsibility. Based on GDP per capita and a responsibility-capability index.',
 		color: '#dc9a00'
 	},
 	ECPC: {
 		label: 'Equal cumulative per capita',
-		summary: 'Responsibility + Equality. Based on historical emissions and the past and future per capita share.',
+		summary:
+			'Responsibility + Equality. Based on historical emissions and the past and future per capita share.',
 		color: '#ae6600'
 	}
 } as const;

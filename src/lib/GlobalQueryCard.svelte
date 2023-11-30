@@ -21,7 +21,7 @@
 	$: onChange('negativeEmissions', negativeEmissions);
 </script>
 
-<div class="card card-compact prose min-w-full bg-base-100 shadow-xl">
+<div class="card-compact card prose min-w-full bg-base-100 shadow-xl">
 	<div class="card-body">
 		<div>
 			<h2 class="not-prose card-title">Global budget</h2>
@@ -31,7 +31,8 @@
 				<span
 					class="tooltip text-lg"
 					data-tip="The temperature target determines the emissions we can globally still emit. A
-			less ambitious target (for example, 2.2°C) implies the possibility to emit more greenhouse gases.">ⓘ</span
+			less ambitious target (for example, 2.2°C) implies the possibility to emit more greenhouse gases."
+					>ⓘ</span
 				>
 				<CustomRange
 					bind:value={temperature}
@@ -42,9 +43,10 @@
 			<p>
 				Acceptable risk of exceeding global warming limit
 				<span
-					class="tooltip text-lg z-[750]"
+					class="tooltip z-[750] text-lg"
 					data-tip="The temperature rise at any level of cumulative emissions has some uncertainties.
-					Therefore, if you want to be sure to remain within a given temperature level (small risk), you will need to shrink the budget even more.">ⓘ</span
+					Therefore, if you want to be sure to remain within a given temperature level (small risk), you will need to shrink the budget even more."
+					>ⓘ</span
 				>
 				<CustomRange
 					bind:value={exceedanceRisk}
@@ -59,7 +61,8 @@
 				<span
 					class="tooltip text-lg"
 					data-tip="A major influence on the shape of the global pathway is the assumption on the amount of negative emissions.
-					More negative emissions (slider to the right) gives us some slack in the coming decades, and vice versa.">ⓘ</span
+					More negative emissions (slider to the right) gives us some slack in the coming decades, and vice versa."
+					>ⓘ</span
 				>
 				<CustomRange
 					bind:value={negativeEmissions}

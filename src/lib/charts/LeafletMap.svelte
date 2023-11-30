@@ -113,7 +113,11 @@
 				on:mouseout={onmouseout}
 			/>
 		</LeafletMap>
-		<ColorLegend title={'Emissions allocation per capita (t CO2e/pc)'} {...notypecheck({ scale: scale})} {scale} />
+		<ColorLegend
+			title={'Emissions allocation per capita (t CO2e/pc)'}
+			{...notypecheck({ scale: scale })}
+			{scale}
+		/>
 	{/if}
 </div>
 

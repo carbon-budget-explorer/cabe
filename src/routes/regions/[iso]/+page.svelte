@@ -103,7 +103,8 @@
 								class="tooltip cursor-pointer"
 								role="tooltip"
 								data-tip="In terms of greenhouse gases without taking into account land use, land use change and forestry (LULUCF)."
-								>% reduction ⓘ</span>
+								>% reduction ⓘ</span
+							>
 						</span>
 					</p>
 				</div>

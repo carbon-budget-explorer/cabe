@@ -25,30 +25,41 @@
 						href="https://www.esciencecenter.nl/"
 						target="_blank"
 						rel="noopener
-					noreferrer" class="text-white">Netherlands eScience Center</a
+					noreferrer"
+						class="text-white">Netherlands eScience Center</a
 					>
 					in collaboration with the
-					<a href="https://www.pbl.nl/en" target="_blank" rel="noopener noreferrer"
-					class="text-white">Environmental Assessment Agency (PBL)</a
+					<a
+						href="https://www.pbl.nl/en"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="text-white">Environmental Assessment Agency (PBL)</a
 					>, in the context of the
-					<a href="https://www.ecemf.eu/about/" target="_blank" rel="noopener noreferrer" class="text-white"
-						>ECEMF</a> and 
-					<a href="https://www.elevate-climate.org/" target="_blank" rel="noopener noreferrer" class="text-white"
-						>ELEVATE</a
+					<a
+						href="https://www.ecemf.eu/about/"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="text-white">ECEMF</a
+					>
+					and
+					<a
+						href="https://www.elevate-climate.org/"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="text-white">ELEVATE</a
 					>
 					projects. For more information you can contact dr.
 					<a
 						href="https://www.pbl.nl/about-pbl/employees/mark-dekker"
 						target="_blank"
-            class="text-white"
+						class="text-white"
 						rel="noopener noreferrer">Mark Dekker.</a
 					>
-					<br><br>© 2023 Planbureau voor de Leefomgeving and Netherlands eScience Center.
-					<img src="/logo_pbl.png" alt="logo_pbl" width=200/>
-					<img src="/logo_ecemf.png" alt="logo_ecemf" width=200/>
-					<img src="/logo_elevate.png" alt="logo_elevate" width=200/>
-					<img src="/netherlands-escience-center-logo-DIAP.png" alt="logo_escience" width=200/>
-					
+					<br /><br />© 2023 Planbureau voor de Leefomgeving and Netherlands eScience Center.
+					<img src="/logo_pbl.png" alt="logo_pbl" width="200" />
+					<img src="/logo_ecemf.png" alt="logo_ecemf" width="200" />
+					<img src="/logo_elevate.png" alt="logo_elevate" width="200" />
+					<img src="/netherlands-escience-center-logo-DIAP.png" alt="logo_escience" width="200" />
 				</p>
 			</div>
 		</div>
@@ -103,9 +114,9 @@
 					sense to talk about a budget in terms of cumulative CO<sub>2</sub> emissions, because CO<sub
 						>2</sub
 					>
-					remains in the atmosphere for a long time, while other greenhouse gases are mostly
-					short-lived and filtered out quickly from the atmosphere, so it matters when exactly these
-					greenhouse gases are emitted. The global carbon budget numbers are taken from
+					remains in the atmosphere for a long time, while other greenhouse gases are mostly short-lived
+					and filtered out quickly from the atmosphere, so it matters when exactly these greenhouse gases
+					are emitted. The global carbon budget numbers are taken from
 					<a
 						href="https://essd.copernicus.org/articles/15/2295/2023/"
 						target="_blank"

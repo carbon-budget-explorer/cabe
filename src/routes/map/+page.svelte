@@ -131,7 +131,7 @@
 					</div>
 					<div class="absolute bottom-2 z-[400] w-full">
 						<div class="flex w-full flex-row justify-center gap-2 p-2">
-							<div class="text-lg font-bold prose">Choose a method of allocation:</div>
+							<div class="prose text-lg font-bold">Choose a method of allocation:</div>
 						</div>
 						<div class="flex w-full flex-row content-stretch justify-stretch gap-2 p-2">
 							{#each Object.entries(principles) as [id, { label, summary }]}
