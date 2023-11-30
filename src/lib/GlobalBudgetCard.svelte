@@ -21,8 +21,8 @@
 		{$relativeBudgetCounter.toFixed()}x
 	</div>
 
-	<div class="text-center text-xs text-base-content/60" title="Gigaton carbon dioxide equivalent">
-		Gt CO₂e
+	<div class="text-center text-xs text-base-content/60" title="Gigaton carbon dioxide">
+		Gt CO₂
 	</div>
 	<div class="text-center text-xs text-base-content/60">the current annual emissions</div>
 </div>

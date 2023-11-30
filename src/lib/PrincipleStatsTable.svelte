@@ -17,7 +17,7 @@
 	<table class="prose w-full max-w-none table-auto">
 		<thead>
 			<tr>
-				<th>Effort sharing principle</th>
+				<th>Allocation method</th>
 				{#each Object.entries(principles) as [id, { label, color }]}
 					<th>{label}</th>
 				{/each}
