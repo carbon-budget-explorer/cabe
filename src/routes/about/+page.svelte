@@ -42,7 +42,11 @@
 						href="https://www.pbl.nl/about-pbl/employees/mark-dekker"
 						target="_blank"
 						rel="noopener noreferrer">Mark Dekker</a
-					>.
+					>
+					<br><br>© 2023 Planbureau voor de Leefomgeving.
+					<img src="/logo_pbl.png" alt="logo_pbl" width=200/>
+					<img src="/logo_ecemf.png" alt="logo_ecemf" width=200/>
+					<img src="/logo_elevate.png" alt="logo_elevate" width=200/>
 				</p>
 			</div>
 		</div>
