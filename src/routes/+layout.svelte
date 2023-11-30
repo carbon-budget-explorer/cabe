@@ -51,6 +51,7 @@
 		})(window, document, 'dataLayer', '5f6027e9-9dd3-45b2-afbf-2b54ceee73d2');
 	</script><noscript
 		><iframe
+			title="pbl traffic monitor"
 			src="//statistiek.rijksoverheid.nl/containers/5f6027e9-9dd3-45b2-afbf-2b54ceee73d2/noscript.html"
 			height="0"
 			width="0"
