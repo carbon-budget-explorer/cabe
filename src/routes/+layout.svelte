@@ -24,6 +24,15 @@
 	<div class={clsx($page.url.pathname === '/' && 'fancy-gradient', 'flex-1 bg-base-200 p-4')}>
 		<slot />
 	</div>
+	{#if $page.url.pathname === '/about'}
+		<footer class="flex h-16 justify-around gap-10 bg-primary text-center">
+			<p class="self-center">© 2023 Planbureau voor de Leefomgeving.</p>
+			<img src="/logo_pbl.png" alt="logo_pbl" />
+			<img src="/logo_ecemf.png" alt="logo_ecemf" />
+			<img src="/logo_elevate.png" alt="logo_elevate" />
+			<img src="/logo_escience.png" alt="logo_escience" />
+		</footer>
+	{/if}
 </div>
 
 <style>

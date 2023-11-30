@@ -53,7 +53,7 @@
 		};
 	}
 	const hoverHistoricalCarbon = hoverBuilder(
-		(row) => `Historical emission in ${row.time} was ${row.value.toFixed(0)} Mt CO₂e`
+		(row) => `Historical emissions in ${row.time} were ${row.value.toFixed(0)} Mt CO₂e`
 	);
 	const hoverNdc = hoverBuilder(
 		(row) =>
@@ -96,10 +96,14 @@
 						</span>
 					</p>
 					<p>
-						<span class="font-bold"> 2030 NDC ambition: </span><span
+						<span class="font-bold"> NDC ambition in 2030 relative to 1990: </span><span
 							>{data.indicators.ndcAmbition === null
 								? '-'
-								: data.indicators.ndcAmbition.toFixed(0)}% reduction relative to 1990.
+								: data.indicators.ndcAmbition.toFixed(0)}<span
+								class="tooltip cursor-pointer"
+								role="tooltip"
+								data-tip="In terms of greenhouse gases without taking into account land use, land use change and forestry (LULUCF)."
+								>% reduction ⓘ</span>
 						</span>
 					</p>
 				</div>
