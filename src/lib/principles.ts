@@ -3,32 +3,32 @@
 export const principles = {
 	GF: {
 		label: 'Grandfathering',
-		summary: 'Past emissions levels.',
+		summary: 'Continuity. Based on current emission levels',
 		color: '#0a3dda'
 	},
 	PC: {
 		label: 'Per capita',
-		summary: 'Population.',
+		summary: 'Equality. Based on current population levels.',
 		color: '#8b10c8'
 	},
 	PCC: {
 		label: 'Per capita convergence',
-		summary: 'Population with convergence in 2040.',
+		summary: 'Continuity and equality. Converging from grandfathering to per capita in 2050.',
 		color: '#d01581'
 	},
 	AP: {
 		label: 'Ability to pay',
-		summary: 'A country’s ability to pay for mitigation.',
+		summary: 'Capability. Based on GDP per capita',
 		color: '#00afaf'
 	},
 	GDR: {
 		label: 'GH development rights',
-		summary: 'Equalize per capita emissions across countries.',
+		summary: 'Capability + Responsibility. Based on GDP per capita and a responsibility-capability index.',
 		color: '#dc9a00'
 	},
 	ECPC: {
 		label: 'Equal cumulative per capita',
-		summary: 'A country’s cumulative emissions per capita.',
+		summary: 'Responsibility + Equality. Based on historical emissions and the past and future per capita share.',
 		color: '#ae6600'
 	}
 } as const;
