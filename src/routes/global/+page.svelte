@@ -27,15 +27,15 @@
 			{
 				element: '#globalquerycard',
 				popover: {
-					title: 'Determine your pathway',
-					description: 'Use the sliders to construct your personal carbon budget and pathway'
+					title: 'Set global targets',
+					description: 'In these sliders, set your targets on temperature, risk and negative emissions, which affect the global emissions pathway'
 				}
 			},
 			{
 				element: '#references',
 				popover: {
-					title: 'Compare with others',
-					description: 'Check the tickboxes to show reference pathways on the graph'
+					title: 'Compare with other pathways',
+					description: 'Tick these boxes to show other types of emissions pathways on the graph'
 				}
 			},
 			{
@@ -43,7 +43,7 @@
 				popover: {
 					title: 'Proceed to map',
 					description:
-						"When you're ready, proceed to the map view to select your effor-sharing principle"
+						"When you're ready, proceed to the map view to select your effort-sharing principle"
 				}
 			}
 		]
@@ -84,22 +84,22 @@
 		};
 	}
 	const hoverHistoricalCarbon = hoverBuilder(
-		(row) => `Historical emission in ${row.time} was ${row.value.toFixed(0)} Gt CO₂e`
+		(row) => `The historical greenhouse gas emissions in ${row.time} were ${row.value.toFixed(1)} Gt CO₂e`
 	);
 	const hoverPathway = hoverBuilder(
 		(row) =>
 			`Your selected global pathway emission in ${row.time} is on average ${row.mean.toFixed(
-				0
+				1
 			)} Gt CO₂e`
 	);
 	const hoverCurrentPolicy = hoverBuilder(
-		(row) => `Current policy in ${row.time} is on average ${row.mean.toFixed(0)} Gt CO₂e`
+		(row) => `Current policy scenarios in ${row.time} is on average ${row.mean.toFixed(1)} Gt CO₂e`
 	);
 	const hoverNdc = hoverBuilder(
-		(row) => `NDCs in ${row.time} is on average ${row.mean.toFixed(0)} Gt CO₂e`
+		(row) => `NDCs in ${row.time} is on average ${row.mean.toFixed(1)} Gt CO₂e`
 	);
 	const hoverNetzero = hoverBuilder(
-		(row) => `Net zero-scenarios in ${row.time} is on average ${row.mean.toFixed(0)} Gt CO₂e`
+		(row) => `Net zero-scenarios in ${row.time} is on average ${row.mean.toFixed(1)} Gt CO₂e`
 	);
 	// When series overlap the top most series will react to mouse events
 
@@ -117,17 +117,17 @@
 	const tweenOptions = { duration: 1000, easing: cubicOut };
 	const pathwayCarbonTweened = tweened(data.result.pathwayCarbon, tweenOptions);
 	$: pathwayCarbonTweened.set(data.result.pathwayCarbon);
-	const emissionGapTweened = tweened(data.result.stats.gaps.emission, tweenOptions);
-	$: emissionGapTweened.set(data.result.stats.gaps.emission);
-	const ambitionGapTweened = tweened(data.result.stats.gaps.ambition, tweenOptions);
-	$: ambitionGapTweened.set(data.result.stats.gaps.ambition);
+	const emissionGapTweened = tweened(data.result.stats.ghg.gaps.emission, tweenOptions);
+	$: emissionGapTweened.set(data.result.stats.ghg.gaps.emission);
+	const ambitionGapTweened = tweened(data.result.stats.ghg.gaps.ambition, tweenOptions);
+	$: ambitionGapTweened.set(data.result.stats.ghg.gaps.ambition);
 </script>
 
 <div class="flex h-full gap-4">
 	<Sidebar>
 		<GlobalBudgetCard
-			remaining={data.result.stats.remaining}
-			relative={data.result.stats.relative}
+			remaining={data.result.stats.co2.remaining}
+			relative={data.result.stats.co2.relative}
 		/>
 		<div id="globalquerycard">
 			<GlobalQueryCard
@@ -137,29 +137,28 @@
 			/>
 		</div>
 		<div id="references">
-			<div class="card card-compact min-w-full bg-base-100 shadow-xl">
+			<div class="card-compact card min-w-full bg-base-100 shadow-xl">
 				<div class="card-body">
 					<h2 class="card-title">Reference pathways</h2>
 					<p>
-						Use the checkboxes below to compare your pathway with common references. The difference
-						between them is characterized by the <span
+						Use the checkboxes below to compare your pathway with common references. Of particular interest is the 
+						<span
 							class="tooltip cursor-pointer"
 							role="tooltip"
 							on:mouseenter={toggleEmissionGap}
 							on:mouseleave={toggleEmissionGap}
-							data-tip="The emission gap is the difference between your scenario and the current policy."
-							>emission ⓘ</span
-						>
-						and
+							data-tip="The implementation gap is the difference between your scenario and current policy projections."
+							>implementation ⓘ</span>
+						<!-- and # TODO: removed NDC gap because showing wrong part (see Annual NZ Report) see issue #107
 						<span
 							class="tooltip cursor-pointer"
 							role="tooltip"
 							on:mouseenter={toggleAmbitionGap}
 							on:mouseleave={toggleAmbitionGap}
-							data-tip="The ambition gap is the
-				difference between your scenario and the NDCs.">ambition ⓘ</span
-						>
-						gaps.
+							data-tip="The NDC gap is the
+				difference between current policy projections and projections of current NDC pledges.">NDC ⓘ</span
+						> -->
+						gap.
 					</p>
 					<ul class="">
 						<li>
@@ -180,7 +179,7 @@
 									style={`background-color: ${ipcc_red}`}
 									class="m-1 scale-125 shadow"
 									bind:checked={policyPathwayToggles.current}
-								/>{' '}Current policy</label
+								/>{' '}Projections of current policies</label
 							>
 						</li>
 						<li>
@@ -190,7 +189,7 @@
 									style={`background-color: ${ipcc_purple}`}
 									class="m-1 scale-125 shadow"
 									bind:checked={policyPathwayToggles.ndc}
-								/>{' '}Nationally determined contributions (NDCs)</label
+								/>{' '}Projections of nationally determined contributions (NDCs)</label
 							>
 						</li>
 						<li>
@@ -200,7 +199,7 @@
 									style={`background-color: ${ipcc_blue}`}
 									class="m-1 scale-125 shadow"
 									bind:checked={policyPathwayToggles.netzero}
-								/>{' '}Net zero-scenarios</label
+								/>{' '}Projections of net-zero pledges</label
 							>
 						</li>
 					</ul>
@@ -261,16 +260,16 @@
 
 				{#if ambitionGapHover}
 					<Gap
-						x={data.result.stats.gaps.index}
-						y0={data.result.stats.gaps.ndc}
-						y1={data.result.stats.gaps.budget}
+						x={data.result.stats.ghg.gaps.index}
+						y0={data.result.stats.ghg.gaps.ndc}
+						y1={data.result.stats.ghg.gaps.budget}
 					/>
 				{/if}
 				{#if emissionGapHover}
 					<Gap
-						x={data.result.stats.gaps.index}
-						y0={data.result.stats.gaps.curPol}
-						y1={data.result.stats.gaps.budget}
+						x={data.result.stats.ghg.gaps.index}
+						y0={data.result.stats.ghg.gaps.curPol}
+						y1={data.result.stats.ghg.gaps.budget}
 					/>
 				{/if}
 
