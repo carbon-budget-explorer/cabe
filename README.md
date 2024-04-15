@@ -6,6 +6,13 @@ Web application to explore carbon budgets
 
 The web application is written with [SveltKit](https://kit.svelte.dev/).
 
+> [!WARNING]
+>
+> This repo has been transferred to https://github.com/pbl-nl/ where it was
+> further tailored for production. A hosted instance is available at
+> https://carbonbudgetexplorer.nl/.
+
+
 ## Data requirements
 
 Should have the following data files:
