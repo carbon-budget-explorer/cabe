@@ -1,6 +1,6 @@
 # Carbon Budget Explorer (CABE)
 
-[![CI](https://github.com/carbon-budget-explorer/cabe/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/carbon-budget-explorer/cabe/actions/workflows/ci.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11120650.svg)](https://doi.org/10.5281/zenodo.11120650)
 
 Web application to explore carbon budgets
 
