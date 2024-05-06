@@ -20,14 +20,14 @@ authors:
     orcid: 'https://orcid.org/0000-0002-5821-2060'
   - given-names: Jesus
     family-names: Garcia Gonzalez
-    affiliation: 0000-0002-2170-3253
-    orcid: 'https://orcid.org/0000-0002-5821-2060'
+    affiliation: Netherlands eScience Center
+    orcid: 'https://orcid.org/0000-0002-2170-3253'
   - given-names: Mark
     family-names: Dekker
     email: mark.dekker@pbl.nl
     affiliation: Netherlands Environmental Assessment Agency
     orcid: 'https://orcid.org/0000-0002-3543-6889'
-  - given-names: Laszlo 
+  - given-names: Laszlo
     family-names: Vreedenburgh
     affiliation: Netherlands Environmental Assessment Agency
   - given-names: Martijn
@@ -53,3 +53,7 @@ keywords:
   - Fair shares
   - Climate policy
 license: Apache-2.0
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.11120650
+    description: Initial release
